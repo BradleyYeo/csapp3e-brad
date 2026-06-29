@@ -19,13 +19,15 @@ docker run -it --rm --cap-add=SYS_PTRACE --security-opt seccomp=unconfined -v "$
 
 # Phase 1
 
+## Setup and Debugging
+
 Once inside the container, `gdb` is already installed. Start the debugger with your bomb:
 
 ```bash
 gdb ./bomb
 ```
 
-Inside `gdb`, use these commands to examine the secret string for Phase 1:
+Inside `gdb`, use these commands to set up for Phase 1:
 
 ```gdb
 break phase_1
@@ -33,9 +35,10 @@ run ./answer.txt
 disas phase_1
 x/s 0x402400 # Examine memory `x` at 0x402400 as a string `s` in gdb
 ```
-- (gdb) run answer.txt
-- start reading from exploding bomb and up
-- In the Linux x86-64 calling convention, %esi holds the second argument passed to a function. Your input string automatically sits in %rdi or %esirun (the first argument).
+
+- When reversing, it helps to start reading from `explode_bomb` and work your way up to understand what triggers failure.
+
+## Analyzing the Assembly
 
 ```
 Dump of assembler code for function phase_1:
@@ -49,22 +52,57 @@ Dump of assembler code for function phase_1:
    0x0000000000400efb <+27>:    ret
 ```
 
+- The code prepares arguments for `strings_not_equal`.
+- In the Linux x86-64 calling convention, your input string is automatically passed in `%rdi` as the first argument.
+- The second argument is passed in `%esi` (or `%rsi`). The instruction `mov $0x402400,%esi` puts a memory address into this register.
+- Inspecting this memory address with `x/s 0x402400` reveals the target string. 
+- `strings_not_equal` compares your input string to the secret string. It returns `0` in `%eax` if they match.
+- `test %eax,%eax` checks if the result is zero. If it is (`je`), it jumps over `explode_bomb` to safety.
+
 # Phase 2
-- `b phase_2`
-- `b explode_bomb`
-- For loop
+
+## Reading Inputs
 
 ```zsh
-Dump of assembler code for function phase_2:
 => 0x0000000000400efc <+0>:     push   %rbp
    0x0000000000400efd <+1>:     push   %rbx
    0x0000000000400efe <+2>:     sub    $0x28,%rsp
    0x0000000000400f02 <+6>:     mov    %rsp,%rsi
    0x0000000000400f05 <+9>:     call   0x40145c <read_six_numbers>
+```
+
+- `read_six_numbers` indicates exactly six numbers are expected as input.
+- The stack pointer (`%rsp`) is passed as the second argument (`%rsi`), meaning your six numbers are stored in an array on the stack starting at `%rsp`.
+- You can print all 6 numbers as decimal integers at any time using `x/6wd $rsp`.
+
+## Initial Check
+
+```zsh
    0x0000000000400f0a <+14>:    cmpl   $0x1,(%rsp)
    0x0000000000400f0e <+18>:    je     0x400f30 <phase_2+52>
    0x0000000000400f10 <+20>:    call   0x40143a <explode_bomb>
-   0x0000000000400f15 <+25>:    jmp    0x400f30 <phase_2+52>
+```
+
+- `cmpl $0x1,(%rsp)` compares the first element of your array (at `%rsp`) to 1.
+- If it is equal to 1, it jumps to `<+52>` (`je`), bypassing the first `explode_bomb`. 
+- Therefore, the first number in the sequence must be 1.
+
+## Loop Setup
+
+```zsh
+   0x0000000000400f30 <+52>:    lea    0x4(%rsp),%rbx
+   0x0000000000400f35 <+57>:    lea    0x18(%rsp),%rbp
+   0x0000000000400f3a <+62>:    jmp    0x400f17 <phase_2+27>
+```
+
+- After jumping to `<+52>`, the code sets up a loop.
+- `%rbx` is set to `0x4(%rsp)` (the address of the *second* number in your array).
+- `%rbp` is set to `0x18(%rsp)` (the address just past the *sixth* number, acting as the loop boundary).
+- It then jumps back to `<+27>` to begin the loop.
+
+## The For Loop
+
+```zsh
    0x0000000000400f17 <+27>:    mov    -0x4(%rbx),%eax
    0x0000000000400f1a <+30>:    add    %eax,%eax
    0x0000000000400f1c <+32>:    cmp    %eax,(%rbx)
@@ -74,48 +112,53 @@ Dump of assembler code for function phase_2:
    0x0000000000400f29 <+45>:    cmp    %rbp,%rbx
    0x0000000000400f2c <+48>:    jne    0x400f17 <phase_2+27>
    0x0000000000400f2e <+50>:    jmp    0x400f3c <phase_2+64>
-   0x0000000000400f30 <+52>:    lea    0x4(%rsp),%rbx
-   0x0000000000400f35 <+57>:    lea    0x18(%rsp),%rbp
-   0x0000000000400f3a <+62>:    jmp    0x400f17 <phase_2+27>
-   0x0000000000400f3c <+64>:    add    $0x28,%rsp
-   0x0000000000400f40 <+68>:    pop    %rbx
-   0x0000000000400f41 <+69>:    pop    %rbp
-   0x0000000000400f42 <+70>:    ret
 ```
 
-- First explode bomb is here so need to find out the value it must trigger to jump to line 52
-`0x0000000000400f0e <+18>:    je     0x400f30 <phase_2+52>`
-- read_six_numbers and phase_2 being called six times implies six numbers as input being expected
-- `cmpl $0x1,(%rsp)` means compare if value at rsp is equal to 1
-- `0x0000000000400f1a <+30>:    add    %eax,%eax` Doubles the value at eax
-- `break *0x400f0a` Program is paused at beginning of phase_2
-- `continue`
-- Since you know your array sits at %rsp, you can print all 6 numbers as decimal integers at any time using `x/6wd $rsp`
-- Track loop registers: Put a breakpoint at <+27> (b *0x400f17) and look at what your pointers are holding using `info registers rbx rax`.
+- `mov -0x4(%rbx),%eax`: Moves the previous number in the array into `%eax`. (Since `%rbx` points to the current number, `-0x4(%rbx)` points to the previous one).
+- `add %eax,%eax`: Doubles the value in `%eax`.
+- `cmp %eax,(%rbx)`: Compares this doubled value to the current number.
+- `je 0x400f25`: If they match, skip the bomb and continue.
+- `add $0x4,%rbx`: Advance `%rbx` to the next number in the array.
+- `cmp %rbp,%rbx` / `jne`: Loop until `%rbx` reaches the boundary set in `%rbp`.
+- **Conclusion**: Each number must be twice the previous number. The sequence is `1 2 4 8 16 32`.
+
+### Debugging Tip
+- Track loop registers by placing a breakpoint at `<+27>` (`b *0x400f17`).
+- Check what your pointers are holding using `info registers rbx rax`.
 
 # Phase 3
-- `b phase_3`
-- `b explode_bomb`
-- run answer.txt
-- `disas phase_3`
-```bash
-0x0000000000400f5b <+24>:    call   0x400bf0 <__isoc99_sscanf@plt>
-0x0000000000400f60 <+29>:    cmp    $0x1,%eax
-0x0000000000400f63 <+32>:    jg     0x400f6a <phase_3+39>
-0x0000000000400f65 <+34>:    call   0x40143a <explode_bomb>
-```
-This means eax must be greater than 1 to skip over explode bomb (have 2 or more values).
+
+## Debugging Setup
+
+- Set breakpoints with `b phase_3` and `b explode_bomb`.
+- Run your input file: `run answer.txt`.
+- View the assembly: `disas phase_3`.
+
+## Input Formatting
 
 ```bash
 0x0000000000400f47 <+4>:     lea    0xc(%rsp),%rcx
 0x0000000000400f4c <+9>:     lea    0x8(%rsp),%rdx
 0x0000000000400f51 <+14>:    mov    $0x4025cf,%esi
 ```
-First item stored at 0x8, second item at 0xc
-Run:
-`x/s 0x4025cf`
-0x4025cf:       "%d %d"
-Shows that phase_3 expects two separate numbers
+
+- These instructions prepare arguments before reading input.
+- Running `x/s 0x4025cf` in gdb reveals the format string `"%d %d"`. This confirms `phase_3` expects two integer numbers.
+- The first number is stored at `0x8(%rsp)` and the second at `0xc(%rsp)`.
+
+## Input Validation
+
+```bash
+0x0000000000400f5b <+24>:    call   0x400bf0 <__isoc99_sscanf@plt>
+0x0000000000400f60 <+29>:    cmp    $0x1,%eax
+0x0000000000400f63 <+32>:    jg     0x400f6a <phase_3+39>
+0x0000000000400f65 <+34>:    call   0x40143a <explode_bomb>
+```
+
+- `sscanf` returns the number of items matched. 
+- `%eax` must be greater than 1 (`jg`) to skip the bomb, meaning you must provide at least 2 numbers.
+
+## The Jump Table (Switch Statement)
 
 ```bash
 0x0000000000400f6a <+39>:    cmpl   $0x7,0x8(%rsp)
@@ -123,28 +166,39 @@ Shows that phase_3 expects two separate numbers
 0x0000000000400f71 <+46>:    mov    0x8(%rsp),%eax
 0x0000000000400f75 <+50>:    jmp    *0x402470(,%rax,8)
 ```
-Jump to the explosion if the value inside 0x8(%rsp) (your first number) is Above the constant $0x7. Meaning first number must be between 0-7 (inclusive). jmp instructions means a jump table is being used and there is a switch instruction in the code.
+
+- The code compares your first number (`0x8(%rsp)`) to `0x7`. 
+- If it is Above (`ja`) 7, the bomb explodes. Therefore, the first number must be between 0 and 7 (inclusive).
+- The `jmp *0x402470(,%rax,8)` instruction signifies a jump table, which is how C `switch` statements are compiled.
+- You can inspect the jump table using `x/8gx 0x402470` to see where each valid input routes to.
+
+## Executing the Switch Case
+
+- If you input `2` as your first number, the CPU calculates the offset and jumps directly to the corresponding case logic (e.g., `<+64>`).
+
+```bash
+0x0000000000400f83 <+64>:    mov    $0x2c3,%eax
+0x0000000000400f88 <+69>:    jmp    0x400fbe <phase_3+123>
+```
+
+- It moves the literal value `0x2c3` (707 in decimal) into `%eax`.
+- It then jumps immediately to the final target check at `<+123>`.
+
+## Final Verification
 
 ```bash
 0x0000000000400fbe <+123>:   cmp    0xc(%rsp),%eax
 0x0000000000400fc2 <+127>:   je     0x400fc9 <phase_3+134>
 0x0000000000400fc4 <+129>:   call   0x40143a <explode_bomb>
 ```
-Second number went to 0xC
-Inspect Jump table at *0x402470
-x/8gx 0x402470
 
-```
-0x0000000000400f83 <+64>:    mov    $0x2c3,%eax
-0x0000000000400f88 <+69>:    jmp    0x400fbe <phase_3+123>
-```
-The CPU jumps directly to line <+64>.
-It executes mov $0x2c3, %eax, dropping the literal value 0x2c3 into %eax.
-It immediately jumps down to the final target check at <+123>.
-
-Answer: 2 707
+- The code compares your second number (`0xc(%rsp)`) against the value that was just loaded into `%eax`.
+- For the bomb not to explode, they must be equal (`je`).
+- Based on our example switch case, the answer is `2 707`.
 
 # Phase 4
+
+## Input Validation
 
 ```bash
 0x0000000000401024 <+24>:    call   0x400bf0 <__isoc99_sscanf@plt>
@@ -155,37 +209,11 @@ Answer: 2 707
 0x0000000000401035 <+41>:    call   0x40143a <explode_bomb>
 ```
 
-sscanf returns the total number of items it has read from input string, which means there must be at only 2 numbers in the solution to phase 4.
+- `sscanf` returns the total number of items successfully read. It must return 2, meaning you need exactly two numbers.
+- The first number (at `0x8(%rsp)`) must be less than or equal to `0xe` (14). So, the first number is between 0 and 14 inclusive.
 
-```bash
-0x000000000040102e <+34>:    cmpl   $0xe,0x8(%rsp)
-0x0000000000401033 <+39>:    jbe    0x40103a <phase_4+46>
-```
-First number must be between 0 and 14 (inclusive).
+## Setting Up func4
 
-```bash
-0x000000000040101f <+19>:    mov    $0x0,%eax
-...
-0x0000000000401048 <+60>:    call   0x400fce <func4>
-0x000000000040104d <+65>:    test   %eax,%eax
-0x000000000040104f <+67>:    jne    0x401058 <phase_4+76>
-```
-func4 must return 0
-
-```bash
-0x0000000000401051 <+69>:    cmpl   $0x0,0xc(%rsp)
-```
-Second number must equal to 0
-
-Run `disas func4`
-
-func4 is recursive as you can see it call itself from inside its own body.
-```bash
-0x0000000000400fe9 <+27>:    call   0x400fce <func4>
-0x0000000000400ffe <+48>:    call   0x400fce <func4>
-```
-
-0x8(%rsp) same as scanf is in edi?, 0 in esi, 14 in edx
 ```bash
 0x000000000040103a <+46>:    mov    $0xe,%edx
 0x000000000040103f <+51>:    mov    $0x0,%esi
@@ -193,15 +221,14 @@ func4 is recursive as you can see it call itself from inside its own body.
 0x0000000000401048 <+60>:    call   0x400fce <func4>
 ```
 
-Offset(Base, Index, Scale)
-Result = Base + (Index * Scale) + Offset
-Result = rax + rsi
-%rax (which is just the 64-bit full name for %eax) is 7
-%rsi which is esi is 0
-ecx is 7
-```bash
-0x0000000000400fdf <+17>:    lea    (%rax,%rsi,1),%ecx
-```
+- The code prepares arguments for `func4`:
+  - Argument 1 (`%edi`): Your first input number
+  - Argument 2 (`%esi`): 0 (Low boundary)
+  - Argument 3 (`%edx`): 14 (High boundary)
+
+## Understanding func4
+
+- `func4` is a recursive function that performs a binary search.
 
 ```bash
 0x400fd2 <+4>:  mov    %edx,%eax   ; eax = high
@@ -213,9 +240,21 @@ ecx is 7
 0x400fdf <+17>: lea    (%rax,%rsi,1),%ecx ; ecx = ((high - low) / 2) + low
 ```
 
-func4 took your high boundary (14), added your low boundary (0), and divided the whole thing by 2 to get 7 performing binary search.
+### The LEA Instruction
 
-jle and jge means ecx must equal to 7.
+- The `lea` (Load Effective Address) instruction is frequently used by compilers to perform fast math rather than memory lookups.
+- The syntax format is: `Offset(Base, Index, Scale)`.
+- Mathematically, it calculates: `Result = Base + (Index * Scale) + Offset`.
+- In `0x400fdf <+17>: lea (%rax,%rsi,1),%ecx`:
+  - Base (`%rax`): Holds `(high - low) / 2`
+  - Index (`%rsi`): Holds the `low` boundary (0)
+  - Scale (`1`): Multiplier for the index
+  - Offset (`0`): Omitted, defaults to 0
+- The calculation simplifies to `%ecx = %rax + (%rsi * 1)`.
+- This means it calculates the midpoint of our binary search: `((high - low) / 2) + low` and stores it in `%ecx`.
+
+### Recursive Binary Search Logic
+
 ```bash
 0x0000000000400fe4 <+22>:    jle    0x400ff2 <func4+36>
 0x0000000000400fe6 <+24>:    lea    -0x1(%rcx),%edx
@@ -228,6 +267,28 @@ jle and jge means ecx must equal to 7.
 0x0000000000400ffb <+45>:    lea    0x1(%rcx),%esi
 0x0000000000400ffe <+48>:    call   0x400fce <func4>
 ```
+
+- The function compares our input (`%edi`) to the computed midpoint (`%ecx`).
+- If they match exactly, the recursion stops and it returns 0.
+- Otherwise, it recursively calls itself on the upper or lower half, adding the result to `%eax` and potentially shifting it, returning a non-zero value.
+
+## Final Verification
+
+```bash
+0x0000000000401048 <+60>:    call   0x400fce <func4>
+0x000000000040104d <+65>:    test   %eax,%eax
+0x000000000040104f <+67>:    jne    0x401058 <phase_4+76>
+```
+
+- `func4` must return 0 in `%eax` to pass. This only happens if our first number is found at the exact midpoint (7) without recursing into a branch that adds non-zero values to `%eax`.
+
+```bash
+0x0000000000401051 <+69>:    cmpl   $0x0,0xc(%rsp)
+```
+
+- The second number (at `0xc(%rsp)`) must be equal to 0.
+- Therefore, the answer for phase 4 is `7 0`.
+
 
 # Phase 5
 
