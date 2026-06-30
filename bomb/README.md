@@ -292,33 +292,37 @@ Dump of assembler code for function phase_1:
 
 # Phase 5
 
-string in phase 5 must be at least 6 characters long.
+## Input Length Validation
+
 ```bash
 0x000000000040107a <+24>:    call   0x40131b <string_length>
 0x000000000040107f <+29>:    cmp    $0x6,%eax
 0x0000000000401082 <+32>:    je     0x4010d2 <phase_5+112>
 ```
 
-Grab the first character in a for loop which is 1 byte of data.
+- The code calls `string_length` to determine the length of your input string.
+- It compares the result (`%eax`) to `0x6` (6).
+- If it is equal to 6, it jumps to `<+112>` (`je`), skipping an implicit `explode_bomb`.
+- **Conclusion**: The input string must be exactly 6 characters long.
+
+## Character Transformation Loop
+
 ```bash
 0x000000000040108b <+41>:    movzbl (%rbx,%rax,1),%ecx
 0x000000000040108f <+45>:    mov    %cl,(%rsp)
-```
-
-Bitwise AND `0xf` which is `0000 1111` or % 16 in C
-```bash
 0x0000000000401092 <+48>:    mov    (%rsp),%rdx
 0x0000000000401096 <+52>:    and    $0xf,%edx
-```
-
-Secret characters are hidden in `0x4024b0`
-```bash
 0x0000000000401099 <+55>:    movzbl 0x4024b0(%rdx),%edx
 ```
 
-`"maduiersnfotvbylSo you think you can stop the bomb with ctrl-c, do you?"`
+- `movzbl (%rbx,%rax,1),%ecx`: Grabs a single character (1 byte) from the input string at the current index.
+- `mov %cl,(%rsp)` and `mov (%rsp),%rdx`: Moves the byte around in memory/registers to prepare it.
+- `and $0xf,%edx`: Performs a bitwise AND with `0xf` (`0000 1111` in binary). This is equivalent to `% 16` in C, extracting only the lower 4 bits of the character's ASCII value.
+- `movzbl 0x4024b0(%rdx),%edx`: Uses the result (`%rdx`) as an index into a secret character array at `0x4024b0`.
+- Inspecting `0x4024b0` (`x/s 0x4024b0`) reveals the lookup table: `"maduiersnfotvbyl"`.
 
-line 96 must return 0 to jump to safety, meaning string from loop must equal to `x/s 0x40245e`
+## Final Verification
+
 ```bash
 0x00000000004010b3 <+81>:    mov    $0x40245e,%esi
 0x00000000004010b8 <+86>:    lea    0x10(%rsp),%rdi
@@ -326,3 +330,75 @@ line 96 must return 0 to jump to safety, meaning string from loop must equal to 
 0x00000000004010c2 <+96>:    test   %eax,%eax
 0x00000000004010c4 <+98>:    je     0x4010d9 <phase_5+119>
 ```
+
+- It prepares to compare the newly constructed string (at `0x10(%rsp)`) with a target string at `0x40245e`.
+- Inspecting `0x40245e` reveals the target string (e.g., `"flyers"`).
+- `strings_not_equal` must return 0 (`%eax`) to jump to `<+119>` and avoid the bomb.
+- **Conclusion**: The assembled string must match `"flyers"`. We can reverse engineer our input by mapping each character in `"flyers"` back to its index in `"maduiersnfotvbyl"`, and finding an ASCII character whose lower 4 bits match that index.
+
+# Phase 6
+
+## Input Validation and Structure
+
+```bash
+0x0000000000401106 <+18>:    call   0x40145c <read_six_numbers>
+```
+
+- Like Phase 2, this phase expects six integers.
+
+```bash
+0x0000000000401117 <+35>:    mov    0x0(%r13),%eax
+0x000000000040111b <+39>:    sub    $0x1,%eax
+0x000000000040111e <+42>:    cmp    $0x5,%eax
+0x0000000000401121 <+45>:    jbe    0x401128 <phase_6+52>
+0x0000000000401123 <+47>:    call   0x40143a <explode_bomb>
+```
+
+- Each number is checked to see if subtracting 1 leaves it below or equal to 5 (using unsigned jump `jbe`).
+- This means every number must be between 1 and 6.
+
+```bash
+0x0000000000401138 <+68>:    mov    (%rsp,%rax,4),%eax
+0x000000000040113b <+71>:    cmp    %eax,0x0(%rbp)
+0x000000000040113e <+74>:    jne    0x401145 <phase_6+81>
+0x0000000000401140 <+76>:    call   0x40143a <explode_bomb>
+```
+
+- An inner loop compares each number against the subsequent numbers.
+- If any two numbers are equal, the bomb explodes.
+- **Conclusion**: The input must be a permutation of the numbers 1 through 6 with no repeats.
+
+## Data Transformation
+
+```bash
+0x0000000000401160 <+108>:   mov    %ecx,%edx
+0x0000000000401162 <+110>:   sub    (%rax),%edx
+0x0000000000401164 <+112>:   mov    %edx,(%rax)
+```
+
+- `%ecx` holds `7`. This loop subtracts each of our inputs from 7.
+- For example, if we input `1`, it becomes `7 - 1 = 6`.
+
+## Linked List Traversal
+
+```bash
+0x0000000000401183 <+143>:   mov    $0x6032d0,%edx
+```
+
+- The value `0x6032d0` is placed into `%edx`. Inspecting this memory address in `gdb` reveals a linked list structure containing integer values.
+- A complex set of loops reads each node of this linked list and rearranges it into an array of pointers on the stack based on our transformed input sequence.
+
+## Final Verification
+
+```bash
+0x00000000004011df <+235>:   mov    0x8(%rbx),%rax
+0x00000000004011e3 <+239>:   mov    (%rax),%eax
+0x00000000004011e5 <+241>:   cmp    %eax,(%rbx)
+0x00000000004011e7 <+243>:   jge    0x4011ee <phase_6+250>
+0x00000000004011e9 <+245>:   call   0x40143a <explode_bomb>
+```
+
+- This final loop iterates through the newly arranged pointers.
+- It compares the integer value at each node (`(%rax)`) with the integer value at the current node (`(%rbx)`).
+- `jge` ensures the current node is greater than or equal to the next node.
+- **Conclusion**: We need to sort the linked list in descending order. By examining the values of the nodes at `0x6032d0`, we can determine their descending sequence, map them to their original indices, and reverse the `7 - x` transformation to find the correct input.
