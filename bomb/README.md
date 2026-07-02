@@ -55,7 +55,7 @@ Dump of assembler code for function phase_1:
 - The code prepares arguments for `strings_not_equal`.
 - In the Linux x86-64 calling convention, your input string is automatically passed in `%rdi` as the first argument.
 - The second argument is passed in `%esi` (or `%rsi`). The instruction `mov $0x402400,%esi` puts a memory address into this register.
-- Inspecting this memory address with `x/s 0x402400` reveals the target string. 
+- Inspecting this memory address with `x/s 0x402400` reveals the target string.
 - `strings_not_equal` compares your input string to the secret string. It returns `0` in `%eax` if they match.
 - `test %eax,%eax` checks if the result is zero. If it is (`je`), it jumps over `explode_bomb` to safety.
 
@@ -84,7 +84,7 @@ Dump of assembler code for function phase_1:
 ```
 
 - `cmpl $0x1,(%rsp)` compares the first element of your array (at `%rsp`) to 1.
-- If it is equal to 1, it jumps to `<+52>` (`je`), bypassing the first `explode_bomb`. 
+- If it is equal to 1, it jumps to `<+52>` (`je`), bypassing the first `explode_bomb`.
 - Therefore, the first number in the sequence must be 1.
 
 ## Loop Setup
@@ -155,7 +155,7 @@ Dump of assembler code for function phase_1:
 0x0000000000400f65 <+34>:    call   0x40143a <explode_bomb>
 ```
 
-- `sscanf` returns the number of items matched. 
+- `sscanf` returns the number of items matched.
 - `%eax` must be greater than 1 (`jg`) to skip the bomb, meaning you must provide at least 2 numbers.
 
 ## The Jump Table (Switch Statement)
@@ -167,7 +167,7 @@ Dump of assembler code for function phase_1:
 0x0000000000400f75 <+50>:    jmp    *0x402470(,%rax,8)
 ```
 
-- The code compares your first number (`0x8(%rsp)`) to `0x7`. 
+- The code compares your first number (`0x8(%rsp)`) to `0x7`.
 - If it is Above (`ja`) 7, the bomb explodes. Therefore, the first number must be between 0 and 7 (inclusive).
 - The `jmp *0x402470(,%rax,8)` instruction signifies a jump table, which is how C `switch` statements are compiled.
 - You can inspect the jump table using `x/8gx 0x402470` to see where each valid input routes to.
@@ -292,37 +292,58 @@ Dump of assembler code for function phase_1:
 
 # Phase 5
 
-## Input Length Validation
+## Learning Objective
+- Deconstruct how characters are represented in memory.
+- Understand how bitwise operations mask data.
+- Learn how lookup tables map input space to output space.
 
+## Step 1: Input Length Verification
+- The assembly code validating input length:
 ```bash
 0x000000000040107a <+24>:    call   0x40131b <string_length>
 0x000000000040107f <+29>:    cmp    $0x6,%eax
 0x0000000000401082 <+32>:    je     0x4010d2 <phase_5+112>
 ```
+- Analysis:
+  - Calls [string_length](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/bomb/bomb.asm) to count characters.
+  - Compares the length in `%eax` to `0x6`.
+  - Jumps to the loop initialization if length is exactly 6.
+- Key Takeaway: The input string must be exactly 6 characters long.
 
-- The code calls `string_length` to determine the length of your input string.
-- It compares the result (`%eax`) to `0x6` (6).
-- If it is equal to 6, it jumps to `<+112>` (`je`), skipping an implicit `explode_bomb`.
-- **Conclusion**: The input string must be exactly 6 characters long.
-
-## Character Transformation Loop
-
+## Step 2: Character Retrieval and Stack Buffering
+- The instructions fetching and loading characters:
 ```bash
 0x000000000040108b <+41>:    movzbl (%rbx,%rax,1),%ecx
 0x000000000040108f <+45>:    mov    %cl,(%rsp)
 0x0000000000401092 <+48>:    mov    (%rsp),%rdx
+```
+- Analysis:
+  - [movzbl](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/bomb/bomb.asm) fetches the character at index `%rax` from the input string starting at `%rbx`, zero-extending it to 32 bits in `%ecx`.
+  - [mov](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/bomb/bomb.asm) writes the 1-byte character from `%cl` onto the stack at address `(%rsp)`.
+  - The next [mov](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/bomb/bomb.asm) loads 8 bytes from `(%rsp)` into the 64-bit register `%rdx`.
+
+## Step 3: Bitwise Masking
+- The instruction extracting character bits:
+```bash
 0x0000000000401096 <+52>:    and    $0xf,%edx
+```
+- Analysis:
+  - Performs a bitwise AND on register `%edx` with `0xf` (`0000 1111` in binary).
+  - This strips the upper bits of the character's ASCII byte, keeping only the lowest 4 bits.
+  - Mathematically, this is equivalent to `ASCII_value % 16`.
+  - Consequently, multiple different characters will produce the exact same 4-bit index.
+
+## Step 4: Table Indexing
+- The instruction mapping indices to target characters:
+```bash
 0x0000000000401099 <+55>:    movzbl 0x4024b0(%rdx),%edx
 ```
+- Analysis:
+  - Treats the masked value in `%rdx` as an offset/index into the character array at memory address `0x4024b0`.
+  - Inspecting this address reveals the 16-character string: `"maduiersnfotvbyl"`.
 
-- `movzbl (%rbx,%rax,1),%ecx`: Grabs a single character (1 byte) from the input string at the current index.
-- `mov %cl,(%rsp)` and `mov (%rsp),%rdx`: Moves the byte around in memory/registers to prepare it.
-- `and $0xf,%edx`: Performs a bitwise AND with `0xf` (`0000 1111` in binary). This is equivalent to `% 16` in C, extracting only the lower 4 bits of the character's ASCII value.
-- `movzbl 0x4024b0(%rdx),%edx`: Uses the result (`%rdx`) as an index into a secret character array at `0x4024b0`.
-- Inspecting `0x4024b0` (`x/s 0x4024b0`) reveals the lookup table: `"maduiersnfotvbyl"`.
-
-## Final Verification
-
+## Step 5: Final Verification
+- The verification assembly instructions:
 ```bash
 0x00000000004010b3 <+81>:    mov    $0x40245e,%esi
 0x00000000004010b8 <+86>:    lea    0x10(%rsp),%rdi
@@ -330,11 +351,47 @@ Dump of assembler code for function phase_1:
 0x00000000004010c2 <+96>:    test   %eax,%eax
 0x00000000004010c4 <+98>:    je     0x4010d9 <phase_5+119>
 ```
+- Analysis:
+  - Prepares to compare the transformed string at `0x10(%rsp)` with the target string at address `0x40245e`.
+  - Inspecting memory at `0x40245e` (`x/s 0x40245e`) reveals the target string: `"flyers"`.
+  - The function [strings_not_equal](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/bomb/bomb.asm) must return 0 in `%eax` to bypass the bomb-exploding branch.
+  - Therefore, the reconstructed string must equal `"flyers"`.
 
-- It prepares to compare the newly constructed string (at `0x10(%rsp)`) with a target string at `0x40245e`.
-- Inspecting `0x40245e` reveals the target string (e.g., `"flyers"`).
-- `strings_not_equal` must return 0 (`%eax`) to jump to `<+119>` and avoid the bomb.
-- **Conclusion**: The assembled string must match `"flyers"`. We can reverse engineer our input by mapping each character in `"flyers"` back to its index in `"maduiersnfotvbyl"`, and finding an ASCII character whose lower 4 bits match that index.
+## Step 6: Why the ASCII Table is Required
+- The instruction `and $0xf,%edx` filters out all but the lowest 4 bits of the character's binary value.
+- The computer does not understand characters like 'a' or 'i' directly; it represents them using standard ASCII integer mappings.
+- For example, lowercase letters range from `0x61` ('a') to `0x7a` ('z').
+- To retrieve the correct target characters, we map them back to their indices in the table `"maduiersnfotvbyl"` and find characters with matching lower 4 bits.
+
+## Step 7: Step-by-Step Translation of "ionefg" to "flyers"
+- Goal: Pass `"ionefg"` as input to produce the target string `"flyers"`.
+- Lookup Table: `0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15` -> `"m a d u i e r s n f o  t  v  b  y  l"`
+- Walkthrough:
+  - Input character 1: 'i'
+    - ASCII hex value: `0x69`
+    - Apply `and $0xf`: `0x69 & 0x0f = 0x09` (decimal 9)
+    - Lookup table value at index 9: 'f'
+  - Input character 2: 'o'
+    - ASCII hex value: `0x6f`
+    - Apply `and $0xf`: `0x6f & 0x0f = 0x0f` (decimal 15)
+    - Lookup table value at index 15: 'l'
+  - Input character 3: 'n'
+    - ASCII hex value: `0x6e`
+    - Apply `and $0xf`: `0x6e & 0x0f = 0x0e` (decimal 14)
+    - Lookup table value at index 14: 'y'
+  - Input character 4: 'e'
+    - ASCII hex value: `0x65`
+    - Apply `and $0xf`: `0x65 & 0x0f = 0x05` (decimal 5)
+    - Lookup table value at index 5: 'e'
+  - Input character 5: 'f'
+    - ASCII hex value: `0x66`
+    - Apply `and $0xf`: `0x66 & 0x0f = 0x06` (decimal 6)
+    - Lookup table value at index 6: 'r'
+  - Input character 6: 'g'
+    - ASCII hex value: `0x67`
+    - Apply `and $0xf`: `0x67 & 0x0f = 0x07` (decimal 7)
+    - Lookup table value at index 7: 's'
+- Output Result: The final transformed string is `"flyers"`, which matches the target string and passes the phase.
 
 # Phase 6
 
