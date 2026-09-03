@@ -411,6 +411,7 @@ Dump of assembler code for function phase_1:
 0x0000000000401123 <+47>:    call   0x40143a <explode_bomb>
 ```
 
+- At line 35, eax is pointing to the first number
 - Each number is checked to see if subtracting 1 leaves it below or equal to 5 (using unsigned jump `jbe`).
 - This means every number must be between 1 and 6.
 
