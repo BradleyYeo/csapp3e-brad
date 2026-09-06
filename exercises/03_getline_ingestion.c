@@ -57,6 +57,10 @@ int main(void) {
   // Test 4: Reading a physical file from disk via fopen
   const char *test_path = "test.txt";
   FILE *file = fopen(test_path, "r");
+  if (file == nullptr) {
+    test_path = "exercises/test.txt";
+    file = fopen(test_path, "r");
+  }
 
   // Invariant: file pointer must not be null
   assert(file != nullptr);
