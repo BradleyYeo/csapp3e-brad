@@ -27,7 +27,9 @@
 static char *read_trimmed_line(FILE *stream, size_t *out_len) {
   char *line = nullptr;
   size_t cap = 0;
-  ssize_t read_bytes = getline(&line, &cap, stream);
+  ssize_t read_bytes =
+      getline(&line, &cap, stream); // getline dynamically sizes the buffer to
+                                    // fit lines of arbitrary length.
 
   if (read_bytes == -1) {
     free(line);
