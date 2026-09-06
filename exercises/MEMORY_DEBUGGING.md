@@ -1,6 +1,12 @@
-# Memory Debugging Guide: Sanitizers, Leaks, and Defect Remediation
+# 04: Memory Debugging, Sanitizers, and Defect Remediation Manual
 
 A practical diagnostic manual for identifying, reading, and fixing memory corruption defects, leaks, and undefined behavior using compiler sanitizers and system diagnostics.
+
+## Curriculum Reading Sequence
+- Layer 01: [01: Systems C Fundamentals, Syntax, and Core Concepts](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/FUNDAMENTALS.md)
+- Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/README.md)
+- Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
+- Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md) (Current Document)
 
 ---
 

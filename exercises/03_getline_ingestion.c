@@ -1,3 +1,16 @@
+/*
+ * Compile and run:
+ *   clang -Wall -Wextra -pedantic -g -o 03_getline_ingestion 03_getline_ingestion.c && ./03_getline_ingestion
+ */
+#define _POSIX_C_SOURCE 200809L
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
+#include <stdbool.h>
+#include <stdalign.h>
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -38,25 +51,6 @@ static char *read_trimmed_line(FILE *stream, size_t *out_len) {
   }
 
   return line;
-}
-/*
- * Reads a single line from stream and strips trailing newline in O(1) time.
- * Dynamic buffer allocated on heap; caller owns memory and must call free.
- * Input: stream FILE pointer, out_len pointer for resulting string length.
- * Output: heap-allocated string pointer, or nullptr on EOF/failure.
- * Example: stream containing "hello\n" -> returns "hello", *out_len = 5
- */
-static char *read_t_line(FILE *stream) {
-  char *line = nullptr;
-  size_t cap = 0;
-  ssize_t read_bytes = getline(&line, &cap, stream);
-
-  if (read_bytes == 1) {
-    free(line);
-    return nullptr;
-  }
-  // O(1) trailing newline removal
-  // Also strip carriage return \r if present (e.g. CRLF)
 }
 
 int main(void) {

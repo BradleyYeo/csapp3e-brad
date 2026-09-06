@@ -1,7 +1,7 @@
 CC ?= clang
 CFLAGS ?= -std=c23 -Wall -Wextra -Werror -pedantic -g
 
-TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers
+TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers 11_bump_allocator
 
 CFLAGS_SAN ?= -std=c23 -Wall -Wextra -Werror -pedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer
 
@@ -39,6 +39,9 @@ all: $(TARGETS)
 10_memory_safety_sanitizers: 10_memory_safety_sanitizers.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+11_bump_allocator: 11_bump_allocator.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 test: all
 	@echo "Running Exercise 01..."
 	@./01_pointer_traversal
@@ -60,6 +63,8 @@ test: all
 	@./09_dynamic_memory_lifecycle
 	@echo "Running Exercise 10..."
 	@./10_memory_safety_sanitizers
+	@echo "Running Exercise 11..."
+	@./11_bump_allocator
 	@echo "All tests passed successfully."
 
 test-sanitizers: clean

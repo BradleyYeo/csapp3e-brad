@@ -1,3 +1,16 @@
+/*
+ * Compile and run:
+ *   clang -Wall -Wextra -pedantic -g -o 04_enum_state_machine 04_enum_state_machine.c && ./04_enum_state_machine
+ */
+#define _POSIX_C_SOURCE 200809L
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
+#include <stdbool.h>
+#include <stdalign.h>
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <stdio.h>

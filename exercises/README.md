@@ -1,8 +1,18 @@
-# Modern C Practice Exercises
+# 02: Hands-On Practice Exercises and Deliberate Practice Drills
 
-Hands-on exercises demonstrating modern C23 idioms, memory layout, pointer traversal, and software design principles applied to regex engines.
+Hands-on exercises demonstrating modern C23 idioms, memory layout, pointer traversal, and software design principles applied to regex engines and memory allocators.
+
+## Curriculum Reading Sequence
+- Layer 01: [01: Systems C Fundamentals, Syntax, and Core Concepts](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/FUNDAMENTALS.md)
+- Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/README.md) (Current Document)
+- Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
+- Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md)
+
+---
 
 ## Build and Execution
+WSL `sudo apt update && sudo apt install -y clang make build-essential`
+`make -C exercises 11_bump_allocator && ./exercises/11_bump_allocator`
 
 ### Prerequisites
 - Clang or GCC supporting C23 (`-std=c23`).
@@ -25,6 +35,7 @@ make -C exercises 07_process_memory_layout && ./exercises/07_process_memory_layo
 make -C exercises 08_pointer_arithmetic_strides && ./exercises/08_pointer_arithmetic_strides
 make -C exercises 09_dynamic_memory_lifecycle && ./exercises/09_dynamic_memory_lifecycle
 make -C exercises 10_memory_safety_sanitizers && ./exercises/10_memory_safety_sanitizers
+make -C exercises 11_bump_allocator && ./exercises/11_bump_allocator
 ```
 
 ### Running Under Sanitizers (AddressSanitizer & UndefinedBehaviorSanitizer)
@@ -32,7 +43,8 @@ make -C exercises 10_memory_safety_sanitizers && ./exercises/10_memory_safety_sa
 make -C exercises test-sanitizers
 ```
 
-See [MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/MEMORY_DEBUGGING.md) for detailed diagnostics, crash report breakdowns, and leak detection commands.
+See [FUNDAMENTALS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/FUNDAMENTALS.md) for a complete primer on C syntax, pointer concepts, and memory profiling with ASan, Valgrind, Massif, and perf.
+See [MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md) for detailed diagnostics, crash report breakdowns, and leak detection commands.
 
 ### Cleaning Build Artifacts
 ```bash
@@ -43,9 +55,12 @@ make -C exercises clean
 
 # Exercise Guide and Mental Models
 
+> [!TIP]
+> If you are new to pointer arithmetic, memory alignment bitwise algebra, or standard types, start by reading [FUNDAMENTALS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/FUNDAMENTALS.md) before implementing the exercises below.
+
 ## Exercise 01: Pointer Traversal and Cursor Arithmetic
 
-Source: [01_pointer_traversal.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c)
+Source: [01_pointer_traversal.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c)
 
 ### Memory Layout
 - A string in C is a sequence of characters terminated by null byte `'\0'`.
@@ -62,12 +77,12 @@ Cursor p:     ^
 ```
 
 ### Core Functions
-- [count_digits](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c): Iterates text with a pointer cursor and counts numeric digits.
-- [count_alpha](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c): Counts alphabetic characters using `isalpha((unsigned char)*p)`.
-- [find_first_digit](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c): Returns the memory address of the first digit found, or `nullptr`.
-- [find_last_digit](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c): Scans backward from null terminator with lower-bound protection (`p > text`).
-- [match_prefix](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c): Lockstep two-pointer prefix matching with `*prefix != '\0'` runaway prevention.
-- [find_substring](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/01_pointer_traversal.c): Sliding cursor scanner that delegates to `match_prefix` at each byte.
+- [count_digits](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c): Iterates text with a pointer cursor and counts numeric digits.
+- [count_alpha](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c): Counts alphabetic characters using `isalpha((unsigned char)*p)`.
+- [find_first_digit](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c): Returns the memory address of the first digit found, or `nullptr`.
+- [find_last_digit](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c): Scans backward from null terminator with lower-bound protection (`p > text`).
+- [match_prefix](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c): Lockstep two-pointer prefix matching with `*prefix != '\0'` runaway prevention.
+- [find_substring](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.c): Sliding cursor scanner that delegates to `match_prefix` at each byte.
 
 ### Deliberate Practice Drills Completed
 - Reverse pointer traversal with strict bounds checking.
@@ -78,7 +93,7 @@ Cursor p:     ^
 
 ## Exercise 02: Anchored Matching vs Cursor Scanning
 
-Source: [02_anchored_matching.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/02_anchored_matching.c)
+Source: [02_anchored_matching.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.c)
 
 ### Concept Design (Daniel Jackson)
 - Coupling token checking with a full-string search loop leads to code duplication across every regex feature.
@@ -94,20 +109,20 @@ Step 1: match_here("hello_123", "\\w") -> 'h' is word char -> true (Stop)
 ```
 
 ### Core Functions
-- [is_word_char](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/02_anchored_matching.c): Inspects character with `isalnum((unsigned char)c) || c == '_'`.
-- [match_here](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/02_anchored_matching.c): Evaluates literal characters and `\w` without looping over input.
-- [find_pattern](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/02_anchored_matching.c): Drives the search cursor and delegates matching at each byte.
+- [is_word_char](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.c): Inspects character with `isalnum((unsigned char)c) || c == '_'`.
+- [match_here](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.c): Evaluates literal characters and `\w` without looping over input.
+- [find_pattern](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.c): Drives the search cursor and delegates matching at each byte.
 
 ### Deliberate Practice Task
-- Add support for digit token `\d` to [match_here](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/02_anchored_matching.c).
-- Notice how [find_pattern](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/02_anchored_matching.c) requires zero modifications.
+- Add support for digit token `\d` to [match_here](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.c).
+- Notice how [find_pattern](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.c) requires zero modifications.
 - Connect to [src/main.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/src/main.c) to replace duplicate `match_digit` and `match_word` scanning loops with a unified `match_here` + `find_pattern` engine.
 
 ---
 
 ## Exercise 03: Dynamic Buffer Ingestion with `getline`
 
-Source: [03_getline_ingestion.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/03_getline_ingestion.c)
+Source: [03_getline_ingestion.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/03_getline_ingestion.c)
 
 ### Resource Management and Ownership
 - Fixed stack buffers (`char buf[1024]`) truncate lines larger than 1023 bytes.
@@ -134,7 +149,7 @@ Length: 5
 
 ## Exercise 04: State Modeling with Enums
 
-Source: [04_enum_state_machine.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/04_enum_state_machine.c)
+Source: [04_enum_state_machine.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/04_enum_state_machine.c)
 
 ### Defining Errors Out of Existence (Jimmy Koppel)
 - In [src/main.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/src/main.c), unsupported patterns invoke `exit(1)` abruptly.
@@ -162,7 +177,7 @@ match_string()   --> MATCH_FOUND / MATCH_NOT_FOUND
 
 ## Exercise 05: Character Groups, Slicing, and Set Scanning
 
-Source: [05_char_group_slicing.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/05_char_group_slicing.c)
+Source: [05_char_group_slicing.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/05_char_group_slicing.c)
 
 ### Memory Layout and Pointer Distance
 - In C, subtracting two pointers into the same array computes the element distance: `len = end - start`.
@@ -200,14 +215,14 @@ Offset:        0    1    2     3     4    5
 - Recursive Extension: Recurse on `candidate + 1` when evaluating following pattern tokens.
 
 ### Deliberate Practice Tasks
-- Modify [05_char_group_slicing.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/05_char_group_slicing.c) to handle negative character groups `[^abc]`.
+- Modify [05_char_group_slicing.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/05_char_group_slicing.c) to handle negative character groups `[^abc]`.
 - Verify bounds when pattern contains empty brackets `[]`.
 
 ---
 
 ## Exercise 06: Zero-Copy File Search with mmap
 
-Source: [06_mmap_search.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/06_mmap_search.c)
+Source: [06_mmap_search.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_mmap_search.c)
 
 ### Virtual Memory Mapping Architecture
 - Standard `read(2)` copies storage pages from kernel Page Cache to user-space buffers.
@@ -241,7 +256,7 @@ Memory-Mapped mmap(2):
 
 ## Exercise 07: Process Memory Space and Segment Topology
 
-Source: [07_process_memory_layout.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/07_process_memory_layout.c)
+Source: [07_process_memory_layout.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.c)
 
 ### Virtual Memory Segment Map
 
@@ -290,7 +305,7 @@ Low Addresses (0x0000000000000000)
 
 ## Exercise 08: Pointer Arithmetic, Strides, and Address Offsets
 
-Source: [08_pointer_arithmetic_strides.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/08_pointer_arithmetic_strides.c)
+Source: [08_pointer_arithmetic_strides.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/08_pointer_arithmetic_strides.c)
 
 ### Pointer Stride Mechanics
 - Adding an integer `n` to a pointer `T *p` does NOT add `n` bytes; it scales by element size:
@@ -323,7 +338,7 @@ Byte Distance: (uintptr_t)(p + 2) - (uintptr_t)p = 8 bytes
 
 ## Exercise 09: Dynamic Memory Allocation Lifecycle & Safe Realloc
 
-Source: [09_dynamic_memory_lifecycle.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/09_dynamic_memory_lifecycle.c)
+Source: [09_dynamic_memory_lifecycle.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.c)
 
 ### Memory Lifecycle & Ownership
 - Dynamic allocations reside on the heap and require explicit deallocation via `free`.
@@ -360,7 +375,7 @@ Source: [09_dynamic_memory_lifecycle.c](file:///Users/bradleyyeo/Documents/learn
 
 ## Exercise 10: Memory Safety Sanitization & Defect Verification
 
-Source: [10_memory_safety_sanitizers.c](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/10_memory_safety_sanitizers.c)
+Source: [10_memory_safety_sanitizers.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/10_memory_safety_sanitizers.c)
 
 ### Compiler Sanitizers
 - AddressSanitizer (ASan): Injects redzones and shadow memory tracking to trap:
@@ -376,4 +391,45 @@ Source: [10_memory_safety_sanitizers.c](file:///Users/bradleyyeo/Documents/learn
 
 ### Deliberate Practice Tasks
 - Run exercise under `make test-sanitizers` and verify clean execution in default mode.
-- Trigger `--trigger-uaf` and trace the allocation and free call sites in the ASan error log using [MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/c-learn/codecrafters-grep-c/exercises/MEMORY_DEBUGGING.md).
+- Trigger `--trigger-uaf` and trace the allocation and free call sites in the ASan error log using [MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md).
+
+---
+
+## Exercise 11: Fixed-Size Bump Allocator (Arena Allocator)
+
+Source: [11_bump_allocator.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.c)
+Guide & Implementation Reference: [11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
+
+### Memory Model and Arena Topography
+- Backed by a contiguous array of raw bytes (`uint8_t *buffer`) with fixed `capacity`.
+- Monotonic pointer advancement: each allocation increments an internal `offset` cursor forward.
+- Zero per-allocation metadata overhead: no chunk headers or free-list nodes.
+- Bulk reclamation: `bump_reset` rewinds `offset = 0` in $O(1)$ time, reclaiming all blocks simultaneously.
+
+```
+[------------------------- Fixed Capacity (e.g. 512 Bytes) -------------------------]
+[ Alloc 1: 10 B ][ Alloc 2: 20 B ][ Pad: 2 B ][ Alloc 3: 8 B (aligned) ][ Free Space ]
+                                                                        ^
+                                                                        offset = 40
+```
+
+### Memory Alignment Formula
+- Alignment requirement $a$ must be a power of two ($2^k$).
+- Address forward-alignment bitwise equation:
+  `aligned_addr = (addr + (align - 1)) & ~(align - 1)`
+- Padding calculation:
+  `padding = aligned_addr - current_addr`
+
+### Invariants and Defensive Hygiene (Jimmy Koppel & John Ousterhout)
+- Reject non-power-of-two alignments immediately.
+- Prevent integer overflow by verifying `size <= SIZE_MAX - padding - alloc->offset`.
+- Ensure `alloc->offset + padding + size <= alloc->capacity`.
+- On allocation failure, leave `alloc->offset` unmodified.
+- Scoped rollback: `bump_save` captures current offset, and `bump_restore` rewinds cursor to checkpoint without metadata corruption.
+
+### Deliberate Practice Tasks
+- Complete the function stubs in [11_bump_allocator.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.c) using the specification comments.
+- Verify memory alignment across 1, 2, 4, 8, and 16-byte boundaries.
+- Verify clean execution against all 10 unit tests in `main()`.
+- Reference [11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) for the complete annotated reference implementation.
+

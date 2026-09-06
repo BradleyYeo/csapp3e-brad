@@ -1,3 +1,16 @@
+/*
+ * Compile and run:
+ *   clang -Wall -Wextra -pedantic -g -o 01_pointer_traversal 01_pointer_traversal.c && ./01_pointer_traversal
+ */
+#define _POSIX_C_SOURCE 200809L
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
+#include <stdbool.h>
+#include <stdalign.h>
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
 #include <assert.h>
 #include <ctype.h>
 #include <stddef.h>

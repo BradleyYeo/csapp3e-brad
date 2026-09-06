@@ -1,3 +1,16 @@
+/*
+ * Compile and run:
+ *   clang -Wall -Wextra -pedantic -g -o 05_char_group_slicing 05_char_group_slicing.c && ./05_char_group_slicing
+ */
+#define _POSIX_C_SOURCE 200809L
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
+#include <stdbool.h>
+#include <stdalign.h>
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
 #include <assert.h>
 #include <stddef.h>
 #include <stdio.h>
