@@ -39,6 +39,10 @@ static bool get_group_bounds(const char *pattern, const char **start_out, size_t
   }
 
   const char *start = pattern + 1;
+  if (*start  == '^') {
+    start++;
+  }
+
   const char *end = strchr(start, ']');
 
   if (end == nullptr) {
@@ -74,7 +78,6 @@ static bool slice_to_buffer(const char *src, size_t len, char *dest, size_t capa
   if (len >= capacity) {
     return false;
   }
-
   memcpy(dest, src, len);
   dest[len] = '\0';
   return true;
@@ -150,11 +153,42 @@ static bool match_pos_bracket_grp(const char *input_line, const char *pattern) {
   return match_charset_rec(input_line, charset);
 }
 
+static bool not_match_charset_rec(const char *text, const char *charset) {
+  if (text == nullptr || *text == '\0') {
+    return false;
+  }
+  const size_t candidate = strcspn(text, charset);
+  if (candidate == 0) {
+    return false;
+  }
+
+  if (candidate > 0) {
+    return true;
+  }
+
+  return true;
+}
+
+static bool match_neg_bracket_grp(const char *input_line, const char *pattern) {
+  const char *start = nullptr;
+  size_t len = 0;
+
+  if (!get_group_bounds(pattern, &start, &len)) {
+    return false;
+  }
+
+  char charset[256];
+  if (!slice_to_buffer(start, len, charset, sizeof(charset))) {
+    return false;
+  }
+
+  return not_match_charset_rec(input_line, charset);
+}
+
 int main(void) {
   // Test 1: Bounds and pointer distance calculation
   const char *start = nullptr;
   size_t len = 0;
-
   assert(get_group_bounds("[abc]", &start, &len) == true);
   assert(*start == 'a');
   assert(len == 3);
@@ -195,6 +229,11 @@ int main(void) {
   assert(match_pos_bracket_grp("e", "[grape]") == true);
   assert(match_pos_bracket_grp("xyz", "[grape]") == false);
 
+
+   // Test 6: End-to-end character not group matching
+  assert(match_neg_bracket_grp("apple", "[^abc]") == false);
+  assert(match_neg_bracket_grp("cab", "[^abc]") == false);
+  assert(match_neg_bracket_grp("dog", "[^abc]") == true);
   printf("[PASS] Exercise 05: Character Group Slicing verified.\n");
   return EXIT_SUCCESS;
 }
