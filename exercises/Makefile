@@ -1,4 +1,5 @@
-CC ?= clang
+# CC ?= clang
+ CC = clang
 CFLAGS ?= -std=c23 -Wall -Wextra -Werror -pedantic -g
 
 TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers 11_bump_allocator
