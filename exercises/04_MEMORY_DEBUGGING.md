@@ -7,6 +7,7 @@ A practical diagnostic manual for identifying, reading, and fixing memory corrup
 - Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/README.md)
 - Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
 - Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md) (Current Document)
+- Layer 05: [05: UNIX Pipes Ping-Pong Benchmark and IPC Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md)
 
 ---
 

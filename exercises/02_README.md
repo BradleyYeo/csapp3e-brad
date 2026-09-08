@@ -7,6 +7,7 @@ Hands-on exercises demonstrating modern C23 idioms, memory layout, pointer trave
 - Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/README.md) (Current Document)
 - Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
 - Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md)
+- Layer 05: [05: UNIX Pipes Ping-Pong Benchmark and IPC Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md)
 
 ---
 
@@ -36,6 +37,7 @@ make -C exercises 08_pointer_arithmetic_strides && ./exercises/08_pointer_arithm
 make -C exercises 09_dynamic_memory_lifecycle && ./exercises/09_dynamic_memory_lifecycle
 make -C exercises 10_memory_safety_sanitizers && ./exercises/10_memory_safety_sanitizers
 make -C exercises 11_bump_allocator && ./exercises/11_bump_allocator
+make -C exercises 12_pipe_pingpong && ./exercises/12_pipe_pingpong
 ```
 
 ### Running Under Sanitizers (AddressSanitizer & UndefinedBehaviorSanitizer)
@@ -432,4 +434,41 @@ Guide & Implementation Reference: [11_bump_allocator.md](file:///Users/bradleyye
 - Verify memory alignment across 1, 2, 4, 8, and 16-byte boundaries.
 - Verify clean execution against all 10 unit tests in `main()`.
 - Reference [11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) for the complete annotated reference implementation.
+
+---
+
+## Exercise 12: UNIX Pipes Ping-Pong Benchmark
+
+Source: [12_pipe_pingpong.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.c)
+Guide & Implementation Reference: [12_pipe_pingpong.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md)
+
+### Inter-Process Communication and Descriptor Invariants
+- Dual anonymous pipes (`p2c` and `c2p`) established for bidirectional full-duplex byte transfers.
+- Process duplication via `fork(2)` with Copy-on-Write address space.
+- Invariant: Every unused descriptor end must be explicitly closed in each process:
+  - Parent closes `p2c[0]` (read end) and `c2p[1]` (write end).
+  - Child closes `p2c[1]` (write end) and `c2p[0]` (read end).
+  - Prevents reader deadlock and guarantees proper EOF (`read() == 0`) propagation.
+
+```
++------------------+     p2c[1] -> Kernel Pipe A -> p2c[0]     +------------------+
+|  Parent Process  |                                           |  Child Process   |
+|                  |     c2p[0] <- Kernel Pipe B <- c2p[1]     |                  |
++------------------+                                           +------------------+
+```
+
+### Context Switch Latency and Throughput Metrics
+- High-precision monotonic timing using `clock_gettime(CLOCK_MONOTONIC)`.
+- Metric formulations:
+  - Throughput: $\text{Exchanges per Second} = \frac{N}{\Delta t}$.
+  - Round-Trip Latency: $\text{RTT} = \frac{\Delta t}{N} \times 10^6 \ \mu\text{s}$.
+  - One-Way Transit Time: $\frac{\text{RTT}}{2} \ \mu\text{s}$ (Context Switch + Pipe Transit).
+- Reaping: Parent calls `waitpid(pid, &status, 0)` to prevent zombie processes.
+
+### Deliberate Practice Tasks
+- Complete the function stubs in [12_pipe_pingpong.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.c) using the specification comments.
+- Implement robust I/O handling for `EINTR` signals in `safe_read_byte` and `safe_write_byte`.
+- Measure context switch throughput over 10,000 and 100,000 round-trip exchanges.
+- Reference [12_pipe_pingpong.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md) for the complete annotated reference implementation.
+
 
