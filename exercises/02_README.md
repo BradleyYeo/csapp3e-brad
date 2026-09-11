@@ -3,11 +3,12 @@
 Hands-on exercises demonstrating modern C23 idioms, memory layout, pointer traversal, and software design principles applied to regex engines and memory allocators.
 
 ## Curriculum Reading Sequence
-- Layer 01: [01: Systems C Fundamentals, Syntax, and Core Concepts](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/FUNDAMENTALS.md)
-- Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/README.md) (Current Document)
-- Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
-- Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md)
-- Layer 05: [05: UNIX Pipes Ping-Pong Benchmark and IPC Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md)
+- Layer 01: [01: Systems C Fundamentals, Syntax, and Core Concepts](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_FUNDAMENTALS.md)
+- Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_README.md) (Current Document)
+- Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/03_bump_allocator.md)
+- Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/04_MEMORY_DEBUGGING.md)
+- Layer 05: [05: UNIX Pipes Ping-Pong Benchmark and IPC Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/05_pipe_pingpong.md)
+- Layer 06: [06: Valgrind Architecture, Memcheck Diagnostics, and Memory Profiling Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md)
 
 ---
 
@@ -38,6 +39,7 @@ make -C exercises 09_dynamic_memory_lifecycle && ./exercises/09_dynamic_memory_l
 make -C exercises 10_memory_safety_sanitizers && ./exercises/10_memory_safety_sanitizers
 make -C exercises 11_bump_allocator && ./exercises/11_bump_allocator
 make -C exercises 12_pipe_pingpong && ./exercises/12_pipe_pingpong
+make -C exercises 13_valgrind_fundamentals && ./exercises/13_valgrind_fundamentals
 ```
 
 ### Running Under Sanitizers (AddressSanitizer & UndefinedBehaviorSanitizer)
@@ -45,8 +47,9 @@ make -C exercises 12_pipe_pingpong && ./exercises/12_pipe_pingpong
 make -C exercises test-sanitizers
 ```
 
-See [FUNDAMENTALS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/FUNDAMENTALS.md) for a complete primer on C syntax, pointer concepts, and memory profiling with ASan, Valgrind, Massif, and perf.
-See [MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/MEMORY_DEBUGGING.md) for detailed diagnostics, crash report breakdowns, and leak detection commands.
+See [01_FUNDAMENTALS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_FUNDAMENTALS.md) for a complete primer on C syntax, pointer concepts, and memory profiling with ASan, Valgrind, Massif, and perf.
+See [04_MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/04_MEMORY_DEBUGGING.md) for detailed diagnostics, crash report breakdowns, and leak detection commands.
+See [06_valgrind_fundamentals.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md) for Valgrind DBI internals, A-bits vs V-bits, and memory leak classification.
 
 ### Cleaning Build Artifacts
 ```bash
@@ -470,5 +473,48 @@ Guide & Implementation Reference: [12_pipe_pingpong.md](file:///Users/bradleyyeo
 - Implement robust I/O handling for `EINTR` signals in `safe_read_byte` and `safe_write_byte`.
 - Measure context switch throughput over 10,000 and 100,000 round-trip exchanges.
 - Reference [12_pipe_pingpong.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md) for the complete annotated reference implementation.
+
+---
+
+## Exercise 13: Valgrind Fundamentals and Memory Diagnostics
+
+Source: [13_valgrind_fundamentals.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/13_valgrind_fundamentals.c)
+Guide & Implementation Reference: [06_valgrind_fundamentals.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md)
+
+### Concept Design & Lexical Scope Architecture (Daniel Jackson & John Ousterhout)
+- `SymbolEntry`: Owned heap record containing string keys, values, and integer identifiers.
+- `ScopeEnvironment`: Encapsulates a lexical scope frame, maintaining symbol lists and delegating upward via parent pointer links.
+- `ScopeCursor`: Borrowed, non-owning traversal pointer (`const SymbolEntry*`) for lookups without mutating heap state.
+
+```
+Scope 0 (Global Scope):
+  [ PORT: "8080" ] -> [ HOST: "127.0.0.1" ]
+        ▲
+        │ parent
+Scope 1 (Local Scope):
+  [ TIMEOUT: "30" ]
+```
+
+### Valgrind Shadow State and Defect Triggers
+- Dynamic Binary Instrumentation (DBI) tracks byte addressability (A-bits) and bit-level data validity (V-bits).
+- CLI flags deliberately reproduce the core Valgrind diagnostic categories:
+  - `--trigger-uninit-branch`: Demonstrates uninitialized value propagation to conditional jumps (`if (*box > 0)`).
+  - `--trigger-uninit-syscall`: Demonstrates passing uninitialized buffers to `write(2)` syscalls.
+  - `--trigger-invalid-read`: Demonstrates out-of-bounds heap reading past chunk boundaries.
+  - `--trigger-invalid-write`: Demonstrates out-of-bounds heap writing past chunk boundaries.
+  - `--trigger-definitely-lost`: Demonstrates orphaned heap allocations with zero surviving pointers.
+  - `--trigger-indirectly-lost`: Demonstrates cascading pointer loss in chained structures.
+  - `--trigger-possibly-lost`: Demonstrates interior pointer retention (`ptr + offset`).
+  - `--trigger-overlap`: Demonstrates undefined memory movement via overlapping `memcpy()`.
+  - `--trigger-client-poison`: Demonstrates custom allocator poisoning using `VALGRIND_MAKE_MEM_NOACCESS`.
+
+### Deliberate Practice Tasks
+- Run default unit tests: `make -C exercises 13_valgrind_fundamentals && ./exercises/13_valgrind_fundamentals`.
+- Run under Valgrind Memcheck with diagnostic flags:
+  ```bash
+  valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./exercises/13_valgrind_fundamentals
+  ```
+- Trigger each diagnostic flag and cross-examine the resulting stack traces and classification lines with [06_valgrind_fundamentals.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md).
+
 
 

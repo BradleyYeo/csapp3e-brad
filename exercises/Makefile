@@ -2,11 +2,11 @@
  CC = clang
 CFLAGS ?= -std=c23 -Wall -Wextra -Werror -pedantic -g
 
-TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers 11_bump_allocator 12_pipe_pingpong
+TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers 11_bump_allocator 12_pipe_pingpong 13_valgrind_fundamentals
 
 CFLAGS_SAN ?= -std=c23 -Wall -Wextra -Werror -pedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer
 
-.PHONY: all test clean test-sanitizers
+.PHONY: all test clean test-sanitizers valgrind-13
 
 all: $(TARGETS)
 
@@ -46,6 +46,9 @@ all: $(TARGETS)
 12_pipe_pingpong: 12_pipe_pingpong.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+13_valgrind_fundamentals: 13_valgrind_fundamentals.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 test: all
 	@echo "Running Exercise 01..."
 	@./01_pointer_traversal
@@ -71,6 +74,8 @@ test: all
 	@./11_bump_allocator
 	@echo "Running Exercise 12..."
 	@./12_pipe_pingpong
+	@echo "Running Exercise 13..."
+	@./13_valgrind_fundamentals
 	@echo "All tests passed successfully."
 
 test-sanitizers: clean
@@ -78,6 +83,11 @@ test-sanitizers: clean
 	@$(MAKE) CFLAGS="$(CFLAGS_SAN)" all
 	@echo "Running exercises under sanitizers..."
 	@$(MAKE) test
+
+valgrind-13: 13_valgrind_fundamentals
+	@which valgrind > /dev/null 2>&1 && \
+		valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes --error-exitcode=1 ./13_valgrind_fundamentals || \
+		echo "Note: valgrind not found on host PATH. Run under Linux/WSL or container."
 
 clean:
 	rm -rf $(TARGETS) *.dSYM
