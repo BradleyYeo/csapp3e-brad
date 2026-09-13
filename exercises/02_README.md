@@ -2,13 +2,31 @@
 
 Hands-on exercises demonstrating modern C23 idioms, memory layout, pointer traversal, and software design principles applied to regex engines and memory allocators.
 
-## Curriculum Reading Sequence
-- Layer 01: [01: Systems C Fundamentals, Syntax, and Core Concepts](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_FUNDAMENTALS.md)
-- Layer 02: [02: Hands-On Practice Exercises and Deliberate Practice Drills](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_README.md) (Current Document)
-- Layer 03: [03: Fixed-Size Bump Allocator Architecture and Implementation Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/03_bump_allocator.md)
-- Layer 04: [04: Memory Debugging, Sanitizers, and Defect Remediation Manual](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/04_MEMORY_DEBUGGING.md)
-- Layer 05: [05: UNIX Pipes Ping-Pong Benchmark and IPC Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/05_pipe_pingpong.md)
-- Layer 06: [06: Valgrind Architecture, Memcheck Diagnostics, and Memory Profiling Guide](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md)
+## 7-Stage Pedagogical Curriculum Sequence
+
+- Stage 1: Pointers, Memory Addressing & Slicing
+  - Exercise 01: [01_pointer_traversal.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_pointer_traversal.md) - Pointer traversal, dereferencing, reverse scans, two-pointer lockstep
+  - Exercise 02: [02_anchored_matching.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/02_anchored_matching.md) - Anchored predicates (`match_here`), unanchored search, character classes (`\w`)
+  - Exercise 05: [05_char_group_slicing.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/05_char_group_slicing.md) - Pointer subtraction, output double pointers, stack buffer slicing (`memcpy`)
+  - Exercise 08: [08_pointer_arithmetic_strides.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/08_pointer_arithmetic_strides.md) - Type scaling, `void*` arithmetic, `uintptr_t`, struct stride offsets
+- Stage 2: State Machines & Stream Ingestion
+  - Exercise 04: [04_enum_state_machine.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/04_enum_state_machine.md) - C enums, lexical token classification, defining errors out of existence
+  - Exercise 03: [03_getline_ingestion.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/03_getline_ingestion.md) - POSIX `getline(3)`, dynamic heap buffer growth in libc, stream EOF mechanics
+- Stage 3: Virtual Memory & Dynamic Allocation
+  - Exercise 07: [07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md) - Process virtual memory topography: Text, Data, BSS, Heap, Stack downward growth
+  - Exercise 09: [09_dynamic_memory_lifecycle.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.md) - Heap lifecycle, safe `realloc` idiom, zeroing dangling pointers, deep cloning
+  - Exercise 11: [11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) - Monotonic arena allocator, power-of-two alignment arithmetic, scoped checkpoints
+- Stage 4: Memory Safety & Sanitizers
+  - Exercise 10: [10_memory_safety_sanitizers.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/10_memory_safety_sanitizers.md) - AddressSanitizer (ASan), UBSan, shadow memory, redzones, defect diagnosis
+  - Exercise 13: [13_valgrind_fundamentals.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/13_valgrind_fundamentals.md) - Dynamic Binary Instrumentation, VEX IR, A-bits vs V-bits, 4 leak kinds
+- Stage 5: Formal Logic & Refactoring
+  - Exercise 14: [14_hoare_logic_refactoring.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/14_hoare_logic_refactoring.md) - Jimmy Koppel's Three Levels of Software, Hoare triples $\{P\}\ C\ \{Q\}$, loop invariants, refinement
+- Stage 6: Virtual File System & Memory Mapping
+  - Exercise 06: [06_mmap_search.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_mmap_search.md) - Zero-copy `mmap`, `fstat`, demand paging, minor page faults, `SIGBUS` vs `SIGSEGV`
+  - Exercise 16: [16_filesystem_inode_ops.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/16_filesystem_inode_ops.md) - VFS inodes, 3-level table hierarchy, hard links (`link`/`unlink`), directories, `sbrk`
+- Stage 7: Process Execution & IPC
+  - Exercise 15: [15_process_pipeline_exec.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/15_process_pipeline_exec.md) - `fork`, `exit`, `waitpid`, `kill`, `dup2`, `execvp`, pipeline invariants
+  - Exercise 12: [12_pipe_pingpong.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/12_pipe_pingpong.md) - Full-duplex pipe IPC, closing unused descriptor ends, context switch latency
 
 ---
 
@@ -19,6 +37,7 @@ WSL `sudo apt update && sudo apt install -y clang make build-essential`
 ### Prerequisites
 - Clang or GCC supporting C23 (`-std=c23`).
 - Make.
+- Python 3 for Exercise 14.
 
 ### Running All Tests
 ```bash
@@ -40,16 +59,15 @@ make -C exercises 10_memory_safety_sanitizers && ./exercises/10_memory_safety_sa
 make -C exercises 11_bump_allocator && ./exercises/11_bump_allocator
 make -C exercises 12_pipe_pingpong && ./exercises/12_pipe_pingpong
 make -C exercises 13_valgrind_fundamentals && ./exercises/13_valgrind_fundamentals
+python3 exercises/14_hoare_logic_refactoring.py
+make -C exercises 15_process_pipeline_exec && ./exercises/15_process_pipeline_exec
+make -C exercises 16_filesystem_inode_ops && ./exercises/16_filesystem_inode_ops
 ```
 
 ### Running Under Sanitizers (AddressSanitizer & UndefinedBehaviorSanitizer)
 ```bash
 make -C exercises test-sanitizers
 ```
-
-See [01_FUNDAMENTALS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/01_FUNDAMENTALS.md) for a complete primer on C syntax, pointer concepts, and memory profiling with ASan, Valgrind, Massif, and perf.
-See [04_MEMORY_DEBUGGING.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/04_MEMORY_DEBUGGING.md) for detailed diagnostics, crash report breakdowns, and leak detection commands.
-See [06_valgrind_fundamentals.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md) for Valgrind DBI internals, A-bits vs V-bits, and memory leak classification.
 
 ### Cleaning Build Artifacts
 ```bash
@@ -515,6 +533,74 @@ Scope 1 (Local Scope):
   valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes ./exercises/13_valgrind_fundamentals
   ```
 - Trigger each diagnostic flag and cross-examine the resulting stack traces and classification lines with [06_valgrind_fundamentals.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/06_valgrind_fundamentals.md).
+
+---
+
+## Exercise 14: Hoare Logic & Refactoring via the Hidden Layer of Logic
+
+Source: [14_hoare_logic_refactoring.py](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/14_hoare_logic_refactoring.py)
+Guide & Implementation Reference: [07_hoare_logic_refactoring.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_hoare_logic_refactoring.md)
+
+### Concepts & The Hidden Layer of Logic (Jimmy Koppel)
+- The Three Levels of Software:
+  - Level 1: Runtime execution values.
+  - Level 2: Concrete implementation code.
+  - Level 3: Design, specifications, and predicates (The Hidden Layer of Logic).
+- Executable Contracts: Preconditions (`@requires`), Postconditions (`@ensures`), and Loop Invariants (`verify_loop_invariant`).
+- Refactoring via Specification Refinement (Rule of Consequence):
+  - Weaker Precondition: $P_{\text{old}} \implies P_{\text{new}}$ (handles arbitrary unsorted input instead of crashing).
+  - Stronger Postcondition: $Q_{\text{new}} \implies Q_{\text{old}}$ (guarantees strictly disjoint intervals).
+- Sequential Composition Rule: Decomposes monolithic logic into pure sorting ($C_1$) and pure collapsing ($C_2$).
+
+### Deliberate Practice Tasks
+- Run the verification suite:
+  ```bash
+  python3 exercises/14_hoare_logic_refactoring.py
+  ```
+- Trace the three obligations of the loop invariant in `collapse_sorted_intervals`:
+  - Initialization ($P \implies I$)
+  - Maintenance ($\{I \land B\}\ C\ \{I\}$)
+  - Termination & Correctness ($(I \land \neg B) \implies Q$)
+- Experiment with deliberate contract violations to observe `PreconditionViolationError` and `PostconditionViolationError`.
+
+---
+
+## Exercise 15: Process Lifecycle, IPC Pipelines & Signal Management
+
+Source: [15_process_pipeline_exec.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/15_process_pipeline_exec.c)
+Guide & Implementation Reference: [08_unix_system_calls_guide.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/08_unix_system_calls_guide.md)
+
+### Systems Concepts & Operational Mechanics
+- Process Duplication (`fork`): Clones parent address space using Copy-on-Write (COW).
+- Zombie Elimination (`waitpid`): Reaps child PCB metadata and extracts exit status codes.
+- Signal Management (`kill`, `sleep`): Dispatches asynchronous kernel interrupts (`SIGTERM`).
+- File Descriptor Redirection (`dup`, `dup2`): Manipulates process descriptor table entries.
+- Pipeline Orchestration (`pipe`, `execvp`): Connects stdout of producer child to stdin of consumer child across a kernel circular buffer.
+
+### Deliberate Practice Tasks
+- Run tests: `make -C exercises 15_process_pipeline_exec && ./exercises/15_process_pipeline_exec`.
+- Experiment with leaving `pipefd[1]` unclosed in child 2 and observe the resulting reader deadlock.
+- Trace descriptor manipulation via `strace` or kernel logs.
+
+---
+
+## Exercise 16: VFS Inodes, Directories, Special Nodes & Heap Break
+
+Source: [16_filesystem_inode_ops.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/16_filesystem_inode_ops.c)
+Guide & Implementation Reference: [08_unix_system_calls_guide.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/08_unix_system_calls_guide.md)
+
+### Systems Concepts & Operational Mechanics
+- Directory Structure (`mkdir`, `chdir`, `rmdir`): Navigates directory files and inspects `.` / `..` link counts.
+- Hard Link Invariant (`link`, `unlink`, `fstat`): Demonstrates that filenames are directory entries pointing to inodes. Verified that unlinking the original name preserves data via the hard link until all link counts reach zero.
+- Special File Nodes (`mknod`): Creates a named FIFO pipe in the VFS namespace without superuser requirements.
+- Program Break Management (`sbrk`): Queries initial break with `sbrk(0)`, expands heap segment by 1024 bytes, verifies write access, and contracts heap.
+
+### Deliberate Practice Tasks
+- Run tests: `make -C exercises 16_filesystem_inode_ops && ./exercises/16_filesystem_inode_ops`.
+- Verify hard link count transitions ($1 \to 2 \to 1 \to 0$) via `stat` commands in shell.
+- Inspect process memory maps (`/proc/<pid>/maps` on Linux, `vmmap` on macOS) before and after `sbrk`.
+
+
 
 
 

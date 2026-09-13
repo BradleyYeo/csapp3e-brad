@@ -43,12 +43,25 @@ typedef struct {
  * - If read returns -1 and errno == EINTR (system call interrupted by signal), retry immediately.
  * - If read returns -1 with any other errno, return false.
  */
-/* TODO: Implement safe_read_byte */
 static bool safe_read_byte(int fd, uint8_t *byte_out) {
-  (void)fd;
-  (void)byte_out;
-  // Type your implementation here.
-  return false;
+  if (fd < 0 || byte_out == nullptr) {
+    return false;
+  }
+  while (true) {
+    ssize_t n = read(fd, byte_out, 1);
+    if (n == 1) {
+      return true;
+    }
+    if (n == 0) {
+      return false; // EOF
+    }
+    if (n == -1) {
+      if (errno == EINTR) {
+        continue; // Interrupted by signal, retry
+      }
+      return false;
+    }
+  }
 }
 
 /*
@@ -60,12 +73,22 @@ static bool safe_read_byte(int fd, uint8_t *byte_out) {
  * - If write returns -1 and errno == EINTR, retry immediately.
  * - If write returns -1 with any other errno, return false.
  */
-/* TODO: Implement safe_write_byte */
 static bool safe_write_byte(int fd, uint8_t byte) {
-  (void)fd;
-  (void)byte;
-  // Type your implementation here.
-  return false;
+  if (fd < 0) {
+    return false;
+  }
+  while (true) {
+    ssize_t n = write(fd, &byte, 1);
+    if (n == 1) {
+      return true;
+    }
+    if (n == -1) {
+      if (errno == EINTR) {
+        continue;
+      }
+      return false;
+    }
+  }
 }
 
 /*
@@ -79,14 +102,19 @@ static bool safe_write_byte(int fd, uint8_t byte) {
  * - Close read_fd and write_fd before exiting.
  * - Terminate process with exit(EXIT_SUCCESS).
  */
-/* TODO: Implement run_child */
 static void run_child(int read_fd, int write_fd, size_t iterations) {
-  (void)read_fd;
-  (void)write_fd;
-  (void)iterations;
-  (void)safe_read_byte;
-  (void)safe_write_byte;
-  // Type your implementation here.
+  uint8_t b = 0;
+  for (size_t i = 0; i < iterations; ++i) {
+    if (!safe_read_byte(read_fd, &b)) {
+      break;
+    }
+    b++;
+    if (!safe_write_byte(write_fd, b)) {
+      break;
+    }
+  }
+  close(read_fd);
+  close(write_fd);
   exit(EXIT_SUCCESS);
 }
 
@@ -99,14 +127,18 @@ static void run_child(int read_fd, int write_fd, size_t iterations) {
  *     2. Read response byte from read_fd using safe_read_byte.
  * - Close write_fd and read_fd after completing the loop.
  */
-/* TODO: Implement run_parent */
 static void run_parent(int write_fd, int read_fd, size_t iterations) {
-  (void)write_fd;
-  (void)read_fd;
-  (void)iterations;
-  (void)safe_read_byte;
-  (void)safe_write_byte;
-  // Type your implementation here.
+  uint8_t b = 0x42;
+  for (size_t i = 0; i < iterations; ++i) {
+    if (!safe_write_byte(write_fd, b)) {
+      break;
+    }
+    if (!safe_read_byte(read_fd, &b)) {
+      break;
+    }
+  }
+  close(write_fd);
+  close(read_fd);
 }
 
 /*
@@ -119,14 +151,22 @@ static void run_parent(int write_fd, int read_fd, size_t iterations) {
  * - Compute oneway_transit_us: roundtrip_latency_us / 2.0.
  * - Populate metrics struct and return true.
  */
-/* TODO: Implement calculate_metrics */
 static bool calculate_metrics(struct timespec start, struct timespec end, size_t iterations, BenchmarkMetrics *out) {
-  (void)start;
-  (void)end;
-  (void)iterations;
-  (void)out;
-  // Type your implementation here.
-  return false;
+  if (out == nullptr || iterations == 0) {
+    return false;
+  }
+
+  double elapsed = (double)(end.tv_sec - start.tv_sec) +
+                   (double)(end.tv_nsec - start.tv_nsec) / 1e9;
+  if (elapsed <= 0.0) {
+    return false;
+  }
+
+  out->elapsed_seconds = elapsed;
+  out->exchanges_per_second = (double)iterations / elapsed;
+  out->roundtrip_latency_us = (elapsed * 1e6) / (double)iterations;
+  out->oneway_transit_us = out->roundtrip_latency_us / 2.0;
+  return true;
 }
 
 int main(int argc, char **argv) {

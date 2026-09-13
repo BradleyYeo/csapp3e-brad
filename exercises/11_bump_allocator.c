@@ -68,11 +68,8 @@ typedef struct {
  * - Return false if n == 0 or has more than one bit set in binary.
  * - Must use bitwise manipulation: (n & (n - 1)) clears the lowest set bit.
  */
-/* TODO: Implement is_power_of_two */
 static inline bool is_power_of_two(size_t n) {
-  (void)n;
-  // Type your implementation here.
-  return false;
+  return (n != 0) && ((n & (n - 1)) == 0);
 }
 
 /*
@@ -84,12 +81,8 @@ static inline bool is_power_of_two(size_t n) {
  * - Must round addr upwards to the next multiple of align.
  * - If addr is already aligned, return addr unchanged.
  */
-/* TODO: Implement bump_align_forward */
 static inline uintptr_t bump_align_forward(uintptr_t addr, size_t align) {
-  (void)addr;
-  (void)align;
-  // Type your implementation here.
-  return 0;
+  return (addr + (align - 1)) & ~(uintptr_t)(align - 1);
 }
 
 /*
@@ -103,13 +96,14 @@ static inline uintptr_t bump_align_forward(uintptr_t addr, size_t align) {
  * - Initialize alloc->offset = 0.
  * - Return BUMP_OK.
  */
-/* TODO: Implement bump_init */
 static BumpStatus bump_init(BumpAllocator *alloc, void *memory_block, size_t capacity_bytes) {
-  (void)alloc;
-  (void)memory_block;
-  (void)capacity_bytes;
-  // Type your implementation here.
-  return BUMP_ERR_INVALID_ARG;
+  if (alloc == nullptr || memory_block == nullptr || capacity_bytes == 0) {
+    return BUMP_ERR_INVALID_ARG;
+  }
+  alloc->buffer = (uint8_t *)memory_block;
+  alloc->capacity = capacity_bytes;
+  alloc->offset = 0;
+  return BUMP_OK;
 }
 
 /*
@@ -130,13 +124,38 @@ static BumpStatus bump_init(BumpAllocator *alloc, void *memory_block, size_t cap
  * - Increment alloc->offset by (padding + size).
  * - Return pointer to allocated memory block ((void *)aligned_addr).
  */
-/* TODO: Implement bump_alloc */
 static void *bump_alloc(BumpAllocator *alloc, size_t size, size_t align) {
-  (void)alloc;
-  (void)size;
-  (void)align;
-  // Type your implementation here.
-  return nullptr;
+  if (alloc == nullptr || alloc->buffer == nullptr) {
+    return nullptr;
+  }
+  if (align == 0) {
+    align = alignof(max_align_t);
+  }
+  if (!is_power_of_two(align)) {
+    return nullptr;
+  }
+
+  uintptr_t current_addr = (uintptr_t)(alloc->buffer + alloc->offset);
+  uintptr_t aligned_addr = bump_align_forward(current_addr, align);
+  size_t padding = (size_t)(aligned_addr - current_addr);
+
+  if (size == 0) {
+    if (alloc->offset + padding > alloc->capacity) {
+      return nullptr;
+    }
+    return (void *)aligned_addr;
+  }
+
+  if (size > SIZE_MAX - padding || (padding + size) > SIZE_MAX - alloc->offset) {
+    return nullptr;
+  }
+
+  if (alloc->offset + padding + size > alloc->capacity) {
+    return nullptr;
+  }
+
+  alloc->offset += (padding + size);
+  return (void *)aligned_addr;
 }
 
 /*
@@ -146,10 +165,10 @@ static void *bump_alloc(BumpAllocator *alloc, size_t size, size_t align) {
  * - If alloc is not nullptr, reset alloc->offset = 0.
  * - Reclaims all allocated blocks in O(1) time.
  */
-/* TODO: Implement bump_reset */
 static void bump_reset(BumpAllocator *alloc) {
-  (void)alloc;
-  // Type your implementation here.
+  if (alloc != nullptr) {
+    alloc->offset = 0;
+  }
 }
 
 /*
@@ -159,11 +178,11 @@ static void bump_reset(BumpAllocator *alloc) {
  * - Return current alloc->offset snapshot.
  * - Return 0 if alloc is nullptr.
  */
-/* TODO: Implement bump_save */
 static BumpMarker bump_save(const BumpAllocator *alloc) {
-  (void)alloc;
-  // Type your implementation here.
-  return 0;
+  if (alloc == nullptr) {
+    return 0;
+  }
+  return alloc->offset;
 }
 
 /*
@@ -175,12 +194,12 @@ static BumpMarker bump_save(const BumpAllocator *alloc) {
  * - Set alloc->offset = marker.
  * - Return true.
  */
-/* TODO: Implement bump_restore */
 static bool bump_restore(BumpAllocator *alloc, BumpMarker marker) {
-  (void)alloc;
-  (void)marker;
-  // Type your implementation here.
-  return false;
+  if (alloc == nullptr || marker > alloc->offset) {
+    return false;
+  }
+  alloc->offset = marker;
+  return true;
 }
 
 /*
@@ -190,11 +209,11 @@ static bool bump_restore(BumpAllocator *alloc, BumpMarker marker) {
  * - Return remaining allocatable raw bytes (capacity - offset).
  * - Return 0 if alloc is nullptr or offset > capacity.
  */
-/* TODO: Implement bump_available */
 static size_t bump_available(const BumpAllocator *alloc) {
-  (void)alloc;
-  // Type your implementation here.
-  return 0;
+  if (alloc == nullptr || alloc->offset > alloc->capacity) {
+    return 0;
+  }
+  return alloc->capacity - alloc->offset;
 }
 
 /*
@@ -205,12 +224,13 @@ static size_t bump_available(const BumpAllocator *alloc) {
  * - Return true if (uintptr_t)ptr >= (uintptr_t)alloc->buffer
  *   AND (uintptr_t)ptr < ((uintptr_t)alloc->buffer + alloc->capacity).
  */
-/* TODO: Implement bump_owns */
 static bool bump_owns(const BumpAllocator *alloc, const void *ptr) {
-  (void)alloc;
-  (void)ptr;
-  // Type your implementation here.
-  return false;
+  if (alloc == nullptr || alloc->buffer == nullptr || ptr == nullptr) {
+    return false;
+  }
+  uintptr_t u_ptr = (uintptr_t)ptr;
+  uintptr_t u_base = (uintptr_t)alloc->buffer;
+  return (u_ptr >= u_base && u_ptr < (u_base + alloc->capacity));
 }
 
 int main(void) {
@@ -241,7 +261,7 @@ int main(void) {
 
   // Test 3: Allocator initialization
   BumpAllocator alloc = {0};
-  uint8_t memory_arena[512] = {0};
+  alignas(64) uint8_t memory_arena[512] = {0};
 
   assert(bump_init(&alloc, memory_arena, sizeof(memory_arena)) == BUMP_OK);
   assert(alloc.buffer == memory_arena);

@@ -1,0 +1,5 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     08_pointer_arithmetic_strides
+relocations:     []
+...

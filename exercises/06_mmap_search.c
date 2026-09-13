@@ -35,14 +35,14 @@ static bool get_file_len(int fd, size_t *len_out) {
     return false;
   }
 
-  struct stat sb;
-  if (fstat(fd, &sb) != 0) {
-    return false;
+  struct stat sb; // stores file metadata
+  if (fstat(fd, &sb) != 0) { // write metadata directly to sb
+    return false; // retruns false immediately if FD is inaccessible or invalid
   }
 
   // Only regular files can be mapped; sockets, pipes, and FIFOs cannot
   if (!S_ISREG(sb.st_mode)) {
-    return false;
+    return false; // If the descriptor does not refer to a regular file, get_file_len aborts early and returns false.
   }
 
   *len_out = (size_t)sb.st_size;

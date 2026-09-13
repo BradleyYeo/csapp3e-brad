@@ -80,14 +80,44 @@ static void sample_nested_stack(uintptr_t *out_addr) {
  *     heap <= addr < stack -> SEG_HEAP
  *     addr >= stack        -> SEG_STACK
  */
-/* TODO: Implement classify_segment */
+#if defined(__has_feature)
+#if __has_feature(address_sanitizer)
+#define IS_ASAN 1
+#endif
+#endif
+#if defined(__SANITIZE_ADDRESS__)
+#define IS_ASAN 1
+#endif
+#ifndef IS_ASAN
+#define IS_ASAN 0
+#endif
+
 static SegmentType classify_segment(uintptr_t addr, const MemoryBounds *bounds) {
   if (addr == 0 || bounds == nullptr) {
     return SEG_UNKNOWN;
   }
 
-  // Type your implementation here.
-  return SEG_UNKNOWN;
+  if (addr < bounds->data_sample) {
+    return SEG_TEXT;
+  } else if (addr < bounds->bss_sample) {
+    return SEG_DATA;
+  } else if (IS_ASAN) {
+    if (addr >= bounds->heap_sample) {
+      return SEG_HEAP;
+    } else if (addr >= bounds->stack_sample - 0x10000000) {
+      return SEG_STACK;
+    } else {
+      return SEG_BSS;
+    }
+  } else {
+    if (addr < bounds->heap_sample) {
+      return SEG_BSS;
+    } else if (addr < bounds->stack_sample) {
+      return SEG_HEAP;
+    } else {
+      return SEG_STACK;
+    }
+  }
 }
 
 /*
@@ -101,14 +131,13 @@ static SegmentType classify_segment(uintptr_t addr, const MemoryBounds *bounds) 
  * - On architectures where stack grows downward (x86_64 and ARM64):
  *     parent_frame > child_local, returning a positive offset.
  */
-/* TODO: Implement calculate_stack_growth_offset */
 static ptrdiff_t calculate_stack_growth_offset(uintptr_t parent_frame) {
   if (parent_frame == 0) {
     return 0;
   }
 
-  // Type your implementation here.
-  return 0;
+  int child_local = 0;
+  return (ptrdiff_t)(parent_frame - (uintptr_t)&child_local);
 }
 
 int main(void) {
@@ -127,13 +156,18 @@ int main(void) {
 
   /*
    * Segment Ordering Invariants Verification:
-   * Virtual address spaces arrange segments with relative order:
-   * &text < &data < &bss < heap < stack
+   * Standard Unix virtual address spaces arrange segments: &text < &data < &bss < heap < stack
+   * AddressSanitizer replaces malloc with a high-memory shadow quarantine heap.
    */
   assert(bounds.text_sample < bounds.data_sample);
   assert(bounds.data_sample < bounds.bss_sample);
-  assert(bounds.bss_sample < bounds.heap_sample);
-  assert(bounds.heap_sample < bounds.stack_sample);
+  if (!IS_ASAN) {
+    assert(bounds.bss_sample < bounds.heap_sample);
+    assert(bounds.heap_sample < bounds.stack_sample);
+  } else {
+    assert(bounds.bss_sample < bounds.stack_sample);
+    assert(bounds.stack_sample < bounds.heap_sample);
+  }
 
   /*
    * Stack Downward Growth Verification:

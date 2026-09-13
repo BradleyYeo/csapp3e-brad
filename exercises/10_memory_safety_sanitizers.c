@@ -64,14 +64,12 @@ static void safe_block_destroy(SafeBlock *block) {
  * - Return true.
  * - This defines buffer overflows out of existence at the abstraction layer.
  */
-/* TODO: Implement safe_block_write */
 static bool safe_block_write(SafeBlock *block, size_t index, uint8_t byte) {
   if (block == nullptr || block->buffer == nullptr || index >= block->length) {
     return false;
   }
-  (void)byte;
 
-  // Type your implementation here.
+  block->buffer[index] = byte;
   return true;
 }
 
@@ -86,13 +84,12 @@ static bool safe_block_write(SafeBlock *block, size_t index, uint8_t byte) {
  * - Assign block->buffer[index] to *out_byte.
  * - Return true.
  */
-/* TODO: Implement safe_block_read */
 static bool safe_block_read(const SafeBlock *block, size_t index, uint8_t *out_byte) {
   if (block == nullptr || block->buffer == nullptr || out_byte == nullptr || index >= block->length) {
     return false;
   }
 
-  // Type your implementation here.
+  *out_byte = block->buffer[index];
   return true;
 }
 

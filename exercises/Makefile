@@ -2,7 +2,7 @@
  CC = clang
 CFLAGS ?= -std=c23 -Wall -Wextra -Werror -pedantic -g
 
-TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers 11_bump_allocator 12_pipe_pingpong 13_valgrind_fundamentals
+TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum_state_machine 05_char_group_slicing 06_mmap_search 07_process_memory_layout 08_pointer_arithmetic_strides 09_dynamic_memory_lifecycle 10_memory_safety_sanitizers 11_bump_allocator 12_pipe_pingpong 13_valgrind_fundamentals 15_process_pipeline_exec 16_filesystem_inode_ops 17_recursion_patterns
 
 CFLAGS_SAN ?= -std=c23 -Wall -Wextra -Werror -pedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer
 
@@ -49,6 +49,15 @@ all: $(TARGETS)
 13_valgrind_fundamentals: 13_valgrind_fundamentals.c
 	$(CC) $(CFLAGS) -o $@ $<
 
+15_process_pipeline_exec: 15_process_pipeline_exec.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+16_filesystem_inode_ops: 16_filesystem_inode_ops.c
+	$(CC) $(CFLAGS) -o $@ $<
+
+17_recursion_patterns: 17_recursion_patterns.c
+	$(CC) $(CFLAGS) -o $@ $<
+
 test: all
 	@echo "Running Exercise 01..."
 	@./01_pointer_traversal
@@ -76,6 +85,12 @@ test: all
 	@./12_pipe_pingpong
 	@echo "Running Exercise 13..."
 	@./13_valgrind_fundamentals
+	@echo "Running Exercise 15..."
+	@./15_process_pipeline_exec
+	@echo "Running Exercise 16..."
+	@./16_filesystem_inode_ops
+	@echo "Running Exercise 17..."
+	@./17_recursion_patterns
 	@echo "All tests passed successfully."
 
 test-sanitizers: clean

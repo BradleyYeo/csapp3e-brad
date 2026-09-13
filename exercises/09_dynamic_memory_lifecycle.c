@@ -92,14 +92,23 @@ static void buffer_destroy(Buffer *buf) {
  * - Increment buf->size.
  * - Return ALLOC_SUCCESS.
  */
-/* TODO: Implement buffer_append */
 static AllocStatus buffer_append(Buffer *buf, uint8_t byte) {
   if (buf == nullptr || buf->data == nullptr) {
     return ALLOC_INVALID_ARG;
   }
-  (void)byte;
 
-  // Type your implementation here.
+  if (buf->size == buf->capacity) {
+    size_t new_cap = (buf->capacity == 0) ? 1 : buf->capacity * 2;
+    uint8_t *temp = realloc(buf->data, new_cap * sizeof(uint8_t));
+    if (temp == nullptr) {
+      return ALLOC_OUT_OF_MEMORY;
+    }
+    buf->data = temp;
+    buf->capacity = new_cap;
+  }
+
+  buf->data[buf->size] = byte;
+  buf->size++;
   return ALLOC_SUCCESS;
 }
 
@@ -116,13 +125,23 @@ static AllocStatus buffer_append(Buffer *buf, uint8_t byte) {
  * - If realloc succeeds, update buf->data and buf->capacity = buf->size.
  * - Return ALLOC_SUCCESS or ALLOC_OUT_OF_MEMORY.
  */
-/* TODO: Implement buffer_shrink_to_fit */
 static AllocStatus buffer_shrink_to_fit(Buffer *buf) {
   if (buf == nullptr || buf->data == nullptr) {
     return ALLOC_INVALID_ARG;
   }
 
-  // Type your implementation here.
+  if (buf->size == buf->capacity) {
+    return ALLOC_SUCCESS;
+  }
+
+  size_t target_cap = (buf->size == 0) ? 1 : buf->size;
+  uint8_t *temp = realloc(buf->data, target_cap * sizeof(uint8_t));
+  if (temp == nullptr) {
+    return ALLOC_OUT_OF_MEMORY;
+  }
+
+  buf->data = temp;
+  buf->capacity = target_cap;
   return ALLOC_SUCCESS;
 }
 
@@ -138,13 +157,23 @@ static AllocStatus buffer_shrink_to_fit(Buffer *buf) {
  * - Set dest->size = src->size and dest->capacity = src->capacity.
  * - Return ALLOC_SUCCESS or ALLOC_OUT_OF_MEMORY.
  */
-/* TODO: Implement buffer_clone */
 static AllocStatus buffer_clone(Buffer *dest, const Buffer *src) {
   if (dest == nullptr || src == nullptr || src->data == nullptr) {
     return ALLOC_INVALID_ARG;
   }
 
-  // Type your implementation here.
+  dest->data = malloc(src->capacity * sizeof(uint8_t));
+  if (dest->data == nullptr) {
+    dest->size = 0;
+    dest->capacity = 0;
+    return ALLOC_OUT_OF_MEMORY;
+  }
+
+  if (src->size > 0) {
+    memcpy(dest->data, src->data, src->size);
+  }
+  dest->size = src->size;
+  dest->capacity = src->capacity;
   return ALLOC_SUCCESS;
 }
 
