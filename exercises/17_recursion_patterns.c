@@ -134,12 +134,11 @@ static bool rec_starts_with(const char *prefix, const char *text) {
  */
 static bool rec_match_one_or_more(char target, const char *rest,
                                   const char *text) {
-  // TODO: Implement branching recursion with backtracking
-  (void)target;
-  (void)rest;
-  (void)text;
-  return false;
-}
+  if (*text != target) {
+    return false;
+  }
+  return rec_match_one_or_more(target, rest, text + 1) || rec_starts_with(rest, text + 1);
+  }
 
 int main(void) {
   printf("Running Exercise 17: Recursion Patterns tests...\n\n");
