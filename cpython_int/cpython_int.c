@@ -73,14 +73,31 @@ PyTypeObject PyLong_Type = {
 };
 
 /*
+ * Phase 1: PyObject Initialization Primitives
+ */
+
+PyObject *PyObject_Init(PyObject *op, PyTypeObject *type) {
+    if (!op) return NULL;
+    Py_REFCNT(op) = 1;
+    Py_TYPE(op) = type;
+    return op;
+}
+
+PyVarObject *PyObject_InitVar(PyVarObject *op, PyTypeObject *type, int64_t size) {
+    if (!op) return NULL;
+    PyObject_Init((PyObject *)op, type);
+    Py_SIZE(op) = size;
+    return op;
+}
+
+/*
  * Phase 2: PyFloatObject Constructors & Polymorphic Dispatchers
  */
 
 PyObject *PyFloat_FromDouble(double v) {
     PyFloatObject *op = (PyFloatObject *)malloc(sizeof(PyFloatObject));
     if (!op) return NULL;
-    Py_REFCNT(op) = 1;
-    Py_TYPE(op) = &PyFloat_Type;
+    PyObject_Init((PyObject *)op, &PyFloat_Type);
     op->ob_fval = v;
     return (PyObject *)op;
 }
@@ -118,9 +135,7 @@ PyLongObject *pylong_alloc(size_t size) {
         return NULL;
     }
 
-    Py_REFCNT(op) = 1;
-    Py_TYPE(op) = &PyLong_Type;
-    Py_SIZE(op) = (int64_t)size;
+    PyObject_InitVar((PyVarObject *)op, &PyLong_Type, (int64_t)size);
     if (size > 0) {
         memset(op->ob_digit, 0, size * sizeof(digit));
     }

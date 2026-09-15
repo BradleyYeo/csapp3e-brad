@@ -57,30 +57,16 @@ struct _varobject {
 
 /*
  * Reference Counting & Object Accessor Macros
+ * (Your task: implement Py_REFCNT, Py_TYPE, Py_SIZE, Py_INCREF, Py_DECREF, Py_XINCREF, Py_XDECREF here)
  */
-#define Py_REFCNT(op)       (((PyObject *)(op))->ob_refcnt)
-#define Py_TYPE(op)         (((PyObject *)(op))->ob_type)
-#define Py_SIZE(op)         (((PyVarObject *)(op))->ob_size)
 
-#define Py_INCREF(op) do { \
-    if ((op) != NULL) { \
-        ((PyObject *)(op))->ob_refcnt++; \
-    } \
-} while (0)
 
-#define Py_DECREF(op) do { \
-    PyObject *_py_op = (PyObject *)(op); \
-    if (_py_op != NULL) { \
-        if (--_py_op->ob_refcnt == 0) { \
-            if (_py_op->ob_type && _py_op->ob_type->tp_dealloc) { \
-                _py_op->ob_type->tp_dealloc(_py_op); \
-            } \
-        } \
-    } \
-} while (0)
+/* Standard Object Initialization */
+PyObject *PyObject_Init(PyObject *op, PyTypeObject *type);
+PyVarObject *PyObject_InitVar(PyVarObject *op, PyTypeObject *type,
+                              int64_t size);
 
-/*
- * Phase 2: Minimal Concrete Type (PyFloatObject) & Dynamic Dispatch
+ /* Phase 2: Minimal Concrete Type (PyFloatObject) & Dynamic Dispatch
  */
 typedef struct {
     PyObject ob_base;

@@ -32,23 +32,38 @@ flowchart TD
 # Phase 1: The Core PyObject Protocol & Reference Counting
 
 ## Mental Model & Concept Map
-- Reference: [CONCEPTS.md#the-cpython-object-model-and-subtyping-in-c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/CONCEPTS.md#L1-L71).
-- Every object in Python is fundamentally a [PyObject](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L43-L46) header containing:
+- Reference: [CONCEPTS.md#the-cpython-object-model-and-subtyping-in-c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/CONCEPTS.md#L1-L95).
+- Every object in Python is fundamentally a [PyObject](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L47-L50) header containing:
   - `ob_refcnt`: 64-bit reference counter.
-  - `ob_type`: Pointer to a [PyTypeObject](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L34-L41) (vtable).
+  - `ob_type`: Pointer to a [PyTypeObject](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L35-L42) (vtable).
+- Variable-length objects extend [PyVarObject](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L53-L56), adding `ob_size`.
 - Destructor rule: When `ob_refcnt` drops to zero, the runtime must invoke `op->ob_type->tp_dealloc(op)` to reclaim memory.
 
-## Implementation Targets
-- Reference counting macros in [cpython_int.h](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L58-L76): `Py_INCREF` and `Py_DECREF`.
-- Verifiable test: `test_phase1_pyobject_refcount_and_dealloc` in [test_cpython_int.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/test_cpython_int.c#L23-L45).
+## Progressive PyObject Drills
 
-## Practice Drill
-- Challenge: In [cpython_int.h](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L66-L76), rewrite `Py_DECREF` to handle NULL-checks, pre-decrementing, and conditional `tp_dealloc` invocation.
-- Validation: Run `make test_sanitizer` to confirm that failing to deallocate leaks memory, and double-freeing triggers an AddressSanitizer panic.
+### Drill 1.1: Struct Field Accessors as Lvalue Macros
+- Targets: `Py_REFCNT(op)`, `Py_TYPE(op)`, `Py_SIZE(op)` in [cpython_int.h](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L58-L62).
+- Test: `test_phase1_pyobject_accessors` in [test_cpython_int.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/test_cpython_int.c).
+- Concept: In C, a macro expanding to a struct member dereference (e.g. `(((PyObject *)(op))->ob_refcnt)`) is an **lvalue**. This means you can both read from it (`val = Py_REFCNT(op);`) and assign to it (`Py_REFCNT(op) = 1;`).
+
+### Drill 1.2: Standard Object Initializers
+- Targets: `PyObject_Init(op, type)` and `PyObject_InitVar(op, type, size)` in [cpython_int.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.c).
+- Tests: `test_phase1_pyobject_init` and `test_phase1_pyvarobject_init` in [test_cpython_int.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/test_cpython_int.c).
+- Invariant: `PyObject_Init` guarantees `ob_refcnt = 1` and sets `ob_type`. `PyObject_InitVar` chains to `PyObject_Init` and sets `ob_size = size`.
+
+### Drill 1.3: Reference Counting Primitives
+- Targets: `Py_INCREF(op)` and `Py_DECREF(op)` in [cpython_int.h](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L58-L62).
+- Test: `test_phase1_pyobject_refcount_and_dealloc` in [test_cpython_int.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/test_cpython_int.c).
+- Invariant: `Py_DECREF` must use pre-decrement `if (--_py_op->ob_refcnt == 0)` and call `tp_dealloc` when reaching zero.
+
+### Drill 1.4: NULL-Safe Macro Variants
+- Targets: `Py_XINCREF(op)` and `Py_XDECREF(op)` in [cpython_int.h](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/cpython_int.h#L58-L62).
+- Test: `test_phase1_pyobject_null_safety` in [test_cpython_int.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/cpython_int/test_cpython_int.c).
+- Invariant: Must safely accept `NULL` pointers without performing any operation or dereference.
 
 ## Active Recall Checkpoint
-- What is the difference between an owned reference and a borrowed reference?
-- Why does CPython check `if (--op->ob_refcnt == 0)` rather than using garbage collector sweeps for non-cyclic objects?
+- Why does CPython provide macros like `Py_REFCNT` rather than having external code access struct fields directly?
+- What is the difference between `Py_DECREF` and `Py_XDECREF`? When must you use `Py_XDECREF`?
 
 ---
 

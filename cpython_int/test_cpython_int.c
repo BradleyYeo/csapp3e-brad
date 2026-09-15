@@ -19,15 +19,52 @@ static PyTypeObject Dummy_Type = {
 };
 
 /*
- * Phase 1 Tests: PyObject Core Runtime, Reference Counting, and Destructors
+ * Phase 1 Tests: PyObject Core Runtime, Initializers, Accessors, and Lifecycle
  */
+
+static void test_phase1_pyobject_accessors(void) {
+    PyObject obj;
+    Py_REFCNT(&obj) = 42;
+    Py_TYPE(&obj) = &Dummy_Type;
+
+    ASSERT_EQ_INT(Py_REFCNT(&obj), 42);
+    ASSERT_TRUE(Py_TYPE(&obj) == &Dummy_Type);
+
+    PyVarObject var_obj;
+    Py_SIZE(&var_obj) = -7;
+    ASSERT_EQ_INT(Py_SIZE(&var_obj), -7);
+}
+
+static void test_phase1_pyobject_init(void) {
+    PyObject obj;
+    /* Simulate uninitialized memory with garbage */
+    memset(&obj, 0xAA, sizeof(PyObject));
+
+    PyObject *res = PyObject_Init(&obj, &Dummy_Type);
+    ASSERT_NOT_NULL(res);
+    ASSERT_TRUE(res == &obj);
+    ASSERT_EQ_INT(Py_REFCNT(&obj), 1);
+    ASSERT_TRUE(Py_TYPE(&obj) == &Dummy_Type);
+}
+
+static void test_phase1_pyvarobject_init(void) {
+    PyVarObject var_obj;
+    memset(&var_obj, 0xBB, sizeof(PyVarObject));
+
+    PyVarObject *res = PyObject_InitVar(&var_obj, &Dummy_Type, 10);
+    ASSERT_NOT_NULL(res);
+    ASSERT_TRUE(res == &var_obj);
+    ASSERT_EQ_INT(Py_REFCNT(&var_obj), 1);
+    ASSERT_TRUE(Py_TYPE(&var_obj) == &Dummy_Type);
+    ASSERT_EQ_INT(Py_SIZE(&var_obj), 10);
+}
+
 static void test_phase1_pyobject_refcount_and_dealloc(void) {
     g_custom_dealloc_called = 0;
 
     PyObject *obj = (PyObject *)malloc(sizeof(PyObject));
     ASSERT_NOT_NULL(obj);
-    Py_REFCNT(obj) = 1;
-    Py_TYPE(obj) = &Dummy_Type;
+    PyObject_Init(obj, &Dummy_Type);
 
     /* Increment reference count */
     Py_INCREF(obj);
@@ -41,6 +78,14 @@ static void test_phase1_pyobject_refcount_and_dealloc(void) {
     /* Second decrement reaches 0: must invoke custom tp_dealloc */
     Py_DECREF(obj);
     ASSERT_EQ_INT(g_custom_dealloc_called, 1);
+}
+
+static void test_phase1_pyobject_null_safety(void) {
+    /* Py_XINCREF and Py_XDECREF must safely ignore NULL pointers without crashing */
+    PyObject *null_ptr = NULL;
+    Py_XINCREF(null_ptr);
+    Py_XDECREF(null_ptr);
+    ASSERT_TRUE(true);
 }
 
 /*
@@ -425,8 +470,12 @@ static void test_layer7_twos_complement(void) {
 int main(void) {
     TEST_SUITE_START();
 
-    /* Phase 1: PyObject core & reference counting */
+    /* Phase 1: PyObject core, initializers, accessors, and reference counting */
+    RUN_TEST(test_phase1_pyobject_accessors);
+    RUN_TEST(test_phase1_pyobject_init);
+    RUN_TEST(test_phase1_pyvarobject_init);
     RUN_TEST(test_phase1_pyobject_refcount_and_dealloc);
+    RUN_TEST(test_phase1_pyobject_null_safety);
 
     /* Phase 2: PyFloatObject & polymorphic dynamic dispatch */
     RUN_TEST(test_phase2_pyfloat_and_dispatch);
