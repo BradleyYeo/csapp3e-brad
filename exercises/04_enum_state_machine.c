@@ -16,13 +16,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-enum PatternKind
-{
+enum PatternKind {
   PATTERN_LITERAL,
   PATTERN_DIGIT,
   PATTERN_WORD,
   PATTERN_INVALID,
   PATTERN_WHITESPACE,
+  PATTERN_HEX_DIGIT,
 };
 
 enum MatchResult
@@ -60,6 +60,9 @@ static enum PatternKind classify_token(const char *pattern)
     {
       return PATTERN_WHITESPACE;
     }
+    if (pattern[1] == 'x' && pattern[2] == '\0') {
+      return PATTERN_HEX_DIGIT;
+    }
     return PATTERN_INVALID;
   }
 
@@ -91,6 +94,8 @@ static bool test_char(char c, enum PatternKind kind)
     return isalnum(uc) || c == '_';
   case PATTERN_WHITESPACE:
     return isspace(uc);
+  case PATTERN_HEX_DIGIT:
+    return isxdigit(uc);
   case PATTERN_LITERAL:
   case PATTERN_INVALID:
     return false;
@@ -143,13 +148,14 @@ int main(void)
   assert(classify_token("") == PATTERN_INVALID);
   assert(classify_token(nullptr) == PATTERN_INVALID);
   assert(classify_token("\\s") == PATTERN_WHITESPACE);
-
+  assert(classify_token("\\x") == PATTERN_HEX_DIGIT);
   // Test 2: Matching with explicit result enums
   assert(match_string("user_123", "\\d") == MATCH_FOUND);
   assert(match_string("no_digits", "\\d") == MATCH_NOT_FOUND);
   assert(match_string("!@#", "\\w") == MATCH_NOT_FOUND);
   assert(match_string("hello_world", "_") == MATCH_FOUND);
   assert(match_string("hello    _world", "\\s") == MATCH_FOUND);
+  assert(match_string("0xDEAD", "\\x") == MATCH_FOUND);
 
   // Test 3: Syntax error handled gracefully without crashing
   assert(match_string("any text", "\\unsupported") == MATCH_SYNTAX_ERROR);
