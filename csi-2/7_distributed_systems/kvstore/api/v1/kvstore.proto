@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package api.v1;
+
+option go_package = "github.com/omarfq/kvstore/api/v1";
+
+message Command {
+  string operation = 1;
+  string key = 2;
+  string value = 3;
+}
+
+message Data {
+  string key = 1;
+  string value = 2;
+}

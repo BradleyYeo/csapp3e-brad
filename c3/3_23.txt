@@ -1,0 +1,33 @@
+long dw_loop(long x) {
+    long y = x*x;
+    long *p = &x;
+    long n = 2*x;
+    do {
+       x += y;
+       (*p)++;
+       n--;
+    } while (n > 0);
+    return x;
+}
+
+long dw_loop(long x)
+	x initially in %rdi
+1	dw_loop:
+2	  movq	%rdi, %rax // copy x to rax
+3	  movq	%rdi, %rcx // copy x to rax
+4	  imulq	%rdi, %rcx // long y = x*x;
+5	  leaq	(%rdi,%rdi), %rdx // long n = 2*x; ? explain why
+6	.L2:
+7	  leaq	1(%rcx,%rax), %rax // x += y; and (*p)++;
+8	  subq	$1, %rdx // n--;
+9	  testq	%rdx, %rdx //  while (n > 0);
+10	  jg	.L2 // if gt 0, goto loop
+11	  rep; ret // return x;
+
+Which registers are used to hold program values x, y, and n?
+x = rdi > rax
+y = rcx
+n = rdx
+How has the compiler eliminated the need for pointer variable p and the pointer dereferencing implied by the expression (*p)++?
+leaq	1(%rcx,%rax), %rax ? Idk how to explain teach me
+Add annotations to the assembly code describing the operation of the program, similar to those shown in Figure 3.19(c).”

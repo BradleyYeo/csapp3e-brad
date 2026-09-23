@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/Users/omarflores/Documents/BradfieldCSI/omarfq/prep-phase/c/the_c_programming_language/chapter4/build",
+  "command": "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc   -std=gnu99 -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.3.sdk -Wall -Wuninitialized -o CMakeFiles/test.dir/test.c.o -c /Users/omarflores/Documents/BradfieldCSI/omarfq/prep-phase/c/the_c_programming_language/chapter4/test.c",
+  "file": "/Users/omarflores/Documents/BradfieldCSI/omarfq/prep-phase/c/the_c_programming_language/chapter4/test.c",
+  "output": "CMakeFiles/test.dir/test.c.o"
+}
+]

@@ -1,0 +1,7 @@
+go 1.21.6
+
+use (
+	./query_executor
+	./query_executor_physical_storage
+	./lock_manager
+)

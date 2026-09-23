@@ -1,0 +1,19 @@
+# Local SSH private keys
+*.pem
+
+# Terraform runtime & state
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Sensitive variable definitions
+*.tfvars
+!terraform.tfvars.example
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

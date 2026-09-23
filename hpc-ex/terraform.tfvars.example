@@ -1,0 +1,12 @@
+# AWS Region
+aws_region = "us-east-1"
+
+# Instance Type: Default is t4g.large (ARM64, 2 vCPUs, 8GB RAM).
+# Can also use t4g.medium (2 vCPUs, 4GB RAM) or x86_64 types (c5.metal, c5.xlarge).
+instance_type = "t4g.large"
+
+# Root volume size in GiB (OpenCHAMI tutorial requires at least 60GB)
+root_volume_size = 60
+
+# Restrict SSH access to your specific IP or CIDR range (recommended)
+allowed_ssh_cidrs = ["0.0.0.0/0"]

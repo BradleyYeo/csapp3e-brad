@@ -1,0 +1,38 @@
+#cloud-config
+
+packages:
+  - libvirt
+  - qemu-kvm
+  - virt-install
+  - virt-manager
+  - dnsmasq
+  - podman
+  - buildah
+  - git
+  - vim
+  - ansible-core
+  - openssl
+  - nfs-utils
+
+# Post-package installation commands
+runcmd:
+  - dnf install -y epel-release
+  - dnf install -y s3cmd awscli
+  - systemctl enable --now libvirtd
+  - newgrp libvirt
+  - usermod -aG libvirt rocky
+  - |
+    # Resize partition and filesystem to utilize the 60GB volume
+    # Supports both Nitro NVMe (/dev/nvme0n1) and Xen (/dev/xvda) block devices
+    if [ -b /dev/xvda4 ]; then
+      growpart /dev/xvda 4 || true
+      pvresize /dev/xvda4 || true
+    elif [ -b /dev/nvme0n1p4 ]; then
+      growpart /dev/nvme0n1 4 || true
+      pvresize /dev/nvme0n1p4 || true
+    elif [ -b /dev/nvme0n1p3 ]; then
+      growpart /dev/nvme0n1 3 || true
+      pvresize /dev/nvme0n1p3 || true
+    fi
+    lvextend -l +100%FREE /dev/rocky/lvroot || lvextend -l +100%FREE /dev/rl/root || true
+    xfs_growfs / || true
