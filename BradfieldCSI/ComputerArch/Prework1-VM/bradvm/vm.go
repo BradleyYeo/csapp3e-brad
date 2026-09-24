@@ -4,154 +4,65 @@ import (
 	"fmt"
 )
 
-const (
-	Load  = 0x01
-	Store = 0x02
-	Add   = 0x03
-	Sub   = 0x04
-	Addi  = 0x05
-	Subi  = 0x06
-	Jump  = 0x07
-	Beqz  = 0x08
-	Halt  = 0xff
-)
-
-type Instruction struct {
-	Opcode  byte
-	DestReg byte
-	SrcReg  byte
-	Addr    byte
-	Imm     byte // immediate value a constant
-	Length  int
-}
-
-type CPU struct {
-	PC        int
-	Registers [3]byte
-}
-
-type FlowDirective int
-
-const (
-	FlowNext FlowDirective = iota
-	FlowJump
-	FlowHalt
-)
-
-type ExecutionResult struct {
-	Flow FlowDirective
-	NextPC byte
-}
-
-func NewCPU() *CPU {
-	return &CPU{
-		PC: 0x08,
-	}
-}
-
-func decode(memory []byte, pc int) (Instruction, error) {
-	opcode := memory[pc]
-	switch opcode {
+func execute(cpu *CPU, memory []byte, inst Instruction) (FlowDirective, error) {
+	switch inst.Opcode {
+	case Beqz:
+		if cpu.Registers[inst.DestReg] != 0 {
+			return FlowDirective{Kind: FlowNext}, nil
+		}
+		offset := int8(inst.Imm)
+		target := cpu.PC + inst.Length + int(offset)
+		return FlowDirective{
+			Kind:   FlowJump,
+			Target: target,
+		}, nil
 	case Jump:
-		return Instruction{
-			Opcode:  opcode,
-			Addr: memory[pc+1],
-			Length:  2,
+		return FlowDirective{
+			Kind:   FlowJump,
+			Target: int(inst.Addr),
 		}, nil
 	case Addi:
-		return Instruction{
-			Opcode:  opcode,
-			DestReg: memory[pc+1],
-			Imm:  memory[pc+2],
-			Length:  3,
-		}, nil
+		cpu.Registers[inst.DestReg] = cpu.Registers[inst.DestReg] + inst.Imm
+		return FlowDirective{Kind: FlowNext}, nil
 	case Subi:
-		return Instruction{
-			Opcode:  opcode,
-			DestReg: memory[pc+1],
-			Imm:  memory[pc+2],
-			Length:  3,
-		}, nil
+		cpu.Registers[inst.DestReg] = cpu.Registers[inst.DestReg] - inst.Imm
+		return FlowDirective{Kind: FlowNext}, nil
 	case Add:
-		return Instruction{
-			Opcode:  opcode,
-			DestReg: memory[pc+1],
-			SrcReg:  memory[pc+2],
-			Length:  3,
-		}, nil
+		cpu.Registers[inst.DestReg] = cpu.Registers[inst.DestReg] + cpu.Registers[inst.SrcReg]
+		return FlowDirective{Kind: FlowNext}, nil
 	case Sub:
-		return Instruction{
-			Opcode:  opcode,
-			DestReg: memory[pc+1],
-			SrcReg:  memory[pc+2],
-			Length:  3,
-		}, nil
+		cpu.Registers[inst.DestReg] = cpu.Registers[inst.DestReg] - cpu.Registers[inst.SrcReg]
+		return FlowDirective{Kind: FlowNext}, nil
 	case Load:
-		return Instruction{
-			Opcode:  opcode,
-			DestReg: memory[pc+1],
-			Addr:    memory[pc+2],
-			Length:  3,
-		}, nil
+		cpu.Registers[inst.DestReg] = memory[inst.Addr]
+		return FlowDirective{Kind: FlowNext}, nil
 	case Store:
-		return Instruction{
-			Opcode: opcode,
-			SrcReg: memory[pc+1],
-			Addr:   memory[pc+2],
-			Length: 3,
-		}, nil
+		memory[inst.Addr] = cpu.Registers[inst.SrcReg]
+		return FlowDirective{Kind: FlowNext}, nil
 	case Halt:
-		return Instruction{
-			Opcode: opcode,
-			Length: 1}, nil
+		return FlowDirective{Kind: FlowHalt}, nil
 	default:
-		return Instruction{}, fmt.Errorf("unknown opcode: 0x%02x", opcode)
+		return FlowDirective{}, fmt.Errorf("unknown opcode: 0x%02x", inst.Opcode)
 	}
 }
 
-func compute(memory []byte) {
-	pc := 0x08
-	var registers [3]byte // registers[1] is r1, registers[2] is r2
+func Run(memory []byte) {
+	cpu := NewCPU()
 	for {
 		// 1 clock cycle
-		instruct, err := decode(memory, pc)
+		inst, err := decode(memory, cpu.PC)
 		if err != nil {
 			panic(err)
 		}
-		switch instruct.Opcode {
-		case Jump:
-			target_addr := instruct.Addr
-			pc = int(target_addr)
-		case Addi:
-			registers[instruct.DestReg] = registers[instruct.DestReg] + instruct.Imm
-			pc += instruct.Length
-		case Subi:
-			registers[instruct.DestReg] = registers[instruct.DestReg] - instruct.Imm
-			pc += instruct.Length
-		case Add:
-			registers[instruct.DestReg] = registers[instruct.DestReg] + registers[instruct.SrcReg]
-			pc += instruct.Length
-		case Sub:
-			registers[instruct.DestReg] = registers[instruct.DestReg] - registers[instruct.SrcReg]
-			pc += instruct.Length
-		case Load:
-			registers[instruct.DestReg] = memory[instruct.Addr]
-			pc += instruct.Length
-		case Store:
-			memory[instruct.Addr] = registers[instruct.SrcReg]
-			pc += instruct.Length
-		case Beqz:
-			reg := memory[pc+1]
-			cc := registers[reg]
-			relative_offset := int8(memory[pc+2])
-			pc += 3
-			if cc == 0 {
-				pc += int(relative_offset)
-			}
-		case Halt:
+		flow, err := execute(cpu, memory, inst)
+		switch flow.Kind {
+		case FlowNext:
+			cpu.PC += inst.Length
+		case FlowJump:
+			cpu.PC = flow.Target
+		case FlowHalt:
 			return
-		default:
-			panic("Unknown opcode")
 		}
+
 	}
 }

@@ -10,7 +10,7 @@ import (
 func TestHaltMinimal(t *testing.T) {
 	memory := make([]byte, 256)
 	memory[8] = 0xff // Halt opcode
-	compute(memory)
+	Run(memory)
 }
 
 func TestLoadStoreMinimal(t *testing.T) {
@@ -23,7 +23,7 @@ func TestLoadStoreMinimal(t *testing.T) {
 		0xff, // halt
 	}
 	copy(memory[8:], program) // Flashes the machine code bytes into RAM starting at offset 8 (the code segment entry point).
-	compute(memory)
+	Run(memory)
 
 	// address 0x00 is the designated return value/result destination.
 	if memory[0] != 42 {
@@ -63,7 +63,7 @@ func TestAddAndSubtract(t *testing.T) {
 				0xff, // halt
 			}
 			copy(memory[8:], program)
-			compute(memory)
+			Run(memory)
 
 			if memory[0] != tc.expected {
 				t.Fatalf("expected %d, got %d", tc.expected, memory[0])
@@ -85,7 +85,7 @@ func TestImmediateArithmetic(t *testing.T) {
 	}
 	copy(memory[8:], program)
 
-	compute(memory)
+	Run(memory)
 
 	if memory[0] != 18 {
 		t.Fatalf("expected memory[0] to be 18, got %d", memory[0])
@@ -109,7 +109,7 @@ func TestJump(t *testing.T) {
 	}
 	copy(memory[8:], program)
 
-	compute(memory)
+	Run(memory)
 
 	// Since store was jumped over, memory[0] must remain 0
 	if memory[0] != 0 {
@@ -147,7 +147,7 @@ func TestBeqz(t *testing.T) {
 			}
 			copy(memory[8:], program)
 
-			compute(memory)
+			Run(memory)
 
 			if memory[0] != tc.expected {
 				t.Fatalf("expected memory[0] to be %d, got %d", tc.expected, memory[0])

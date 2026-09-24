@@ -418,125 +418,71 @@
 - Why do compilers prefer relative branches over absolute jumps for local loops and `if/else` statements?
 - What happens if an offset wraps the 8-bit Program Counter past 255?
 
-# Challenge 7: Deep Module Refactoring and State Invariant Preservation
+# Virtual Machine Architecture of `bradvm`
 
-## Concept: Applying Ousterhout, Koppel, and Jackson to `bradvm/vm.go`
+## Architectural Pipeline and Data Flow
 
-- Your initial working implementation in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go) successfully passes all tests for Challenges 1 through 6.
-- However, as the instruction set expands towards subroutines, flags, and indirect addressing, the current structure exhibits three architectural design flaws:
+```mermaid
+flowchart TD
+    subgraph Storage ["Hardware State"]
+        CPU["CPU\n- PC: int (Program Counter)\n- Registers: [3]byte (R1, R2)"]
+        MEM["Memory ([]byte)\n- 256 bytes RAM\n- 0x00: Return Value\n- 0x01-0x02: Input Parameters (X, Y)\n- 0x08-0xFF: Instruction Segment"]
+    end
 
-### Architectural Flaws in Current `bradvm/vm.go`
+    subgraph Pipeline ["Oscillator Clock Loop: Run()"]
+        DECODE["1. decode(memory, cpu.PC)\n- Reads opcode byte\n- Determines instruction length\n- Extracts typed operands"]
+        INST["Instruction Struct\n- Opcode: byte\n- DestReg, SrcReg: byte\n- Addr, Imm: byte\n- Length: int"]
+        EXECUTE["2. execute(cpu, memory, inst)\n- Performs ALU computation\n- Reads/writes data RAM\n- Evaluates branch conditions"]
+        FLOW["FlowDirective Struct\n- Kind: FlowNext | FlowJump | FlowHalt\n- Target: int"]
+        AUTHORITY["3. Single Authority PC Gatekeeper\n- FlowNext: cpu.PC += inst.Length\n- FlowJump: cpu.PC = flow.Target\n- FlowHalt: terminate loop"]
+    end
 
-- Entangled Decoding and Execution (John Ousterhout's Shallow Module):
-  - In [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L20-L70), the `switch opcode` block performs fetch, operand decoding, computation, and memory access in a single inlined routine.
-  - Every case directly slices `memory[pc+1]` and `memory[pc+2]`.
-  - Knowledge of instruction byte lengths and operand offsets is duplicated across every case. Adding a new instruction requires calculating raw memory indices ad-hoc.
-- Distributed Multi-Authority Program Counter Mutations (Jimmy Koppel's Single Authority Principle):
-  - Program Counter updates are scattered across multiple cases:
-    - Sequential increment `pc += 3` is duplicated across 6 distinct switch cases (`Addi`, `Subi`, `Load`, `Store`, `Add`, `Sub`).
-    - `Jump` directly sets `pc = int(target_addr)`.
-    - `Beqz` mutates `pc` in two consecutive steps: `pc += 3` followed by `if cc == 0 { pc += int(relative_offset) }`.
-  - Because multiple blocks mutate `pc` directly, there is no single authoritative gatekeeper ensuring that the PC remains aligned to valid instruction boundaries.
-- Unencapsulated Architectural State (Daniel Jackson's Concept Design):
-  - State variables (`pc := 0x08`, `var registers [3]byte`) are declared as bare local variables inside `compute`.
-  - Registers, memory, and control flow are conflated within a single function scope, making it impossible to inspect, snapshot, or test the CPU state independently of execution.
+    CPU -->|"Reads current PC"| DECODE
+    MEM -->|"Fetches opcode & operand bytes"| DECODE
+    DECODE -->|"Produces parsed syntax"| INST
 
-## Architectural Refactoring Requirements
+    INST -->|"Supplies opcode & operands"| EXECUTE
+    EXECUTE -->|"Mutates cpu.Registers"| CPU
+    EXECUTE -->|"Reads / writes data bytes"| MEM
+    EXECUTE -->|"Emits control flow intent"| FLOW
 
-### The CPU Concept
+    FLOW -->|"Evaluates directive"| AUTHORITY
+    AUTHORITY -->|"FlowNext: cpu.PC += inst.Length"| CPU
+    AUTHORITY -->|"FlowJump: cpu.PC = flow.Target"| CPU
+    AUTHORITY -->|"FlowHalt: terminate loop"| CPU
+```
 
-- Encapsulate physical processor state into a dedicated `CPU` struct:
-  ```go
-  type CPU struct {
-      PC        int
-      Registers [3]byte
-  }
+## Architectural Design Principles
 
-  func NewCPU() *CPU {
-      return &CPU{
-          PC: 0x08,
-      }
-  }
-  ```
+### Daniel Jackson's Concept Design
+- Hardware State (`CPU`):
+  - Encapsulates physical processor registers (`PC`, `Registers`) and enforces valid reset vector invariants via `NewCPU()`.
+- Machine Syntax (`Instruction`):
+  - Represents the typed, decoded form of machine code bytes, decoupling operand representation from raw memory indexing.
+- Control Flow Intent (`FlowDirective`):
+  - Models branching and program counter transitions without coupling execution units to register mutation.
 
-### The Instruction Model
+### John Ousterhout's Deep Modules
+- Deep Decoder:
+  - `decode(memory []byte, pc int) (Instruction, error)` hides all variable-length byte parsing, opcode mapping, and operand indexing behind a clean interface.
+- Pure Execution Unit:
+  - `execute(cpu *CPU, memory []byte, inst Instruction) (FlowDirective, error)` isolates state transitions from oscillator loop management.
 
-- Create a structured representation that encapsulates decoded instruction fields:
-  ```go
-  type Instruction struct {
-      Opcode  byte
-      DestReg byte
-      SrcReg  byte
-      Addr    byte
-      Imm     byte
-      Length  int
-  }
-  ```
+### Jimmy Koppel's Single Authority Principle
+- Program Counter Gatekeeper:
+  - Neither `decode()` nor `execute()` mutates `cpu.PC` directly.
+  - The oscillator loop in `Run()` acts as the sole authoritative component updating `cpu.PC`, eliminating distributed mutations, race conditions, and off-by-one errors.
 
-### The Deep Decoder
-
-- Implement a decoder that extracts and validates an instruction behind a clean interface:
-  ```go
-  func decode(memory []byte, pc int) (Instruction, error)
-  ```
-- This function encapsulates:
-  - Determining instruction length from opcode (`Halt`: 1 byte, `Jump`: 2 bytes, others: 3 bytes).
-  - Validating that `pc + length <= len(memory)` before dereferencing operands.
-  - Extracting registers, memory addresses, and immediate constants into typed fields.
-
-### Explicit Control Flow Directives
-
-- Eliminate distributed `pc` mutations by modeling execution outcomes as explicit control flow directives:
-  ```go
-  type FlowKind int
-
-  const (
-      FlowNext FlowKind = iota
-      FlowJump
-      FlowHalt
-  )
-
-  type FlowDirective struct {
-      Kind   FlowKind
-      Target int
-  }
-  ```
-- The execution phase never mutates `cpu.PC` directly. It returns a `FlowDirective`:
-  ```go
-  func execute(cpu *CPU, memory []byte, inst Instruction) (FlowDirective, error)
-  ```
-- The central clock loop becomes the sole authority over Program Counter advancement:
-  ```go
-  flow, err := execute(cpu, memory, inst)
-  if err != nil {
-      panic(err)
-  }
-  switch flow.Kind {
-  case FlowNext:
-      cpu.PC += inst.Length
-  case FlowJump:
-      cpu.PC = flow.Target
-  case FlowHalt:
-      return
-  }
-  ```
-
-## Verification Strategy
-
-- Run `go test -v ./...` in [bradvm/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm).
-- Every test from Challenges 1 through 6 (`TestHaltMinimal`, `TestLoadStoreMinimal`, `TestAddAndSubtract`, `TestImmediateArithmetic`, `TestJump`, `TestBeqz`) must pass without modification after the refactor.
-
-## Active Recall Checkpoint
-
-- How does centralizing Program Counter updates into a single clock loop eliminate off-by-one errors in relative branches?
-- In terms of John Ousterhout's deep modules, why is `decode(memory, pc)` considered deep while inlined `memory[pc+1]` access is shallow?
 
 # Challenge 8: Assembler Construction and Algorithmic Execution
 
-## Concept: Symbolic Assembly Translation and Looping Constructs
+## Concept: Machine Instruction Encoding and Algorithmic Loops (CS:APP 3.2, 3.5, 3.6)
 
-- Writing machine code as raw byte slices is error-prone and obscures algorithmic structure.
-- An assembler parses human-readable assembly instructions and emits valid machine code bytes.
+- In CS:APP Chapter 3, programs are represented as sequences of raw binary instructions, but authored in symbolic assembly.
+- Writing machine code as raw byte slices is error-prone and obscures algorithmic control structures.
+- An assembler acts as a 1:1 translator:
+  - Parses symbolic instruction mnemonics (`load`, `store`, `add`, `subi`, `jump`, `beqz`, `halt`).
+  - Converts human-readable tokens directly into executable binary bytes.
 - The `Sum to n` program tests all architectural components working in harmony:
   - Parameter loading (`Load`).
   - Loop termination condition (`Beqz`).
@@ -570,14 +516,17 @@
           {10, 55}, // sum(10) = 55
       }
 
-      bytecode := assemble(asm)
+      bytecode, err := assemble(asm)
+      if err != nil {
+          t.Fatalf("assembly failed: %v", err)
+      }
 
       for _, tc := range testCases {
           memory := make([]byte, 256)
           memory[1] = tc.n
           copy(memory[8:], bytecode)
 
-          compute(memory)
+          Run(memory)
 
           if memory[0] != tc.expected {
               t.Fatalf("for n=%d, expected %d, got %d", tc.n, tc.expected, memory[0])
@@ -588,40 +537,42 @@
 
 ## Architectural Mechanics
 
-- Execution trace for $n = 3$:
-  - `load r1, 1`: `r1 = 3`.
-  - Loop iteration 1: `r1 != 0` (branch not taken). `r2 = 0 + 3 = 3`. `r1 = 3 - 1 = 2`. `jump 11`.
-  - Loop iteration 2: `r1 != 0`. `r2 = 3 + 2 = 5`. `r1 = 2 - 1 = 1`. `jump 11`.
-  - Loop iteration 3: `r1 != 0`. `r2 = 5 + 1 = 6`. `r1 = 1 - 1 = 0`. `jump 11`.
-  - Loop iteration 4: `r1 == 0`. `beqz r1, 8` takes branch, skipping forward 8 bytes past `add`, `subi`, `jump`.
-  - Land at `store r2, 0`: `memory[0] = 6`.
-  - `halt`: Execution halts.
+### Execution Trace for $n = 3$
+- `load r1, 1`: `r1 = 3`.
+- Loop iteration 1: `r1 != 0` (branch not taken). `r2 = 0 + 3 = 3`. `r1 = 3 - 1 = 2`. `jump 11`.
+- Loop iteration 2: `r1 != 0`. `r2 = 3 + 2 = 5`. `r1 = 2 - 1 = 1`. `jump 11`.
+- Loop iteration 3: `r1 != 0`. `r2 = 5 + 1 = 6`. `r1 = 1 - 1 = 0`. `jump 11`.
+- Loop iteration 4: `r1 == 0`. `beqz r1, 8` takes branch, skipping forward 8 bytes past `add`, `subi`, `jump`.
+- Land at `store r2, 0`: `memory[0] = 6`.
+- `halt`: Execution halts cleanly.
 
 ## Implementation Guidelines
 
-- Implement `assemble(asm string) []byte` in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go) (or a dedicated `assembler.go` in `bradvm`):
-  - Split text by newlines and trim whitespace.
-  - Map instruction mnemonics to opcode constants (`Load`, `Store`, `Add`, etc.).
-  - Parse register strings (`"r1"` $\rightarrow 1$, `"r2"` $\rightarrow 2$).
+- Implement `assemble(asm string) ([]byte, error)` in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go) (or a dedicated `assembler.go` in [bradvm/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm)):
+  - Split input by newlines and trim whitespace.
+  - Ignore empty lines and comments (`#` or `//`).
+  - Tokenize instruction mnemonics and operands separated by commas or whitespace.
+  - Map instruction mnemonics to opcode constants ([Load](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L8), [Store](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L9), [Add](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L10), etc.).
+  - Map `"r1"` $\rightarrow 1$, `"r2"` $\rightarrow 2$.
   - Parse integers using `strconv.Atoi`.
 
 ## Active Recall Checkpoint
 
-- What is the difference between an assembler and a compiler?
-- Trace how `jump 11` targets the `beqz` instruction: why address 11? (Hint: calculate the byte sizes of the preceding instructions).
+- What is the conceptual difference between an assembler (1:1 mapping) and a compiler (1:many mapping)?
+- Trace how `jump 11` targets the `beqz` instruction: why address 11? (Hint: sum the byte lengths of all preceding instructions starting at address 8).
 
-# Challenge 9: Traps, Fault Handling, and Hardware Exception Vectors
+# Challenge 9: Hardware Exception Traps and Processor Status Codes
 
-## Concept: CPU Traps, Faults, and Abrupt State Termination
+## Concept: Processor Status Codes and Exception Vectors (CS:APP 4.1.4, 8.1)
 
-- In physical silicon, illegal instructions or invalid memory accesses trigger hardware exceptions rather than crashing the emulator host environment.
-- In your refactored architecture, `decode` and `execute` can report errors as structured hardware traps rather than invoking Go's `panic()`.
-- Define trap codes:
-  - `TrapNone`: Normal execution status.
-  - `TrapHalt`: Normal termination via `Halt` (`0xff`).
-  - `TrapIllegalOpcode`: Unrecognized opcode encountered at current PC.
-  - `TrapInvalidRegister`: Register identifier outside valid bounds (`1` or `2`).
-  - `TrapMemoryOutOfBounds`: Instruction fetch or operand address exceeds RAM bounds ($> 255$).
+- In CS:APP Chapter 4 (Y86-64), a processor tracks its execution state through a status code register (`Stat`):
+  - `AOK` (`1`): Normal operation.
+  - `HLT` (`2`): Processor executed a halt instruction.
+  - `ADR` (`3`): Invalid memory address accessed.
+  - `INS` (`4`): Invalid instruction opcode encountered.
+- Physical CPUs do not crash or trigger host language panics when an illegal instruction or memory violation occurs.
+- Instead, hardware traps raise an internal exception, capture the fault code into a status register, and halt the clock with a distinct state.
+- In your refactored architecture, [decode](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L52) and [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119) report structured hardware traps rather than invoking Go's `panic()`.
 
 ## Test Specification
 
@@ -638,7 +589,7 @@
               program: []byte{
                   0xee, // Undefined opcode
               },
-              expectedTrap: 0x02, // TrapIllegalOpcode
+              expectedTrap: 0x02, // TrapIllegalOpcode (INS in CS:APP 4.1.4)
           },
           {
               name: "InvalidRegister",
@@ -650,9 +601,9 @@
           {
               name: "MemoryOutOfBounds",
               program: []byte{
-                  0x07, 0xfe, // jump 254 (points to instruction requiring 3 bytes at EOF)
+                  0x07, 0xfe, // jump 254 (target instruction crosses 256-byte boundary)
               },
-              expectedTrap: 0x04, // TrapMemoryOutOfBounds
+              expectedTrap: 0x04, // TrapMemoryOutOfBounds (ADR in CS:APP 4.1.4)
           },
       }
 
@@ -661,7 +612,7 @@
               memory := make([]byte, 256)
               copy(memory[8:], tc.program)
 
-              trap := computeWithTrap(memory)
+              trap := RunWithTrap(memory)
               if trap != tc.expectedTrap {
                   t.Fatalf("expected trap 0x%02x, got 0x%02x", tc.expectedTrap, trap)
               }
@@ -672,49 +623,54 @@
 
 ## Architectural Mechanics
 
-- The deep `decode(memory, pc)` function validates memory bounds before reading operands:
-  - If `pc >= len(memory)` or `pc + inst.Length > len(memory)`, it returns `TrapMemoryOutOfBounds`.
-  - If opcode is unknown, it returns `TrapIllegalOpcode`.
-- The `execute(cpu, memory, inst)` function validates register bounds:
-  - If `inst.DestReg > 2` or `inst.SrcReg > 2`, it returns `TrapInvalidRegister`.
-- The clock loop catches the trap, halts execution cleanly, and records the trap code.
+### Validation in the Pipeline Stages
+- Fetch & Decode Stage ([decode](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L52)):
+  - Validates that `pc < len(memory)`.
+  - Determines instruction length; validates `pc + inst.Length <= len(memory)`.
+  - If out of bounds: returns `TrapMemoryOutOfBounds`.
+  - If opcode unrecognized: returns `TrapIllegalOpcode`.
+- Execute Stage ([execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119)):
+  - Validates that register identifiers are valid (`inst.DestReg <= 2` and `inst.SrcReg <= 2`).
+  - If invalid: returns `TrapInvalidRegister`.
+- Oscillator Loop ([Run](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L162)):
+  - Catches the trap from `decode` or `execute`, halts the clock, and records the exit status code.
 
 ## Implementation Guidelines
 
 - Define trap constants in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go):
   ```go
   const (
-      TrapNone              byte = 0x00
-      TrapHalt              byte = 0x01
-      TrapIllegalOpcode     byte = 0x02
+      TrapNone              byte = 0x00 // AOK
+      TrapHalt              byte = 0x01 // HLT
+      TrapIllegalOpcode     byte = 0x02 // INS
       TrapInvalidRegister   byte = 0x03
-      TrapMemoryOutOfBounds byte = 0x04
+      TrapMemoryOutOfBounds byte = 0x04 // ADR
   )
   ```
-- Implement `computeWithTrap(memory []byte) byte` returning the final trap code.
-- Keep `compute(memory []byte)` as a wrapper that calls `computeWithTrap`.
+- Implement `RunWithTrap(memory []byte) byte`:
+  - Returns the final trap code instead of panicking.
+- Refactor [Run](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L162) to call `RunWithTrap` and panic only if a fatal trap occurs (maintaining backward test compatibility).
 
 ## Active Recall Checkpoint
 
-- How does the x86 processor trigger `#UD` (Undefined Opcode exception) and how does Linux handle it via `SIGILL`?
-- What is the difference between a trap, a fault, and an interrupt in CPU architecture?
+- How does CS:APP 4.1.4 define the `Stat` register, and how do `ADR` and `INS` protect physical hardware?
+- In Linux systems (CS:APP 8.1), how does the OS kernel handle an Undefined Opcode (`#UD`) hardware exception raised by the CPU?
 
-# Challenge 10: Processor Status Register (FLAGS) and Condition Codes
+# Challenge 10: Processor Status Register (FLAGS) and Decoupled Predication
 
-## Concept: ALU Condition Codes and Decoupled Predication
+## Concept: ALU Condition Codes and Branch Predication (CS:APP 3.6.1, 4.3)
 
-- In `Beqz`, zero checking is coupled directly to the branch instruction.
-- Real CPUs separate the calculation of status flags from control flow decisions:
-  - Arithmetic operations update a dedicated Status Register (`FLAGS`).
-  - Standard flags:
-    - Zero Flag ($Z$, bit 0): Set if computation result equals 0.
-    - Sign Flag ($S$, bit 1): Set if bit 7 of the result is 1 (negative in two's complement).
-    - Carry Flag ($C$, bit 2): Set if unsigned addition wraps past 255 or unsigned subtraction borrows below 0.
-    - Overflow Flag ($V$, bit 3): Set if signed addition/subtraction produces an erroneous sign bit.
-- Control flow instructions evaluate these flags:
-  - `Beq` (`0x09`): Branch if $Z = 1$ (equal / zero).
-  - `Bne` (`0x0a`): Branch if $Z = 0$ (not equal / non-zero).
-- A comparison instruction `Cmp` (`0x0b`): Computes `r1 - r2`, updates flags, and discards the result without modifying general-purpose registers.
+- In `Beqz`, zero checking is tightly coupled to a single branch instruction.
+- Real CPUs (x86-64 and CS:APP Y86-64 SEQ) separate arithmetic computation from control flow decisions:
+  - The ALU automatically computes 1-bit condition flags on every arithmetic operation, storing them in a dedicated Status Register (`FLAGS` or `CC`):
+    - Zero Flag ($ZF$, bit 0): Set if computation result equals 0.
+    - Sign Flag ($SF$, bit 1): Set if the most significant bit (bit 7) is 1 (negative in two's complement).
+    - Carry Flag ($CF$, bit 2): Set if unsigned addition overflows past 255 or unsigned subtraction borrows below 0.
+    - Overflow Flag ($OF$, bit 3): Set if signed two's complement addition/subtraction produces an erroneous sign bit.
+- Control flow instructions inspect condition codes without taking register arguments:
+  - `Beq` (`0x09 <offset>`): Branch if $ZF = 1$ (equal / zero).
+  - `Bne` (`0x0a <offset>`): Branch if $ZF = 0$ (not equal / non-zero).
+- The `Cmp` (`0x0b <r1> <r2>`) instruction performs $r1 - r2$, updates the condition flags, and discards the numerical result without modifying either general-purpose register.
 
 ## Test Specification
 
@@ -736,13 +692,13 @@
               memory[1] = tc.r1Val
               memory[2] = tc.r2Val
 
-              // Layout:
-              // 8:  load r1, 1      (3 bytes)
-              // 11: load r2, 2      (3 bytes)
-              // 14: cmp r1, r2      (3 bytes: 14..16) -> sets Zero flag
-              // 17: beq 3           (2 bytes: 17..18) -> if Z=1, skip 3-byte store
+              // Program layout:
+              // 8:  load r1, 1      (3 bytes: 8..10)
+              // 11: load r2, 2      (3 bytes: 11..13)
+              // 14: cmp r1, r2      (3 bytes: 14..16) -> updates ZF in cpu.Flags
+              // 17: beq 3           (2 bytes: 17..18) -> if ZF=1, skip 3-byte store
               // 19: store r1, 0     (3 bytes: 19..21)
-              // 22: halt            (1 byte)
+              // 22: halt            (1 byte: 22)
               program := []byte{
                   0x01, 0x01, 0x01, // load r1, 1
                   0x01, 0x02, 0x02, // load r2, 2
@@ -753,7 +709,7 @@
               }
               copy(memory[8:], program)
 
-              compute(memory)
+              Run(memory)
 
               if tc.expectBranch && memory[0] != 0 {
                   t.Fatalf("expected branch taken (memory[0] == 0), got %d", memory[0])
@@ -768,23 +724,8 @@
 
 ## Architectural Mechanics
 
-- The `CPU` struct adds `Flags byte`.
-- During `execute`, arithmetic operations (`Add`, `Sub`, `Addi`, `Subi`, `Cmp`) update `cpu.Flags`.
-- `Cmp` disables register writeback while enabling flags update.
-- Branch instructions evaluate bitwise predicates against `cpu.Flags` and return `FlowJump(target)` or `FlowNext`.
-
-## Implementation Guidelines
-
-- Define flag bitmasks:
-  ```go
-  const (
-      FlagZ byte = 1 << 0 // Zero
-      FlagS byte = 1 << 1 // Sign
-      FlagC byte = 1 << 2 // Carry
-      FlagV byte = 1 << 3 // Overflow
-  )
-  ```
-- Update `CPU` struct:
+### Updating the Execute Stage (CS:APP 4.3.2)
+- Update [CPU](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L28) struct:
   ```go
   type CPU struct {
       PC        int
@@ -792,29 +733,62 @@
       Flags     byte
   }
   ```
-- Implement flag setting in ALU execution and evaluate in `Beq`/`Bne`.
+- During [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119), arithmetic instructions ([Add](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L10), [Sub](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L11), [Addi](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L12), [Subi](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L13), `Cmp`) update `cpu.Flags`:
+  - Calculate `val`: result of operation.
+  - If `val == 0`: set `FlagZ`.
+  - If `val & 0x80 != 0`: set `FlagS`.
+  - For addition: set `FlagC` if `result > 255`.
+  - For subtraction / comparison: set `FlagC` if `r1 < r2` (borrow occurred).
+  - Set `FlagV` if signed overflow occurred.
+- `Cmp` disables register writeback while enabling `cpu.Flags` latching.
+- `Beq` evaluates `cpu.Flags & FlagZ != 0`:
+  - If true: returns `FlowDirective{Kind: FlowJump, Target: cpu.PC + inst.Length + int(offset)}`.
+  - If false: returns `FlowDirective{Kind: FlowNext}`.
+
+## Implementation Guidelines
+
+- Define flag masks in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go):
+  ```go
+  const (
+      FlagZ byte = 1 << 0 // Zero Flag
+      FlagS byte = 1 << 1 // Sign Flag
+      FlagC byte = 1 << 2 // Carry Flag
+      FlagV byte = 1 << 3 // Overflow Flag
+  )
+  ```
+- Add opcodes:
+  ```go
+  const (
+      Beq = 0x09
+      Bne = 0x0a
+      Cmp = 0x0b
+  )
+  ```
 
 ## Active Recall Checkpoint
 
-- How does the ALU calculate the signed overflow flag ($V$) for an 8-bit addition?
-- Why do modern ISAs like x86 use condition flags while RISC-V avoids a flags register in favor of compare-and-branch instructions?
+- How does the ALU calculate the signed overflow flag ($OF$) for an 8-bit two's complement addition? (Hint: compare the signs of operands and result).
+- Why does CS:APP 4.3 separate the comparison (`cmp`) from the jump (`jxx`), rather than combining them into a single instruction?
 
 # Challenge 11: Call Stack, Subroutines, and Activation Frames
 
-## Concept: The Call Stack, Return Addresses, and Stack Pointer
+## Concept: Procedure Control Transfer and the Runtime Stack (CS:APP 3.7, 4.3)
 
-- Subroutines allow reusable code execution from multiple callers.
-- A call stack stores return addresses dynamically so subroutines know where to return.
-- Stack mechanics:
-  - Add Stack Pointer (`SP`) to the `CPU` struct, initialized to `0xff`.
-  - The stack grows downwards from `0xff` towards `0x00`.
+- CS:APP Chapter 3.7 explains how procedures are implemented in hardware:
+  - Passing control: Diverting the PC to the starting address of the procedure.
+  - Passing data: Placing parameters in designated registers.
+  - Allocating and freeing memory: Managing stack frames on the call stack.
+- Without a call stack, a subroutine cannot be invoked from multiple call sites because the return address cannot be restored dynamically.
+- The Call Stack mechanism:
+  - Stack Pointer (`SP`): A dedicated CPU register pointing to the top of the active stack frame.
+  - The stack grows downwards in memory from `0xff` down towards `0x00`.
   - `Call <addr>` (`0x0c <addr>`):
-    - Pushes the return address (`cpu.PC + 2`) to `memory[cpu.SP]`.
+    - Pushes the continuation address ($\text{cpu.PC} + \text{inst.Length}$) onto `memory[cpu.SP]`.
     - Decrements `cpu.SP--`.
-    - Sets `cpu.PC = target_addr`.
+    - Diverts $\text{cpu.PC} \leftarrow \text{target}$.
   - `Ret` (`0x0d`):
     - Increments `cpu.SP++`.
-    - Pops return address from `memory[cpu.SP]` into `cpu.PC`.
+    - Pops the return address from `memory[cpu.SP]` into `cpu.PC`.
 
 ## Test Specification
 
@@ -847,7 +821,7 @@
       }
       copy(memory[20:], subroutine)
 
-      compute(memory)
+      Run(memory)
 
       if memory[0] != 10 {
           t.Fatalf("expected memory[0] to be 10, got %d", memory[0])
@@ -857,44 +831,55 @@
 
 ## Architectural Mechanics
 
-- At initialization: `cpu.SP = 0xff`.
-- When `Call` executes at PC 11:
-  - Return address is `11 + 2 = 13`.
+### Stack Frame Transitions
+- At initialization ([NewCPU](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L46)): `cpu.SP = 0xff`.
+- When `Call 20` executes at PC 11:
+  - Continuation address is $11 + 2 = 13$.
   - Byte `13` is written to `memory[0xff]`.
   - `cpu.SP` decrements to `0xfe`.
-  - `cpu.PC` is diverted to `20`.
+  - [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119) returns `FlowDirective{Kind: FlowJump, Target: 20}`.
 - When `Ret` executes at PC 23:
   - `cpu.SP` increments to `0xff`.
-  - Byte `memory[0xff]` (`13`) is read into `cpu.PC`.
-  - Sequential execution resumes at PC 13.
+  - Byte `memory[0xff]` (`13`) is read.
+  - [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119) returns `FlowDirective{Kind: FlowJump, Target: 13}`.
+  - Execution resumes sequentially at address 13.
 
 ## Implementation Guidelines
 
-- Define constants:
+- Define opcodes:
   ```go
   const (
       Call = 0x0c
       Ret  = 0x0d
   )
   ```
-- Add `SP byte` to `CPU` struct, initialized to `0xff`.
-- In `execute`, `Call` and `Ret` return `FlowCall` and `FlowRet` directives to the central clock loop.
+- Update [CPU](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L28) struct:
+  ```go
+  type CPU struct {
+      PC        int
+      Registers [3]byte
+      Flags     byte
+      SP        byte
+  }
+  ```
+- Initialize `SP: 0xff` in [NewCPU](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L46).
+- Implement `Call` and `Ret` in [decode](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L52) and [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119).
 
 ## Active Recall Checkpoint
 
-- What happens in physical hardware when recursive subroutines run without a base termination condition?
-- How do x86 `CALL`/`RET` instructions use the `RSP` and `RIP` registers?
+- In x86-64 (CS:APP 3.7), what register acts as the hardware stack pointer, and why does the stack grow toward lower memory addresses?
+- What security vulnerability (CS:APP 3.10.3) arises when an attacker writes beyond a buffer allocated on the stack to overwrite the return address?
 
 # Challenge 12: Register-Indirect Addressing and Pointer Dereferencing
 
-## Concept: Pointers and Dynamically Computed Addresses
+## Concept: Pointers and Dynamically Computed Memory Addresses (CS:APP 3.8, 4.3)
 
-- In direct addressing (`Load` and `Store`), memory addresses are fixed at compile time in the instruction bytes.
+- Direct memory addressing (`Load` and `Store`) hardcodes the linear memory target in the instruction bytes at compile time.
 - Dynamic data structures (arrays, buffers, linked nodes) require computing memory addresses at runtime.
-- Register-indirect addressing uses a register as a pointer:
-  - `LoadInd rDest, rAddr` (`0x0e rDest rAddr`): Reads `memory[cpu.Registers[rAddr]]` into `cpu.Registers[rDest]`.
-  - `StoreInd rSrc, rAddr` (`0x0f rSrc rAddr`): Writes `cpu.Registers[rSrc]` into `memory[cpu.Registers[rAddr]]`.
-- Together with `Addi rAddr, 1`, indirect addressing enables pointer loops and buffer scanning.
+- Register-indirect addressing uses a general-purpose register as a pointer:
+  - `LoadInd rDest, rAddr` (`0x0e <dest> <addr_reg>`): Reads `memory[cpu.Registers[rAddr]]` into `cpu.Registers[rDest]`.
+  - `StoreInd rSrc, rAddr` (`0x0f <src> <addr_reg>`): Writes `cpu.Registers[rSrc]` into `memory[cpu.Registers[rAddr]]`.
+- Together with immediate arithmetic (`addi rAddr, 1`), indirect addressing enables pointer loops and buffer scanning.
 
 ## Test Specification
 
@@ -925,7 +910,7 @@
       }
       copy(memory[8:], program)
 
-      compute(memory)
+      Run(memory)
 
       if memory[0] != 30 {
           t.Fatalf("expected memory[0] to be 30, got %d", memory[0])
@@ -935,35 +920,39 @@
 
 ## Architectural Mechanics
 
-- The memory address bus multiplexer selects the address from the register file output instead of the instruction stream register.
-- Allows arbitrary memory dereferencing, enabling heap structures, lookup tables, and stack frame pointer offsets.
+### Memory Bus Multiplexing (CS:APP 4.3.4)
+- In direct addressing, the memory address bus is driven by the immediate address byte decoded from the instruction stream (`inst.Addr`).
+- In register-indirect addressing, the address bus multiplexer selects the address from the register file output (`cpu.Registers[inst.SrcReg]`).
+- This allows software to implement dynamic data structures, array slicing, and pointer dereferencing.
 
 ## Implementation Guidelines
 
-- Define constants:
+- Define opcodes:
   ```go
   const (
       LoadInd  = 0x0e
       StoreInd = 0x0f
   )
   ```
-- Implement decode and execute handlers:
-  - `LoadInd`: `cpu.Registers[dest] = memory[cpu.Registers[addrReg]]`.
-  - `StoreInd`: `memory[cpu.Registers[addrReg]] = cpu.Registers[srcReg]`.
+- In [decode](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L52):
+  - `LoadInd`: `DestReg = memory[pc+1]`, `SrcReg = memory[pc+2]`, `Length = 3`.
+  - `StoreInd`: `SrcReg = memory[pc+1]`, `DestReg = memory[pc+2]`, `Length = 3`.
+- In [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L119):
+  - `LoadInd`: `cpu.Registers[inst.DestReg] = memory[cpu.Registers[inst.SrcReg]]`.
+  - `StoreInd`: `memory[cpu.Registers[inst.DestReg]] = cpu.Registers[inst.SrcReg]`.
 
 ## Active Recall Checkpoint
 
-- How does register-indirect addressing map to C pointer dereferencing (`*ptr`) and array indexing (`arr[i]`)?
-- What hardware faults can occur during an indirect memory access in virtual memory systems?
+- In CS:APP 3.8, how does C's pointer dereferencing expression `*ptr` and array indexing `arr[i]` lower to indirect addressing?
+- What hardware trap should occur if `cpu.Registers[addrReg]` points outside physical memory bounds?
 
 # Challenge 13: Execution Tracing and Disassembler Construction
 
-## Concept: Machine Introspection, Disassembly, and Cycle Accounting
+## Concept: Machine Introspection, Disassembly, and Cycle Tracking (CS:APP 3.2.2, 4.4)
 
-- Inspecting raw byte arrays during VM failures introduces high cognitive overhead.
-- A disassembler translates binary bytecode back into symbolic human-readable assembly lines.
-- Because your architecture has a deep `decode()` module from Challenge 7, building a disassembler requires zero duplicated instruction length logic.
-- An execution tracer records the complete architectural state (`PC`, `Opcode`, `Registers`, `Flags`) on every clock cycle.
+- CS:APP 3.2.2 describes how tools like `objdump -d` reconstruct assembly mnemonics from machine code bytes.
+- Because your architecture has a deep `decode()` module from earlier refactoring, building a disassembler requires zero duplicated instruction length logic.
+- An execution tracer records the complete architectural state (`PC`, `Opcode`, `Registers`, `Flags`, `SP`) on every clock cycle, providing full observability into instruction retirement.
 
 ## Test Specification
 
@@ -1004,85 +993,91 @@
 ## Architectural Mechanics
 
 - The disassembler functions as a non-mutating fetch-decode pipeline:
-  - Iterates through the bytecode slice.
-  - Calls `decode(bytecode, pc)`.
-  - Formats symbolic mnemonic from `Instruction`.
+  - Iterates through the bytecode slice starting at offset 0.
+  - Calls [decode](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L52)`(bytecode, pc)`.
+  - Formats symbolic mnemonic from [Instruction](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L19).
   - Advances `pc += inst.Length`.
 
 ## Implementation Guidelines
 
-- Implement `disassemble(bytecode []byte) ([]string, error)` in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go).
+- Implement `disassemble(bytecode []byte) ([]string, error)` in [bradvm/vm.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go) (or a dedicated `disassembler.go`).
 - Return error on unrecognized opcodes or truncated operand streams.
 
 ## Active Recall Checkpoint
 
-- Why is disassembling variable-length instruction architectures (x86) more complex than fixed-length architectures (ARM/RISC-V)?
-- What is the difference between static disassembly and dynamic execution tracing?
+- Why is disassembling variable-length instructions (like x86 and `bradvm`) more complex than fixed-length architectures (like 32-bit ARM or RISC-V)?
+- What is the difference between static disassembly (inspecting bytes at rest) and dynamic execution tracing (observing instructions in flight)?
 
 # Extension Exercises: Systems Engineering & Mental Model Expansion
 
-## Extension Exercise 1: Two-Pass Assembler with Symbolic Labels
+## Extension Exercise 1: Two-Pass Assembler with Symbolic Labels (CS:APP 7.5)
 
 ### The Problem with Hardcoded Offsets
-
 - In raw assembly, jumps and branches require manual calculation of byte targets (e.g., `jump 11` or `beqz r1, 8`).
 - Adding or removing a single instruction shifts all subsequent memory addresses, requiring error-prone recalculation of all branch targets.
 
-### Two-Pass Architecture
-
+### Two-Pass Architecture (CS:APP 7.5 Symbol Resolution)
 - Pass 1 (Symbol Definition):
-  - Scan the assembly source line by line.
+  - Scan assembly source line by line.
   - Track current byte offset starting at 8.
   - Detect label declarations (e.g., `loop:` or `exit:`).
-  - Record the label name and byte address in a symbol table (`map[string]byte`).
+  - Record the label name and byte address in a symbol table (`map[string]int`).
 - Pass 2 (Code Emission):
   - Translate symbolic instructions to machine code.
   - Replace symbolic target references (`jump loop`) with resolved absolute addresses or relative offsets computed from the symbol table.
 
 ### Deliverable
-
 - Implement `assembleWithLabels(source string) ([]byte, error)`.
 - Test the `Sum to n` program written cleanly with `loop:` and `done:` labels without numeric branch targets.
 
-## Extension Exercise 2: W^X Memory Protection Unit
+## Extension Exercise 2: W^X Memory Protection Unit (CS:APP 9.7)
 
 ### Architectural Invariant
-
 - Modern operating systems enforce the W^X (Write XOR Execute) security invariant:
   - Memory pages can be writable, or executable, but never both simultaneously.
-  - Prevents arbitrary code injection attacks where user input is executed as machine code.
+  - Prevents arbitrary code injection attacks where user input written to a buffer is executed as machine code.
 
 ### Segmentation Rules
-
 - Divide the 256-byte address space into three permission segments:
   - `0x00` to `0x07` (Data Segment): Read-Write, No-Execute (`RW-`).
   - `0x08` to `0xef` (Code Segment): Read-Only, Executable (`R-X`).
   - `0xf0` to `0xff` (Stack Segment): Read-Write, No-Execute (`RW-`).
 
 ### Deliverable
-
 - Add permission checks to memory read, write, and execute operations.
 - Emit `TrapMemoryProtectionViolation` if:
   - The PC attempts to fetch instructions from the Data segment (`< 0x08`) or Stack segment (`>= 0xf0`).
   - A `Store` or `StoreInd` instruction attempts to write into the Code segment (`0x08` to `0xef`).
 
-## Extension Exercise 3: Memory-Mapped I/O (MMIO) Virtual Teletype
+## Extension Exercise 3: Memory-Mapped I/O (MMIO) Virtual Teletype (CS:APP 10.1)
 
 ### Concept: Peripheral Communication via Memory Bus
-
-- Physical CPUs communicate with external peripherals (keyboards, serial consoles, network adapters) by mapping device control registers into the memory address space.
-- A write to a specific memory address does not store data in RAM; it transmits the data across an I/O bus to a peripheral controller.
+- Physical CPUs communicate with external peripherals (keyboards, serial consoles, displays) by mapping device control registers into reserved memory addresses.
+- A write to a designated memory address does not store data in RAM; it transmits the data across an I/O bus to a peripheral controller.
 
 ### Architectural Mapping
-
 - Designate memory address `0x07` as the `UART_TX` (Serial Teletype Output) data register.
 - When the CPU executes `Store` or `StoreInd` targeting address `0x07`:
   - Intercept the write operation before writing to RAM.
   - Transmit the byte value as an ASCII character to an attached `io.Writer`.
 
 ### Deliverable
-
-- Add an `io.Writer` interface field to the VM.
+- Add an `io.Writer` interface field to [CPU](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L28).
 - Write an assembly program that prints a null-terminated string (`"HELLO\n"`) stored in data memory to the teletype using a pointer loop.
+
+## Extension Exercise 4: Pipelining Hazards and Stalls (CS:APP 4.5)
+
+### Concept: Pipelined Execution Hazards
+- CS:APP 4.5 describes pipelining the sequential processor into 5 stages: Fetch, Decode, Execute, Memory, Write-back.
+- Pipelining introduces hardware hazards:
+  - Data Hazards (Read-After-Write / RAW): An instruction depends on the result of a preceding instruction that has not yet completed the Write-back stage.
+  - Control Hazards: The processor fetches the next instruction before a branch instruction has determined whether the branch is taken.
+- Hardware resolutions:
+  - Inserting bubbles (stalls).
+  - Data forwarding (bypassing the register file by routing ALU outputs directly to input multiplexers).
+
+### Deliverable
+- Analyze the `Sum to n` assembly loop: identify which consecutive instruction pairs would cause RAW data hazards in a pipelined implementation, and calculate how many stall cycles would be required without data forwarding.
+
 
 
