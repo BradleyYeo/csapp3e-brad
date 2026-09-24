@@ -30,6 +30,19 @@ type CPU struct {
 	Registers [3]byte
 }
 
+type FlowDirective int
+
+const (
+	FlowNext FlowDirective = iota
+	FlowJump
+	FlowHalt
+)
+
+type ExecutionResult struct {
+	Flow FlowDirective
+	NextPC byte
+}
+
 func NewCPU() *CPU {
 	return &CPU{
 		PC: 0x08,

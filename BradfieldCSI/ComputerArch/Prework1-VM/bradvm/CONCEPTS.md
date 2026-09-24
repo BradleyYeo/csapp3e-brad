@@ -129,10 +129,36 @@
 - Control Flow:
   - Evaluates branch conditions and updates the Program Counter.
 
-## Single Authority Program Counter Progression
-- In physical hardware, the PC advances past the current instruction during fetch and decode.
-- When a branch occurs, the target address overrides the sequential increment.
-- Maintaining a single authority in the clock loop prevents distributed mutations and eliminates subtle off-by-one errors.
+# Program Counter (PC) Mechanics and Invariants
+
+## Definition and Physical Hardware Role
+- The Program Counter (`PC`) is a dedicated processor register that holds the memory address of the next machine instruction to be fetched and executed.
+- Across major architectures:
+  - ARM and RISC-V: Designated as `PC`.
+  - x86 (16-bit): Known as `IP` (Instruction Pointer).
+  - x86-32: Known as `EIP` (Extended Instruction Pointer).
+  - x86-64: Known as `RIP` (Register Instruction Pointer).
+
+## The Fetch-Increment Invariant
+- During sequential program execution, the PC progresses monotonically:
+  $$\text{PC}_{\text{next}} = \text{PC}_{\text{current}} + \text{Instruction Length}$$
+- In physical silicon, the CPU hardware increments the PC immediately during or directly following the instruction fetch phase.
+- Instruction Boundary Alignment:
+  - Machine instructions consist of an opcode byte followed by optional operand bytes.
+  - If the PC is incremented incorrectly by an off-by-one offset, the CPU attempts to interpret operand data (register numbers, addresses, or constants) as opcodes, causing instruction desynchronization and illegal opcode faults.
+
+## Control Flow Diversion
+- Control flow instructions intentionally break the default sequential progression:
+  - Absolute Jump (`Jump`): Overwrites the Program Counter directly with a target address ($\text{PC} \leftarrow \text{Target}$).
+  - Relative Branch (`Beqz`, `Beq`, `Bne`): Adds a displacement to the already-advanced Program Counter ($\text{PC} \leftarrow \text{PC} + \text{Offset}$).
+  - Subroutine Call (`Call`): Pushes the sequential continuation address ($\text{PC} + \text{Length}$) onto the call stack before redirecting $\text{PC} \leftarrow \text{Target}$.
+  - Subroutine Return (`Ret`): Pops the saved return address from the call stack directly into the PC.
+
+## Single Authority Principle in Software Simulation
+- In software emulators, updating `pc` ad-hoc inside multiple individual `switch` cases creates distributed authority.
+- When every instruction handles its own PC stepping, relative branch calculations and jump targets become temporally coupled to loop tail logic.
+- Best practice: Instruction execution returns an explicit flow directive (`FlowNext`, `FlowJump`, `FlowHalt`), leaving the clock loop as the sole authority that applies mutations to `cpu.PC`.
+
 
 # Advanced Hardware Subsystems
 
