@@ -232,3 +232,174 @@
 ## Context Switching and Register Spilling
 - When the Linux kernel performs a context switch, it saves the processor's register state into the process control block (task struct).
 - When a compiler runs out of physical registers for variables, it generates `Store` and `Load` instructions to spill register values into stack memory.
+
+# The Sequential (SEQ) Processor Model (CS:APP Chapter 4)
+
+## The Six Canonical Execution Stages
+- In CS:APP 4.3, sequential processor hardware processes instructions through six discrete stages in a single clock cycle:
+  - Fetch (`F`): Reads instruction bytes from memory at address `PC`, extracts opcode and operand bytes, and computes sequential successor address `valP` ($\text{PC} + \text{Length}$).
+  - Decode (`D`): Reads up to two operand values (`valA`, `valB`) from the register file.
+  - Execute (`E`): The Arithmetic Logic Unit (ALU) performs mathematical operations, effective address calculations, or evaluates condition flags to produce branch decision `Cnd`.
+  - Memory (`M`): Reads a byte from data memory (`valM`) or writes a byte to data memory.
+  - Write-Back (`W`): Writes up to two results (`valE` from ALU, `valM` from memory) back to the register file.
+  - PC Update (`P`): Sets the Program Counter to the next instruction address (`valP`, jump target, or branch target).
+
+## Mapping CS:APP SEQ Stages to `bradvm`
+- Fetch and Decode Stages:
+  - Encapsulated by [decode](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/constructs.go#L28)`(memory, cpu.PC) (Instruction, error)`.
+  - Slices opcode and operand bytes from RAM, computes `inst.Length`, and validates memory boundaries.
+- Execute, Memory, and Write-Back Stages:
+  - Encapsulated by [execute](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L7)`(cpu, memory, inst) (FlowDirective, error)`.
+  - Performs register math, modifies RAM bytes on `Store`, mutates `cpu.Registers` on write-back, and generates flow directives.
+- PC Update Stage:
+  - Encapsulated by the clock oscillator loop in [Run](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/vm.go#L49).
+  - Evaluates [FlowDirective](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/ComputerArch/Prework1-VM/bradvm/constructs.go#L114) and commits the single authoritative mutation to `cpu.PC`.
+
+# Assembler Architecture and Symbol Resolution (CS:APP 3.2, 7.5)
+
+## The Assembler Translation Model
+- Cardinality:
+  - An assembler performs a 1:1 isomorphic mapping between human-readable mnemonics and hardware machine code bytes.
+  - Unlike a compiler (which maps 1 high-level statement to many machine instructions), an assembler does not perform register allocation, high-level control-flow lowering, or algorithmic restructuring.
+- Assembly Grammar for `bradvm`:
+  - 1-byte instructions: `halt`.
+  - 2-byte instructions: `jump <addr>`, `call <addr>`, `ret`.
+  - 3-byte instructions: `load <reg>, <addr>`, `store <reg>, <addr>`, `add <dest>, <src>`, `sub <dest>, <src>`, `addi <dest>, <imm>`, `subi <dest>, <imm>`, `beqz <reg>, <offset>`.
+
+## Two-Pass Assembler Design
+- The Forward Reference Problem:
+  - In assembly code with backward loops and forward branches, branch targets frequently refer to labels that have not yet been encountered in the text.
+- Pass 1: Symbol Definition Table Construction:
+  - Scans assembly text line by line while maintaining an instruction pointer offset (beginning at reset vector `0x08`).
+  - When encountering a label definition (e.g. `loop:` or `done:`), records the label name and current byte offset into a symbol table (`map[string]int`).
+  - Does not emit machine code bytes; calculates instruction lengths based on mnemonics to track address progression.
+- Pass 2: Machine Code Generation and Target Resolution:
+  - Re-scans the assembly text and emits binary machine bytes.
+  - Replaces symbolic references with concrete numerical values:
+    - Absolute jumps (`jump loop`): looks up `loop` in the symbol table and emits absolute target address byte.
+    - Relative branches (`beqz r1, done`): calculates displacement $\text{offset} = \text{target} - (\text{PC} + \text{Length})$ and emits signed offset byte.
+
+# Processor Status Codes and Exceptional Control Flow (CS:APP 4.1.4, 8.1)
+
+## Processor Status Codes (`Stat`)
+- In CS:APP 4.1.4, physical processors track operational integrity through a status code register (`Stat`):
+  - `AOK` (`0x00`): Normal operating status; clock oscillator continues running.
+  - `HLT` (`0x01`): `Halt` instruction executed; processor clock terminates cleanly.
+  - `INS` (`0x02`): Illegal or undefined instruction opcode encountered; triggers hardware exception.
+  - `ADR` (`0x04`): Address violation; instruction fetch or data memory access outside valid RAM boundaries.
+  - `REG` (`0x03`): Invalid register identifier referenced in instruction operand bytes.
+
+## Hardware Traps vs Host Runtime Panics
+- Real silicon cannot invoke host language panics (`panic()` in Go or aborting the simulator).
+- Exceptional conditions latch fault status codes into processor registers and halt execution or transfer execution to a pre-configured hardware exception vector.
+- Distinguishes between normal termination (`HLT`) and abnormal termination (`INS`, `ADR`).
+
+## Operating System Exception Classes (CS:APP 8.1)
+- Interrupts:
+  - Asynchronous events triggered by external hardware pins (e.g. timer tick, network packet arrival).
+  - Always returns control to next instruction.
+- Traps:
+  - Synchronous intentional exceptions invoked by software instructions (e.g. `syscall`, software breakpoints).
+  - Returns control to next instruction after kernel service execution.
+- Faults:
+  - Synchronous unintentional error conditions that may be recoverable (e.g. page fault, floating point divide-by-zero).
+  - Re-executes the faulting instruction if kernel resolves condition, or aborts process.
+- Aborts:
+  - Synchronous unrecoverable hardware failures (e.g. parity error, machine check exception).
+  - Terminates the application immediately.
+
+# ALU Condition Codes and Hardware Predication (CS:APP 3.6.1, 4.3.2)
+
+## Condition Code Bitmasks (`FLAGS`)
+- In CS:APP 3.6.1, the CPU maintains a set of 1-bit status flags updated automatically by arithmetic logic units:
+  - Zero Flag ($ZF$, bit 0, mask `0x01`): Set if computation result equals 0 ($\text{result} == 0$).
+  - Sign Flag ($SF$, bit 1, mask `0x02`): Set if most significant bit (bit 7) is 1 ($\text{result} < 0$ in two's complement).
+  - Carry Flag ($CF$, bit 2, mask `0x04`): Set if unsigned addition overflows past 255 or unsigned subtraction requires a borrow below 0.
+  - Overflow Flag ($OF$, bit 3, mask `0x08`): Set if signed two's complement arithmetic produces an erroneous sign bit.
+
+## Mathematical Formulas for 8-Bit Overflow
+- Unsigned Carry Detection:
+  - Addition: $\text{Carry} = (\text{uint16}(a) + \text{uint16}(b)) > 255$.
+  - Subtraction: $\text{Borrow} = a < b$.
+- Signed Two's Complement Overflow Detection:
+  - Adding two positive numbers yields a negative result: $(a_{7} == 0 \land b_{7} == 0 \land \text{res}_{7} == 1)$.
+  - Adding two negative numbers yields a positive result: $(a_{7} == 1 \land b_{7} == 1 \land \text{res}_{7} == 0)$.
+  - Compact bitwise formula:
+    $$\text{Overflow} = ((a \oplus \text{res}) \land (b \oplus \text{res}) \land 0\text{x}80) \neq 0$$
+
+## Decoupled Predication: Compare vs Branch
+- In early virtual machines, branching logic bundles condition testing directly with jump execution (e.g. `Beqz r1, offset`).
+- Advanced ISAs decouple condition generation from condition testing:
+  - Comparison instruction (`Cmp r1, r2`): Computes $r1 - r2$, updates $ZF, SF, CF, OF$, and disables register writeback.
+  - Predicated branches (`Beq`, `Bne`, `Blt`, `Bge`): Inspect condition code bitmasks directly without reading general data registers:
+    - Equal / Zero (`Beq`): Tests $ZF == 1$.
+    - Not Equal / Non-Zero (`Bne`): Tests $ZF == 0$.
+    - Less Than (signed): Tests $(SF \oplus OF) == 1$.
+    - Less Than or Equal (unsigned): Tests $(CF == 1 \lor ZF == 1)$.
+
+# The Runtime Call Stack and Subroutine Linkage (CS:APP 3.7, 4.3.5)
+
+## Subroutine Linkage Mechanics
+- Subroutines require dynamic call-return linkage so that shared utility procedures can return execution back to variable call sites across a program.
+- Call Stack Register (`SP`):
+  - Dedicated hardware register holding the linear address of the current stack top.
+  - Initialized to `0xff` (top of memory) and grows downwards toward `0x00`.
+- Calling Procedure (`Call target`):
+  - Computes sequential continuation address: $\text{retAddr} = \text{PC} + \text{Length}$.
+  - Pushes return address to stack: $\text{memory}[\text{SP}] \leftarrow \text{retAddr}$.
+  - Decrements stack pointer: $\text{SP} \leftarrow \text{SP} - 1$.
+  - Diverts control: $\text{PC} \leftarrow \text{target}$.
+- Returning from Procedure (`Ret`):
+  - Increments stack pointer: $\text{SP} \leftarrow \text{SP} + 1$.
+  - Pops return address: $\text{PC} \leftarrow \text{memory}[\text{SP}]$.
+
+## Calling Conventions and Activation Records
+- Register Preservation Conventions (CS:APP 3.7.3):
+  - Caller-Saved Registers: The caller must store these registers in memory prior to `Call` if their values are needed after return.
+  - Callee-Saved Registers: The subroutine must preserve these registers on the stack and restore them before `Ret`.
+- Stack Frame Invariants:
+  - Stack Underflow: Occurs when popping from an empty stack ($\text{SP} > 0\text{xff}$).
+  - Stack Overflow: Occurs when pushing data into reserved code or data segments ($\text{SP} < 0\text{x}08$).
+
+# Register-Indirect Addressing and Pointer Mechanics (CS:APP 3.8)
+
+## Hardware Memory Bus Multiplexing
+- Direct Memory Addressing (`Load`, `Store`):
+  - Memory address bus multiplexer selects target address directly from the instruction byte stream register (`inst.Addr`).
+  - Address is static and hardwired at assembly time.
+- Register-Indirect Addressing (`LoadInd`, `StoreInd`):
+  - Memory address bus multiplexer selects target address from the register file data output (`cpu.Registers[rAddr]`).
+  - Address is dynamic and computed at runtime.
+
+## Lowering High-Level Pointer and Array Operations
+- C Pointer Dereferencing:
+  - `*ptr = val` lowers directly to `StoreInd val, ptr`.
+  - `val = *ptr` lowers directly to `LoadInd val, ptr`.
+- Array Traversal:
+  - Combining register-indirect addressing with immediate addition (`Addi ptr, elementSize`) provides hardware support for pointer arithmetic, buffer scans, and dynamically allocated collections.
+
+# Pipelining Principles and Hardware Hazards (CS:APP 4.5)
+
+## Computational Throughput and Latency
+- Sequential Execution (Non-Pipelined):
+  - Clock period must accommodate the total propagation delay of all six execution stages combined.
+  - Throughput: 1 instruction every $N$ nanoseconds.
+- Pipelined Execution:
+  - Divides instruction execution across pipeline stages separated by clocked pipeline registers.
+  - Multiple instructions overlap across distinct stages concurrently.
+  - Throughput: Approaches 1 instruction completed per clock cycle, despite individual instruction latency remaining constant or slightly increasing.
+
+## The Three Hardware Hazards
+- Data Hazards (Read-After-Write / RAW):
+  - Occurs when an instruction in the Decode stage requires an operand register that a preceding instruction in the Execute or Memory stage has not yet committed to the register file.
+  - Solutions:
+    - Pipeline Stalls (Bubbles): Pausing dependent pipeline stages until write-back completes.
+    - Data Forwarding (Bypassing): Routing intermediate ALU outputs directly across hardware bypass paths to the inputs of dependent ALU stages without waiting for register write-back.
+- Control Hazards:
+  - Occurs when the Fetch stage must fetch the next instruction before a conditional branch in the Execute stage determines whether the branch is taken.
+  - Solutions:
+    - Speculative execution with branch prediction.
+    - Pipeline flush upon detecting mispredicted branch.
+- Structural Hazards:
+  - Occurs when multiple pipeline stages contend for the same physical hardware component simultaneously (e.g. instruction fetch and data memory access contending for a unified Von Neumann memory bus).
+
