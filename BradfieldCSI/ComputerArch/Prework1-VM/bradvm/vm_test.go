@@ -71,3 +71,48 @@ func TestAddAndSubtract(t *testing.T) {
 		})
 	}
 }
+
+func TestImmediateArithmetic(t *testing.T) {
+	memory := make([]byte, 256)
+	memory[1] = 20 // input X
+
+	program := []byte{
+		0x01, 0x01, 0x01, // load r1, 1 (r1 = 20)
+		0x05, 0x01, 0x03, // addi r1, 3 (r1 = 23)
+		0x06, 0x01, 0x05, // subi r1, 5 (r1 = 18)
+		0x02, 0x01, 0x00, // store r1, 0
+		0xff, // halt
+	}
+	copy(memory[8:], program)
+
+	compute(memory)
+
+	if memory[0] != 18 {
+		t.Fatalf("expected memory[0] to be 18, got %d", memory[0])
+	}
+}
+
+func TestJump(t *testing.T) {
+    memory := make([]byte, 256)
+    memory[1] = 42
+
+    // Program layout:
+    // Address 8:  load r1, 1       (3 bytes: 8, 9, 10)
+    // Address 11: jump 17          (2 bytes: 11, 12)
+    // Address 13: store r1, 0      (3 bytes: 13, 14, 15) -> SHOULD BE SKIPPED
+    // Address 16: halt             (1 byte: 16)          -> Landing point
+    program := []byte{
+        0x01, 0x01, 0x01, // 8:  load r1, 1
+        0x07, 0x10,       // 11: jump 16 (0x10)
+        0x02, 0x01, 0x00, // 13: store r1, 0 (skipped)
+        0xff,             // 16: halt
+    }
+    copy(memory[8:], program)
+
+    compute(memory)
+
+    // Since store was jumped over, memory[0] must remain 0
+    if memory[0] != 0 {
+        t.Fatalf("expected memory[0] to be 0 (skipped store), got %d", memory[0])
+    }
+}

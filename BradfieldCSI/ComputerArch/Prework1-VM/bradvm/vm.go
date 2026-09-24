@@ -1,12 +1,14 @@
 package bradvm
 
-
 const (
 	Load  = 0x01
-    Store = 0x02
-	Add = 0x03
-    Sub = 0x04
-	Halt = 0xff
+	Store = 0x02
+	Add   = 0x03
+	Sub   = 0x04
+	Addi  = 0x05
+	Subi  = 0x06
+	Jump = 0x07
+	Halt  = 0xff
 )
 
 func compute(memory []byte) {
@@ -16,6 +18,23 @@ func compute(memory []byte) {
 		// 1 clock cycle
 		opcode := memory[pc]
 		switch opcode {
+		case Jump:
+			target_addr := memory[pc+1]
+			pc = int(target_addr)
+		case Addi:
+			reg := memory[pc+1]
+			currentVal := registers[reg]
+			constant := memory[pc+2]
+			result := currentVal + constant
+			registers[reg] = result
+			pc += 3
+		case Subi:
+			reg := memory[pc+1]
+			currentVal := registers[reg]
+			constant := memory[pc+2]
+			result := currentVal - constant
+			registers[reg] = result
+			pc += 3
 		case Load:
 			src_reg := memory[pc+1]
 			addr := memory[pc+2]
