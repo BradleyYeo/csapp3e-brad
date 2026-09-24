@@ -93,26 +93,65 @@ func TestImmediateArithmetic(t *testing.T) {
 }
 
 func TestJump(t *testing.T) {
-    memory := make([]byte, 256)
-    memory[1] = 42
+	memory := make([]byte, 256)
+	memory[1] = 42
 
-    // Program layout:
-    // Address 8:  load r1, 1       (3 bytes: 8, 9, 10)
-    // Address 11: jump 17          (2 bytes: 11, 12)
-    // Address 13: store r1, 0      (3 bytes: 13, 14, 15) -> SHOULD BE SKIPPED
-    // Address 16: halt             (1 byte: 16)          -> Landing point
-    program := []byte{
-        0x01, 0x01, 0x01, // 8:  load r1, 1
-        0x07, 0x10,       // 11: jump 16 (0x10)
-        0x02, 0x01, 0x00, // 13: store r1, 0 (skipped)
-        0xff,             // 16: halt
-    }
-    copy(memory[8:], program)
+	// Program layout:
+	// Address 8:  load r1, 1       (3 bytes: 8, 9, 10)
+	// Address 11: jump 17          (2 bytes: 11, 12)
+	// Address 13: store r1, 0      (3 bytes: 13, 14, 15) -> SHOULD BE SKIPPED
+	// Address 16: halt             (1 byte: 16)          -> Landing point
+	program := []byte{
+		0x01, 0x01, 0x01, // 8:  load r1, 1
+		0x07, 0x10, // 11: jump 16 (0x10)
+		0x02, 0x01, 0x00, // 13: store r1, 0 (skipped)
+		0xff, // 16: halt
+	}
+	copy(memory[8:], program)
 
-    compute(memory)
+	compute(memory)
 
-    // Since store was jumped over, memory[0] must remain 0
-    if memory[0] != 0 {
-        t.Fatalf("expected memory[0] to be 0 (skipped store), got %d", memory[0])
-    }
+	// Since store was jumped over, memory[0] must remain 0
+	if memory[0] != 0 {
+		t.Fatalf("expected memory[0] to be 0 (skipped store), got %d", memory[0])
+	}
+}
+
+func TestBeqz(t *testing.T) {
+	cases := []struct {
+		name     string
+		r2Value  byte
+		expected byte
+	}{
+		{"BranchTakenWhenZero", 0, 0},     // r2 is 0 -> branch over store -> memory[0] stays 0
+		{"FallthroughWhenNonZero", 1, 42}, // r2 is 1 -> execute store -> memory[0] becomes 42
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			memory := make([]byte, 256)
+			memory[1] = 42
+			memory[2] = tc.r2Value
+
+			// Layout:
+			// 8:  load r1, 1       (3 bytes: 8..10)
+			// 11: load r2, 2       (3 bytes: 11..13)
+			// 14: beqz r2, 3       (3 bytes: 14..16) -> skip 3-byte store instruction
+			// 17: store r1, 0      (3 bytes: 17..19)
+			// 20: halt             (1 byte: 20)
+			program := []byte{
+				0x01, 0x01, 0x01, // 8:  load r1, 1
+				0x01, 0x02, 0x02, // 11: load r2, 2
+				0x08, 0x02, 0x03, // 14: beqz r2, 3
+				0x02, 0x01, 0x00, // 17: store r1, 0
+				0xff, // 20: halt
+			}
+			copy(memory[8:], program)
+
+			compute(memory)
+
+			if memory[0] != tc.expected {
+				t.Fatalf("expected memory[0] to be %d, got %d", tc.expected, memory[0])
+			}
+		})
+	}
 }
