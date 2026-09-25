@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     15_process_pipeline_exec
-relocations:     []
-...
