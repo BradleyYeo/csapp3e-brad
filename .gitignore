@@ -1,1 +1,80 @@
+# OS Artifacts
 .DS_Store
+Thumbs.db
+
+# macOS DWARF Debug Symbol Bundles
+*.dSYM/
+
+# C / C++ Compiled Object and Archive Files
+*.o
+*.obj
+*.a
+*.so
+*.dylib
+*.out
+*.exe
+
+# Build and Binary Directories
+bin/
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Python Artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+
+# Go Binaries and Test Binaries
+*.test
+
+# CS:APP Exercise Compiled Executables
+/exercises/01_pointer_traversal
+/exercises/02_anchored_matching
+/exercises/03_getline_ingestion
+/exercises/04_enum_state_machine
+/exercises/05_char_group_slicing
+/exercises/06_mmap_search
+/exercises/07_process_memory_layout
+/exercises/08_pointer_arithmetic_strides
+/exercises/09_dynamic_memory_lifecycle
+/exercises/10_memory_safety_sanitizers
+/exercises/11_bump_allocator
+/exercises/12_pipe_pingpong
+/exercises/13_valgrind_fundamentals
+/exercises/15_process_pipeline_exec
+/exercises/16_filesystem_inode_ops
+/exercises/17_recursion_patterns
+/exercises/18_macro_fundamentals
+/exercises/19_pipelining_hazards
+/exercises/test
+/exercises/[0-9][0-9]_*
+
+# Whitelist Source and Documentation Files in Exercises
+!/exercises/*.c
+!/exercises/*.h
+!/exercises/*.md
+!/exercises/*.py
+!/exercises/*.txt
+!/exercises/Makefile
+!/exercises/.gitignore
+
+# Subproject Compiled Binaries
+/cpython_int/test_runner
+/cpython_int/test_runner_san
+/csi-2/1_intro_to_computer_systems/5_memory-hierarchy/loop-order
+/csi-2/6_data_structures_for_storage_and_retrieval/leveldb/cmd/leveldb/leveldb
+/csi-2/7_distributed_systems/kvstore/bin/
+/csi-2/prep-phase/c/the_c_programming_language/chapter1/exercise_1-22
+/csi-2/prep-phase/c/the_c_programming_language/chapter2/exercise_2-6
+/csi-2/prep-phase/c/the_c_programming_language/chapter3/exercise_3-3
+/csi-2/prep-phase/c/the_c_programming_language/chapter4/calculator/caloutput
+/csi-2/prep-phase/c/the_c_programming_language/ls
+/csi-2/prep-phase/go/learning_go_book/ch1/hello
+/csi-2/prep-phase/go/learning_go_book/ch5/defer
+/BradfieldCSI/ComputerArch/Prework3-Assembly/tests
+/csi-2/1_intro_to_computer_systems/4_low_level_optimization/optimization-b-prework/vec/tests
+/csi-2/1_intro_to_computer_systems/3_intro_to_assembly_programming/assembly-b-prework/hello_mac
