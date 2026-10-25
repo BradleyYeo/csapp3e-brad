@@ -1,0 +1,82 @@
+=============== Mar 24, 2024 (AST) ===============
+19:34:08.434204 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:34:08.478525 db@open opening
+19:34:08.480557 version@stat F·[] S·0B[] Sc·[]
+19:34:08.519812 db@janitor F·2 G·0
+19:34:08.519901 db@open done T·41.261643ms
+19:34:08.520190 db@close closing
+19:34:08.520302 db@close done T·110.028µs
+=============== Mar 24, 2024 (AST) ===============
+19:43:35.599040 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:43:35.599537 version@stat F·[] S·0B[] Sc·[]
+19:43:35.599562 db@open opening
+19:43:35.599642 journal@recovery F·1
+19:43:35.600301 journal@recovery recovering @1
+19:43:35.600797 version@stat F·[] S·0B[] Sc·[]
+19:43:35.663718 db@janitor F·2 G·0
+19:43:35.663788 db@open done T·64.206428ms
+19:43:35.663991 db@close closing
+19:43:35.664234 db@close done T·239.111µs
+=============== Mar 24, 2024 (AST) ===============
+19:43:38.646850 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:43:38.647301 version@stat F·[] S·0B[] Sc·[]
+19:43:38.647327 db@open opening
+19:43:38.647399 journal@recovery F·1
+19:43:38.648071 journal@recovery recovering @2
+19:43:38.669109 memdb@flush created L0@4 N·1 S·129B "key1,v1":"key1,v1"
+19:43:38.669658 version@stat F·[1] S·129B[129B] Sc·[0.25]
+19:43:38.729832 db@janitor F·3 G·0
+19:43:38.729884 db@open done T·82.538976ms
+19:43:38.730059 db@close closing
+19:43:38.730465 db@close done T·329.002µs
+=============== Mar 24, 2024 (AST) ===============
+19:45:17.533191 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:45:17.533690 version@stat F·[1] S·129B[129B] Sc·[0.25]
+19:45:17.533715 db@open opening
+19:45:17.533788 journal@recovery F·1
+19:45:17.534518 journal@recovery recovering @5
+19:45:17.555945 memdb@flush created L0@7 N·1 S·129B "key1,v3":"key1,v3"
+19:45:17.556393 version@stat F·[2] S·258B[258B] Sc·[0.50]
+19:45:17.616944 db@janitor F·4 G·0
+19:45:17.617007 db@open done T·83.271384ms
+19:45:17.617206 db@close closing
+19:45:17.617388 db@close done T·180.189µs
+=============== Mar 24, 2024 (AST) ===============
+19:45:58.183352 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:45:58.183858 version@stat F·[2] S·258B[258B] Sc·[0.50]
+19:45:58.183882 db@open opening
+19:45:58.183959 journal@recovery F·1
+19:45:58.184725 journal@recovery recovering @8
+19:45:58.204122 memdb@flush created L0@10 N·1 S·129B "key1,v5":"key1,v5"
+19:45:58.204434 version@stat F·[3] S·387B[387B] Sc·[0.75]
+19:45:58.265406 db@janitor F·5 G·0
+19:45:58.265487 db@open done T·81.581896ms
+19:45:58.265703 db@close closing
+19:45:58.265904 db@close done T·198.842µs
+=============== Mar 24, 2024 (AST) ===============
+19:46:11.713026 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:46:11.713529 version@stat F·[3] S·387B[387B] Sc·[0.75]
+19:46:11.713554 db@open opening
+19:46:11.713633 journal@recovery F·1
+19:46:11.714317 journal@recovery recovering @11
+19:46:11.735268 memdb@flush created L0@13 N·1 S·129B "key1,v7":"key1,v7"
+19:46:11.735754 version@stat F·[4] S·516B[516B] Sc·[1.00]
+19:46:11.797299 db@janitor F·6 G·0
+19:46:11.797363 db@open done T·83.78933ms
+19:46:11.797913 table@compaction L0·4 -> L1·0 S·516B Q·9
+19:46:11.797953 db@close closing
+19:46:11.798297 table@build exiting
+19:46:11.798495 db@close done T·539.916µs
+=============== Mar 24, 2024 (AST) ===============
+19:46:17.716934 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+19:46:17.717448 version@stat F·[4] S·516B[516B] Sc·[1.00]
+19:46:17.717475 db@open opening
+19:46:17.717556 journal@recovery F·1
+19:46:17.718439 journal@recovery recovering @14
+19:46:17.739715 memdb@flush created L0@16 N·1 S·129B "key1,v9":"key1,v9"
+19:46:17.740116 version@stat F·[5] S·645B[645B] Sc·[1.25]
+19:46:17.805632 db@janitor F·7 G·0
+19:46:17.805688 db@open done T·88.192613ms
+19:46:17.806145 table@compaction L0·5 -> L1·0 S·645B Q·10
+19:46:17.806471 db@close closing
+19:46:17.807099 db@close done T·625.258µs
