@@ -1,4 +1,4 @@
-include<stdio.h>
+#include<stdio.h>
 
     void test(char *str) {
   printf("%c", str);
