@@ -31,11 +31,13 @@ c-programming/diagnostic/*
 !c-programming/diagnostic/*.md
 !c-programming/diagnostic/*.txt
 
-c-programming/projects/*
-!c-programming/projects/
-!c-programming/projects/*.c
-!c-programming/projects/*.h
-!c-programming/projects/*.md
+c-programming/projects/**/*
+!c-programming/projects/**/
+!c-programming/projects/**/*.c
+!c-programming/projects/**/*.h
+!c-programming/projects/**/*.md
+!c-programming/projects/**/Makefile
+!c-programming/projects/**/.gitignore
 
 # Go Compiled Executables and Test Artifacts
 go-programming/learning-go/**/*
