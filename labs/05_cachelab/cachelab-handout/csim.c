@@ -1,6 +1,7 @@
 #include "cachelab.h"
 #include <getopt.h>
 #include <inttypes.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -71,15 +72,66 @@ args_t parse_args(int argc, char *argv[]) {
  * TODO: Define your cache line, cache set, and cache metadata structures.
  *
  * Architectural Guidance:
- * - line_t: Needs valid flag (bool), tag (uint64_t), and an LRU counter/timestamp (e.g. int clk).
+ * - line_t: Needs valid flag (bool), tag (uint64_t), and an LRU
+ * counter/timestamp (e.g. int clk).
  * - set_t: Owns an allocated array of E line_t elements.
- * - cache_t: Owns an allocated array of S = 2^s set_t elements, plus s, E, b geometry parameters.
+ * - cache_t: Owns an allocated array of S = 2^s set_t elements, plus s, E, b
+ * geometry parameters.
  */
 
+typedef struct {
+  bool valid;
+  uint64_t tag;
+  int clk;
+} line_t;
+
+typedef struct {
+  line_t *lines;
+} set_t;
+
+typedef struct {
+  set_t *sets;
+  int s;
+  int E;
+  int b;
+} cache_t;
+
 /* TODO: Define cache event constants */
-[[maybe_unused]] constexpr int CACHE_HIT   = 0;
-[[maybe_unused]] constexpr int CACHE_MISS  = 1;
+[[maybe_unused]] constexpr int CACHE_HIT = 0;
+[[maybe_unused]] constexpr int CACHE_MISS = 1;
 [[maybe_unused]] constexpr int CACHE_EVICT = 2;
+
+/*
+ * TODO: Implement cache_init:
+ * Allocate memory for S = 1 << s sets and E lines per set.
+ * Initialize valid bits to false.
+ */
+void cache_init(cache_t *cache, int s, int E, int b) {
+  cache->s = s;   // number of set index bits
+  cache->E = E;   // number of lines per set, the cache associativity
+  cache->b = b;   // number of block offset bits
+  int S = 1 << s; // number of cache sets 2^s
+  cache->sets = malloc(S * sizeof(set_t));
+  if (cache->sets == nullptr) {
+    perror("malloc");
+    exit(EXIT_FAILURE);
+  }
+  // Allocate array E line_t structures for set i
+  for (int i = 0; i < S; i++) {
+    cache->sets[i].lines = malloc(E * sizeof(line_t));
+    if (cache->sets[i].lines == nullptr) {
+      perror("malloc");
+      exit(EXIT_FAILURE);
+    }
+    //
+    for (int j = 0; j < E; j++) {
+      cache->sets[i].lines[j].valid = false;
+      cache->sets[i].lines[j].tag = 0;
+      cache->sets[i].lines[j].clk = 0;
+    }
+  }
+  // free(cache->sets[i].lines);
+}
 
 /*
  * Test contract (tests/test_csim.c calls these exact names and signatures):
@@ -92,14 +144,9 @@ args_t parse_args(int argc, char *argv[]) {
  */
 
 /*
- * TODO: Implement cache_init:
- * Allocate memory for S = 1 << s sets and E lines per set.
- * Initialize valid bits to false.
- */
-
-/*
  * TODO: Implement cache_destroy:
- * Free all dynamically allocated line arrays and the set array to ensure zero Valgrind leaks.
+ * Free all dynamically allocated line arrays and the set array to ensure zero
+ * Valgrind leaks.
  */
 
 /*
@@ -163,7 +210,8 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  /* Autograder entry point: prints summary to stdout and writes .csim_results */
+  /* Autograder entry point: prints summary to stdout and writes .csim_results
+   */
   printSummary(hits, misses, evictions);
   return 0;
 }
