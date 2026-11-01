@@ -24,6 +24,28 @@ trans.o: trans.c
 	$(CC) $(CFLAGS) -O0 -c trans.c
 
 #
+# Progressive csim tests: make test STAGE=<1..5>
+#   1 structs/constants, 2 cache_init, 3 cache_destroy,
+#   4 cache_access, 5 end-to-end traces
+#
+STAGE ?= 1
+SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
+
+.PHONY: test test-unit test-memcheck
+test: test-unit csim
+	@chmod +x tests/run_traces.sh
+	@if [ $(STAGE) -ge 5 ]; then ./tests/run_traces.sh; fi
+
+test-unit:
+	$(CC) $(CFLAGS) $(SANFLAGS) -DSTAGE=$(STAGE) -o tests/test_csim tests/test_csim.c cachelab.c
+	./tests/test_csim
+
+# Leak check (Linux/container only): make test-memcheck STAGE=4
+test-memcheck:
+	$(CC) $(CFLAGS) -DSTAGE=$(STAGE) -o tests/test_csim tests/test_csim.c cachelab.c
+	valgrind --leak-check=full --error-exitcode=1 ./tests/test_csim
+
+#
 # Clean the src dirctory
 #
 clean:
@@ -33,3 +55,4 @@ clean:
 	rm -f test-trans tracegen
 	rm -f trace.all trace.f* trace.tmp
 	rm -f .csim_results .marker
+	rm -rf tests/test_csim tests/test_csim.dSYM

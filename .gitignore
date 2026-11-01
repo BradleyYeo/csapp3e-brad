@@ -101,6 +101,7 @@ venv/
 /labs/**/trace.tmp
 /labs/**/trace.all
 /labs/**/trace.f*
+/labs/**/tests/test_csim
 
 # Whitelist Tracked CS:APP Reference Binaries and Scripts
 !/labs/**/csim-ref

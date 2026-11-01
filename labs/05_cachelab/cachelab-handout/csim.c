@@ -67,104 +67,53 @@ args_t parse_args(int argc, char *argv[]) {
   return args;
 }
 
-typedef struct {
-  bool valid;
-  int clk; // lru timestamp
-  uint64_t tag;
-} line_t;
+/*
+ * TODO: Define your cache line, cache set, and cache metadata structures.
+ *
+ * Architectural Guidance:
+ * - line_t: Needs valid flag (bool), tag (uint64_t), and an LRU counter/timestamp (e.g. int clk).
+ * - set_t: Owns an allocated array of E line_t elements.
+ * - cache_t: Owns an allocated array of S = 2^s set_t elements, plus s, E, b geometry parameters.
+ */
 
-typedef struct { line_t *lines; } set_t;
+/* TODO: Define cache event constants */
+[[maybe_unused]] constexpr int CACHE_HIT   = 0;
+[[maybe_unused]] constexpr int CACHE_MISS  = 1;
+[[maybe_unused]] constexpr int CACHE_EVICT = 2;
 
-typedef struct {
-  int s;
-  int E;
-  int b;
-  set_t *sets;
-} cache_t;
+/*
+ * Test contract (tests/test_csim.c calls these exact names and signatures):
+ *   line_t  { bool valid; uint64_t tag; int clk; }
+ *   set_t   { line_t *lines; }
+ *   cache_t { int s; int E; int b; set_t *sets; }
+ *   void cache_init(cache_t *cache, int s, int E, int b);
+ *   void cache_destroy(cache_t *cache);
+ *   int  cache_access(cache_t *cache, uint64_t addr, int clk);
+ */
 
-void cache_init(cache_t *cache, int s, int E, int b) {
-  cache->s = s;
-  cache->E = E;
-  cache->b = b;
-  int S = 1 << s;
+/*
+ * TODO: Implement cache_init:
+ * Allocate memory for S = 1 << s sets and E lines per set.
+ * Initialize valid bits to false.
+ */
 
-  cache->sets = malloc(S * sizeof(set_t));
-  if (cache->sets == nullptr) {
-    perror("malloc");
-    exit(EXIT_FAILURE);
-  }
-  for (int i = 0; i < S; i++) {
-    set_t *set = &cache->sets[i];
-    set->lines = malloc(E * sizeof(line_t));
-    if (set->lines == nullptr) {
-      perror("malloc");
-      exit(EXIT_FAILURE);
-    }
-    for (int j = 0; j < E; j++) {
-      line_t *line = &set->lines[j];
-      line->valid = false;
-    }
-  }
-}
+/*
+ * TODO: Implement cache_destroy:
+ * Free all dynamically allocated line arrays and the set array to ensure zero Valgrind leaks.
+ */
 
-void cache_destroy(cache_t *cache) {
-  for (int i = 0; i < (1 << cache->s); i++) {
-    free(cache->sets[i].lines);
-  }
-  free(cache->sets);
-}
-
-constexpr int CACHE_HIT   = 0;
-constexpr int CACHE_MISS  = 1;
-constexpr int CACHE_EVICT = 2;
-
-int cache_access(cache_t *cache, uint64_t addr, int clk) {
-  uint64_t index = (addr >> cache->b) & ((1ULL << cache->s) - 1);
-  uint64_t tag = addr >> (cache->b + cache->s);
-  set_t *set = &cache->sets[index];
-
-  for (int i = 0; i < cache->E; i++) {
-    line_t *line = &set->lines[i];
-    if (line->valid && line->tag == tag) {
-      // cache hit
-      line->clk = clk;
-      return CACHE_HIT;
-    }
-  }
-
-  // cache miss: search for an empty line
-  for (int i = 0; i < cache->E; i++) {
-    line_t *line = &set->lines[i];
-    if (!line->valid) {
-      line->valid = true;
-      line->clk = clk;
-      line->tag = tag;
-      return CACHE_MISS;
-    }
-  }
-
-  // do eviction
-  line_t *victim_line = &set->lines[0];
-  for (int i = 1; i < cache->E; i++) {
-    line_t *line = &set->lines[i];
-    if (line->clk < victim_line->clk) {
-      victim_line = line;
-    }
-  }
-  victim_line->tag = tag;
-  victim_line->clk = clk;
-  return CACHE_MISS | CACHE_EVICT;
-}
+/*
+ * TODO: Implement cache_access:
+ * Extract set index = (addr >> b) & ((1ULL << s) - 1)
+ * Extract tag = addr >> (s + b)
+ * Check for hit (valid && line.tag == tag)
+ * Check for cold miss (first line with !valid)
+ * If full, find LRU line (smallest timestamp) and evict
+ * Returns CACHE_HIT, CACHE_MISS, or CACHE_MISS | CACHE_EVICT.
+ */
 
 int main(int argc, char *argv[]) {
   args_t args = parse_args(argc, argv);
-
-#define printf_v(...)                                                          \
-  do {                                                                         \
-    if (args.v) {                                                              \
-      printf(__VA_ARGS__);                                                     \
-    }                                                                          \
-  } while (0)
 
   FILE *fp = fopen(args.t, "r");
   if (fp == nullptr) {
@@ -172,48 +121,49 @@ int main(int argc, char *argv[]) {
     exit(EXIT_FAILURE);
   }
 
-  int hits = 0, misses = 0, evictions = 0;
+  int hits = 0;
+  int misses = 0;
+  int evictions = 0;
 
-  cache_t cache;
-  cache_init(&cache, args.s, args.E, args.b);
+  /*
+   * TODO: Initialize your cache structure here using args.s, args.E, args.b.
+   */
 
   char line[32];
-  int clk = 0;
-  while (fgets(line, sizeof(line), fp)) {
-    char type;
-    uint64_t addr;
-    int size;
+  while (fgets(line, sizeof(line), fp) != nullptr) {
+    [[maybe_unused]] char type;
+    [[maybe_unused]] uint64_t addr;
+    [[maybe_unused]] int size;
+
+    /* Ignore instruction loads (lines without leading space or type 'I') */
     if (sscanf(line, " %c %" SCNx64 ",%d", &type, &addr, &size) != 3) {
       continue;
     }
     if (type != 'L' && type != 'S' && type != 'M') {
       continue;
     }
-    printf_v("%c %" PRIx64 ",%d", type, addr, size);
-    int num_accesses = (type == 'M') ? 2 : 1;
-    for (int i = 0; i < num_accesses; i++) {
-      int ret = cache_access(&cache, addr, clk++);
-      if (ret & CACHE_MISS) {
-        misses++;
-        printf_v(" miss");
-        if (ret & CACHE_EVICT) {
-          evictions++;
-          printf_v(" eviction");
-        }
-      } else {
-        hits++;
-        printf_v(" hit");
-      }
-    }
-    printf_v("\n");
+
+    /*
+     * TODO: Simulate the memory reference(s):
+     * - 'L' (Load): 1 cache access
+     * - 'S' (Store): 1 cache access
+     * - 'M' (Modify): 2 cache accesses (1 Load followed by 1 Store)
+     *
+     * Increment hits, misses, and evictions based on the access result.
+     * If args.v is true, format and print trace outputs.
+     */
   }
 
-  cache_destroy(&cache);
+  /*
+   * TODO: Destroy and free all cache memory allocations.
+   */
+
   if (fclose(fp) != 0) {
     perror("fclose");
     exit(EXIT_FAILURE);
   }
 
+  /* Autograder entry point: prints summary to stdout and writes .csim_results */
   printSummary(hits, misses, evictions);
   return 0;
 }

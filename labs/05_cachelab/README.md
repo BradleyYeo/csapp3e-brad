@@ -60,6 +60,24 @@ docker run -it --rm \
 
 ## Part A: Cache Simulator Testing (`csim.c`)
 
+### Progressive Unit Tests (Run Natively on macOS)
+
+- Run each stage once you finish the matching TODO in `csim.c`. Each stage also re-runs all earlier stages:
+
+| Command | TODO covered | What it checks |
+| :--- | :--- | :--- |
+| `make test STAGE=1` | Structs + constants | Field names, `tag` is `uint64_t`, `CACHE_MISS`/`CACHE_EVICT` are distinct bits |
+| `make test STAGE=2` | `cache_init` | Geometry stored, `2^s` sets × `E` lines allocated (ASan catches undersized mallocs), all lines invalid |
+| `make test STAGE=3` | `cache_destroy` | No double or invalid frees across 1000 init/destroy cycles |
+| `make test STAGE=4` | `cache_access` | Set/tag decoding, offset ignored, cold miss vs eviction, filling every way before evicting, LRU order, hits refreshing recency |
+| `make test STAGE=5` | `main` loop | All 8 graded traces, `I` lines ignored, `M` = 2 accesses, `-v` output format |
+
+- Leak check (Linux container only, because Valgrind isn't available on macOS):
+  ```bash
+  make test-memcheck STAGE=4
+  ```
+- Test sources: [tests/test_csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/tests/test_csim.c) and [tests/run_traces.sh](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/tests/run_traces.sh).
+
 ### Manual Trace Verification Against Reference Simulator
 
 - Run reference simulator on `traces/yi.trace`:
