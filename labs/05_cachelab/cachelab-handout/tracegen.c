@@ -20,7 +20,7 @@ extern trans_func_t func_list[MAX_TRANS_FUNCS];
 extern int func_counter; 
 
 /* External function from trans.c */
-extern void registerFunctions();
+extern void registerFunctions(void);
 
 /* Markers used to bound trace regions of interest */
 volatile char MARKER_START, MARKER_END;

@@ -138,14 +138,13 @@ void trans(int M, int N, int A[N][M], int B[M][N])
  *     performance. This is a handy way to experiment with different
  *     transpose strategies.
  */
-void registerFunctions()
+void registerFunctions(void)
 {
     /* Register your solution function */
     registerTransFunction(transpose_submit, transpose_submit_desc); 
 
     /* Register any additional transpose functions */
-    registerTransFunction(trans, trans_desc); 
-
+    /* registerTransFunction(trans, trans_desc); */
 }
 
 /* 

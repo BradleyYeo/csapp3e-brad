@@ -25,14 +25,14 @@ typedef struct {
   int E;
   int b;
   char *t;
-  int v;
+  bool v;
 } args_t;
 
 args_t parse_args(int argc, char *argv[]) {
   args_t args;
   args.s = args.E = args.b = -1;
-  args.t = NULL;
-  args.v = 0;
+  args.t = nullptr;
+  args.v = false;
 
   int opt;
   while ((opt = getopt(argc, argv, "hvs:E:b:t:")) != -1) {
@@ -53,14 +53,14 @@ args_t parse_args(int argc, char *argv[]) {
       args.t = optarg;
       break;
     case 'v':
-      args.v = 1;
+      args.v = true;
       break;
     default:
       usage(argv[0]);
       exit(EXIT_FAILURE);
     }
   }
-  if (args.s < 0 || args.E <= 0 || args.b < 0 || args.t == NULL) {
+  if (args.s < 0 || args.E <= 0 || args.b < 0 || args.t == nullptr) {
     usage(argv[0]);
     exit(EXIT_FAILURE);
   }
@@ -68,7 +68,7 @@ args_t parse_args(int argc, char *argv[]) {
 }
 
 typedef struct {
-  int valid;
+  bool valid;
   int clk; // lru timestamp
   uint64_t tag;
 } line_t;
@@ -89,20 +89,20 @@ void cache_init(cache_t *cache, int s, int E, int b) {
   int S = 1 << s;
 
   cache->sets = malloc(S * sizeof(set_t));
-  if (cache->sets == NULL) {
+  if (cache->sets == nullptr) {
     perror("malloc");
     exit(EXIT_FAILURE);
   }
   for (int i = 0; i < S; i++) {
     set_t *set = &cache->sets[i];
     set->lines = malloc(E * sizeof(line_t));
-    if (set->lines == NULL) {
+    if (set->lines == nullptr) {
       perror("malloc");
       exit(EXIT_FAILURE);
     }
     for (int j = 0; j < E; j++) {
       line_t *line = &set->lines[j];
-      line->valid = 0;
+      line->valid = false;
     }
   }
 }
@@ -114,11 +114,12 @@ void cache_destroy(cache_t *cache) {
   free(cache->sets);
 }
 
-#define CACHE_MISS 1
-#define CACHE_EVICT 2
+constexpr int CACHE_HIT   = 0;
+constexpr int CACHE_MISS  = 1;
+constexpr int CACHE_EVICT = 2;
 
 int cache_access(cache_t *cache, uint64_t addr, int clk) {
-  uint64_t index = (addr >> cache->b) & ((1ull << cache->s) - 1);
+  uint64_t index = (addr >> cache->b) & ((1ULL << cache->s) - 1);
   uint64_t tag = addr >> (cache->b + cache->s);
   set_t *set = &cache->sets[index];
 
@@ -127,7 +128,7 @@ int cache_access(cache_t *cache, uint64_t addr, int clk) {
     if (line->valid && line->tag == tag) {
       // cache hit
       line->clk = clk;
-      return 0;
+      return CACHE_HIT;
     }
   }
 
@@ -135,7 +136,7 @@ int cache_access(cache_t *cache, uint64_t addr, int clk) {
   for (int i = 0; i < cache->E; i++) {
     line_t *line = &set->lines[i];
     if (!line->valid) {
-      line->valid = 1;
+      line->valid = true;
       line->clk = clk;
       line->tag = tag;
       return CACHE_MISS;
@@ -166,7 +167,7 @@ int main(int argc, char *argv[]) {
   } while (0)
 
   FILE *fp = fopen(args.t, "r");
-  if (fp == NULL) {
+  if (fp == nullptr) {
     perror("fopen");
     exit(EXIT_FAILURE);
   }
@@ -182,13 +183,13 @@ int main(int argc, char *argv[]) {
     char type;
     uint64_t addr;
     int size;
-    if (sscanf(line, " %c %lx,%d", &type, &addr, &size) != 3) {
+    if (sscanf(line, " %c %" SCNx64 ",%d", &type, &addr, &size) != 3) {
       continue;
     }
     if (type != 'L' && type != 'S' && type != 'M') {
       continue;
     }
-    printf_v("%c %lx,%d", type, addr, size);
+    printf_v("%c %" PRIx64 ",%d", type, addr, size);
     int num_accesses = (type == 'M') ? 2 : 1;
     for (int i = 0; i < num_accesses; i++) {
       int ret = cache_access(&cache, addr, clk++);

@@ -29,7 +29,7 @@ void printSummary(int hits, int misses, int evictions)
 void initMatrix(int M, int N, int A[N][M], int B[M][N])
 {
     int i, j;
-    srand(time(NULL));
+    srand(time(nullptr));
     for (i = 0; i < N; i++){
         for (j = 0; j < M; j++){
             // A[i][j] = i+j;  /* The matrix created this way is symmetric */
@@ -41,7 +41,7 @@ void initMatrix(int M, int N, int A[N][M], int B[M][N])
 
 void randMatrix(int M, int N, int A[N][M]) {
     int i, j;
-    srand(time(NULL));
+    srand(time(nullptr));
     for (i = 0; i < N; i++){
         for (j = 0; j < M; j++){
             // A[i][j] = i+j;  /* The matrix created this way is symmetric */

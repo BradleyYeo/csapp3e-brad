@@ -78,3 +78,36 @@ venv/
 /BradfieldCSI/ComputerArch/Prework3-Assembly/tests
 /csi-2/1_intro_to_computer_systems/4_low_level_optimization/optimization-b-prework/vec/tests
 /csi-2/1_intro_to_computer_systems/3_intro_to_assembly_programming/assembly-b-prework/hello_mac
+
+# CS:APP Labs Compiled Binaries and Build Artifacts
+/labs/**/csim
+/labs/**/test-trans
+/labs/**/tracegen
+/labs/**/btest
+/labs/**/fshow
+/labs/**/ishow
+/labs/**/mdriver
+/labs/**/tsh
+/labs/**/sdriver
+/labs/**/myspin
+/labs/**/mysplit
+/labs/**/mystop
+/labs/**/myint
+/labs/**/proxy
+/labs/**/driver
+/labs/**/*-handin.tar
+/labs/**/.csim_results
+/labs/**/.marker
+/labs/**/trace.tmp
+/labs/**/trace.all
+/labs/**/trace.f*
+
+# Whitelist Tracked CS:APP Reference Binaries and Scripts
+!/labs/**/csim-ref
+!/labs/**/test-csim
+!/labs/**/tshref
+!/labs/**/hex2raw
+!/labs/**/ctarget
+!/labs/**/rtarget
+!/labs/**/driver.py
+

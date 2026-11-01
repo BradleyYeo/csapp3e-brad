@@ -23,7 +23,7 @@
 #define SUBMIT_DESCRIPTION "Transpose submission"
 
 /* External function defined in trans.c */
-extern void registerFunctions();
+extern void registerFunctions(void);
 
 /* External variables defined in cachelab-tools.c */
 extern trans_func_t func_list[MAX_TRANS_FUNCS];
@@ -69,7 +69,8 @@ void eval_perf(unsigned int s, unsigned int E, unsigned int b)
         /* Use valgrind to generate the trace */
 
         sprintf(cmd, "valgrind --tool=lackey --trace-mem=yes --log-fd=1 -v ./tracegen -M %d -N %d -F %d  > trace.tmp", M, N,i);
-        flag=WEXITSTATUS(system(cmd));
+        int status = system(cmd);
+        flag = WEXITSTATUS(status);
         if (0!=flag) {
             printf("Validation error at function %d! Run ./tracegen -M %d -N %d -F %d for details.\nSkipping performance evaluation for this function.\n",flag-1,M,N,i);      
             continue;
@@ -100,7 +101,7 @@ void eval_perf(unsigned int s, unsigned int E, unsigned int b)
     
         /* Locate trace corresponding to the trans function */
         flag = 0;
-        while (fgets(buf, 1000, full_trace_fp) != NULL) {
+        while (fgets(buf, 1000, full_trace_fp) != nullptr) {
 
             /* We are only interested in memory access instructions */
             if (buf[0]==' ' && buf[2]==' ' &&
@@ -239,8 +240,8 @@ int main(int argc, char* argv[])
         exit(1);
     }
 
-    /* Time out and give up after a while */
-    alarm(120);
+    /* Time out and give up after a while (increased for VM/emulation environments) */
+    alarm(600);
 
     /* Check the performance of the student's transpose function */
     eval_perf(5, 1, 5);
