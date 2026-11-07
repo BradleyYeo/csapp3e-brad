@@ -1,0 +1,534 @@
+# Operating Rhythm & Time Commitment
+
+## Schedule Architecture
+
+- Morning Theory Block (Monday to Friday, 6:30 AM – 7:30 AM, 1.0 hour):
+  - Dedicated to conceptual reading and lecture videos.
+  - Textbooks: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), and Harris & Harris DDCA.
+  - Lecture series: Onur Mutlu DDCA / Computer Architecture and CMU 15-213.
+- Evening Laboratory Block (Monday to Friday, 8:00 PM – 9:30 PM, 1.5 hours):
+  - Dedicated to hands-on coding, debugging, and lab execution.
+  - Workspace: Colima / Docker x86-64 containers for CS:APP labs; native / QEMU for RISC-V xv6.
+- Weekend Deep Work Blocks (Saturday and Sunday):
+  - Afternoon Block (2:00 PM – 5:00 PM, 3.0 hours): Lab architecture, large implementations, and multi-file debugging.
+  - Evening Block (8:00 PM – 9:30 PM, 1.5 hours): Code review, memory leak profiling with Valgrind, and active recall synthesis.
+- Total Time Allocation:
+  - Weekday: 2.5 hours/day $\times$ 5 days = 12.5 hours/week.
+  - Weekend: 4.5 hours/day $\times$ 2 days = 9.0 hours/week.
+  - Cumulative: 21.5 hours/week $\times$ 26 weeks = 559 hours total.
+
+## Deliberate Practice Rules
+
+- Active Recall Over Passive Viewing:
+  - Never watch lectures or read textbooks without an active terminal or notebook.
+  - Summarize each chapter using mental models, invariants, and failure modes before writing code.
+- Zero-Copy Implementation:
+  - Implement all starter skeletons and lab deliverables from scratch.
+  - Consult reference solutions only when a bug persists past two full debugging sessions.
+- Memory and ABI Discipline:
+  - Every C allocation must have a deterministic deallocation site verified by Valgrind (`lackey`, `memcheck`).
+  - Every assembly function must strictly preserve callee-saved registers and maintain 16-byte stack alignment.
+
+---
+
+# Strategic Remediation: Bomb Lab & Attack Lab
+
+## Diagnostic: Why Bomb Lab and Attack Lab Were Difficult
+
+- Assembly Reading vs Writing Deficit:
+  - Reading optimized compiler assembly without first authoring assembly creates cognitive overload.
+  - Control flow patterns (jump tables, recursive stack frames, struct indexing) look arbitrary until implemented by hand.
+- Stack Topography Uncertainty:
+  - Ambiguity regarding `%rsp` movement, return addresses, and buffer boundaries leads to blind guessing in exploit payloads.
+- GDB Inspection Hesitation:
+  - Insufficient fluency with raw GDB memory dereferencing (`x/gx`, `x/s`, `x/i`, `$rip`, `$rsp`) hinders reverse engineering.
+
+## Remediation Sequence
+
+- Immediate Priority: Complete [labs/05_cachelab](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab) since memory hierarchy concepts and C data structure mechanics are active.
+- Ground-Up Assembly Foundation:
+  - Author x86-64 assembly in [csi/01-computer-architecture/03-x86-64-assembly-intro](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro) ([sum_to_n.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm), [binary_convert.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm), [pangram.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm)).
+  - Author advanced assembly in [csi/01-computer-architecture/04-x86-64-assembly-further](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further) ([fib.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/fib.asm), [matrix.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/matrix.asm), [cone.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/cone.asm)).
+- Defeat Bomb Lab:
+  - Apply newly mastered assembly models to systematically disassemble and defuse [labs/02_bomblab](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/02_bomblab) Phases 1 through 6 plus the secret phase.
+- Defeat Attack Lab:
+  - Systematically map buffer overflows, code injection, and gadget-based Return-Oriented Programming (ROP) in [labs/03_attacklab](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/03_attacklab) Phases 1 through 4.
+
+---
+
+# Six-Month Curriculum Progression
+
+## Phase 1: Memory Hierarchy & Cache Lab Completion (Weeks 1–3: Nov 9 – Nov 29, 2026)
+
+### Focus & Objectives
+- Master the $(S, E, B, m)$ hardware cache geometry, set indexing arithmetic, and LRU replacement policies.
+- Complete [labs/05_cachelab](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab) Part A (Cache Simulator) and Part B (Matrix Transposition Optimization).
+- Analyze row-major vs column-major memory access strides and cache blocking.
+
+### Core Resources
+- Theory: CS:APP 3e Chapter 6; Onur Mutlu CompArch lectures on Cache Memories; Ulrich Drepper's *What Every Programmer Should Know About Memory* (Sections 1–4).
+- Hands-on Targets:
+  - [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c)
+  - [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c)
+  - [csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c)
+  - [csi/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c)
+
+---
+
+## Phase 2: Assembly Fluency & Conquering Bomb + Attack Lab (Weeks 4–7: Nov 30 – Dec 27, 2026)
+
+### Focus & Objectives
+- Build authoring fluency in x86-64 assembly conforming to System V AMD64 ABI.
+- Master GDB dynamic analysis (`stepi`, `nexti`, register dump, memory format strings).
+- Solve all phases of Bomb Lab and Attack Lab.
+
+### Core Resources
+- Theory: CS:APP 3e Chapter 3 (Machine-Level Representation of Programs); CMU 15-213 Machine Programming lectures.
+- Hands-on Targets:
+  - [csi/01-computer-architecture/03-x86-64-assembly-intro/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro) ([sum_to_n.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm), [binary_convert.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm), [pangram.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm))
+  - [csi/01-computer-architecture/04-x86-64-assembly-further/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further) ([fib.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/fib.asm), [matrix.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/matrix.asm), [cone.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/cone.asm))
+  - [labs/02_bomblab/bomb](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/02_bomblab/bomb) (Phases 1–6 + Secret Phase)
+  - [labs/03_attacklab/target/ctarget](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/03_attacklab/target/ctarget) (Phases 1–3) and [labs/03_attacklab/target/rtarget](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/03_attacklab/target/rtarget) (Phase 4 ROP)
+
+---
+
+## Phase 3: Processor Architecture, Pipelining & Optimization (Weeks 8–11: Dec 28, 2026 – Jan 24, 2027)
+
+### Focus & Objectives
+- Understand digital logic, sequential execution, pipelining, and hazard resolution.
+- Build a Von Neumann 8-bit CPU emulator in Go.
+- Explore Out-of-Order execution, branch prediction, loop unrolling, and multiple accumulators.
+
+### Core Resources
+- Theory: CS:APP 3e Chapters 4 & 5; Onur Mutlu DDCA (Lectures 12–18 on Pipelining & Branch Prediction) and CompArch (Tomasulo's Algorithm, Reorder Buffer).
+- Hands-on Targets:
+  - [csi/01-computer-architecture/01-virtual-machine/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/01-virtual-machine)
+  - [exercises/19_pipelining_hazards.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/19_pipelining_hazards.md)
+  - [csi/01-computer-architecture/05-low-level-optimization/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization) ([pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c), [dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c))
+  - [csi/01-computer-architecture/07-memory-hierarchy-data-layout/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout) (SoA vs AoS cache optimization)
+
+---
+
+## Phase 4: Linking & Exceptional Control Flow (Weeks 12–14: Jan 25 – Feb 14, 2027)
+
+### Focus & Objectives
+- Understand object files, symbol resolution, relocation, dynamic linking, and ELF binaries.
+- Master Unix process lifecycles (`fork`, `execve`, `waitpid`), signal handling, and signal safety.
+- Implement a Unix command shell with complete job control and foreground/background handling.
+
+### Core Resources
+- Theory: CS:APP 3e Chapters 7 & 8; OSTEP Chapters 4–6 (Processes, Process API, Direct Execution).
+- Hands-on Targets:
+  - [labs/07_shlab/shlab-handout/tsh.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/07_shlab/shlab-handout/tsh.c)
+  - [csi/01-computer-architecture/08-exceptional-control-flow/shell.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/08-exceptional-control-flow/shell.c)
+
+---
+
+## Phase 5: Virtual Memory & Dynamic Storage Allocators (Weeks 15–18: Feb 15 – Mar 14, 2027)
+
+### Focus & Objectives
+- Master multi-level page tables, TLBs, page faults, address translation math, and `mmap`.
+- Implement a high-performance dynamic memory allocator (`malloc`, `free`, `realloc`) using explicit and segregated free lists.
+- Eliminate external and internal memory fragmentation.
+
+### Core Resources
+- Theory: CS:APP 3e Chapter 9; OSTEP Chapters 13–22 (Virtual Memory, Address Translation, Paging, TLB, Page Replacement).
+- Hands-on Targets:
+  - [exercises/07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md)
+  - [exercises/09_dynamic_memory_lifecycle.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.md)
+  - [exercises/11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
+  - [labs/06_malloclab/malloclab-handout/mm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/06_malloclab/malloclab-handout/mm.c)
+
+---
+
+## Phase 6: OS Kernel Engineering with xv6 (Weeks 19–22: Mar 15 – Apr 11, 2027)
+
+### Focus & Objectives
+- Step inside the kernel boundary to inspect how OS primitives are implemented on physical hardware.
+- Add system calls, manipulate hardware page tables, handle user/kernel trap transitions, and build Copy-on-Write fork.
+
+### Core Resources
+- Course: MIT 6.1810 / 6.S081 (Operating System Engineering).
+- Textbook: *xv6: a simple, Unix-like teaching operating system* by Cox, Kaashoek, Morris.
+- Hands-on Targets:
+  - [xv6-riscv/kernel/sysproc.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/sysproc.c) (System calls: `trace`, `sysinfo`)
+  - [xv6-riscv/kernel/vm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/vm.c) (Page table inspection, virtual memory mapping)
+  - [xv6-riscv/kernel/trap.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/trap.c) (Hardware interrupts, user traps, timer alarm)
+  - [xv6-riscv/kernel/kalloc.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/kalloc.c) (Copy-on-Write reference counting allocator)
+
+---
+
+## Phase 7: Concurrency, Network I/O & High-Performance Systems (Weeks 23–26: Apr 12 – May 9, 2027)
+
+### Focus & Objectives
+- Master POSIX threads, synchronization primitives (mutexes, semaphores), race conditions, and deadlocks.
+- Build a concurrent caching web proxy.
+- Learn modern high-throughput Linux I/O (`epoll`, non-blocking sockets) and hardware memory models (store buffers, acquire/release semantics).
+
+### Core Resources
+- Theory: CS:APP 3e Chapters 10, 11, 12; OSTEP Chapters 26–32 (Concurrency, Locks, Condition Variables, Semaphores); Mutlu lectures on Memory Consistency.
+- Hands-on Targets:
+  - [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c)
+  - [csi/02-computer-networks/03-http-reverse-proxy/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/02-computer-networks/03-http-reverse-proxy)
+  - [csi/03-languages-and-compilers/05-concurrency-patterns/counter-service/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/03-languages-and-compilers/05-concurrency-patterns/counter-service)
+
+---
+
+# Detailed Weekly Execution Plan
+
+## Week 1: Nov 9 – Nov 15, 2026 | Cache Geometry & csim.c
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 6.1–6.4 (Locality, SRAM vs DRAM, $(S, E, B)$ geometry).
+  - Thu–Fri: Mutlu CompArch Lecture on Cache Basics & Address Partitioning.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Parse Valgrind `lackey` trace lines in [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c).
+  - Wed–Fri: Implement cache set allocation, line tag comparison, and hit/miss/eviction accounting.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement LRU replacement policy using dynamic counter tracking in `csim.c`.
+  - Sun: Verify `csim.c` against `csim-ref` across all test traces (`yi.trace`, `dave.trace`, `long.trace`). Achieve 27/27 points on Part A.
+- Active Recall:
+  - Why are Set Index bits placed in the middle of the address rather than the high-order bits?
+
+## Week 2: Nov 16 – Nov 22, 2026 | Matrix Transpose Blocking ($32 \times 32$ & $64 \times 64$)
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Section 6.5–6.6 (Cache impact on program performance, memory mountain).
+  - Thu–Fri: Conflict miss analysis, diagonal self-eviction in matrix transposition.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Benchmark baseline transpose in [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c). Trace 1KB direct-mapped cache collisions ($s=5, E=1, b=5$).
+  - Wed–Fri: Implement $8 \times 8$ blocking for $32 \times 32$ matrix. Use local register variables to avoid diagonal thrashing. Target $< 300$ misses.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement $4 \times 4$ sub-block register staging for $64 \times 64$ matrix. Target $< 1300$ misses.
+  - Sun: Optimize $61 \times 67$ irregular matrix with rectangular blocking ($16 \times 16$ or $17 \times 17$). Target $< 2000$ misses.
+- Active Recall:
+  - Why does an $8 \times 8$ block fail for a $64 \times 64$ matrix on a 1KB direct-mapped cache?
+
+## Week 3: Nov 23 – Nov 29, 2026 | Memory Hierarchy Profiling & Synthesis
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Ulrich Drepper's *What Every Programmer Should Know About Memory* (CPU Caches, Virtual Memory, NUMA).
+  - Thu–Fri: Multi-level cache hierarchies, hardware stream prefetchers, write-back vs write-through.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Profile loop order cache efficiency in [csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c) using Valgrind `cachegrind`.
+  - Wed–Fri: Implement cache-blocked matrix multiplication in [csi/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Run automated driver on `cachelab` (`./driver.py`). Verify full score (53/53 points).
+  - Sun: Synthesize Cache Lab notes into personal memory mental model document.
+- Active Recall:
+  - How does cache tiling transform matrix multiplication miss complexity from $O(N^3)$ to $O(N^3 / B)$?
+
+## Week 4: Nov 30 – Dec 6, 2026 | x86-64 Assembly Authoring Foundations
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 3.1–3.6 (Registers, operand specifiers, data movement, arithmetic/logical operations).
+  - Thu–Fri: System V AMD64 ABI: integer arguments (`%rdi`, `%rsi`, `%rdx`, `%rcx`, `%r8`, `%r9`), return (`%rax`), caller vs callee-saved registers.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm) using arithmetic loop and conditional jumps.
+  - Wed–Fri: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm) with ASCII parsing and bit shifts.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm) with 26-bit bitmask tracking (`bts` / bitwise shift).
+  - Sun: Verify all intro assembly tests via `make test`. Practice GDB register inspection (`info registers`, `p/x $rax`).
+- Active Recall:
+  - Why must a callee function preserve `%rbx`, `%rbp`, and `%r12-%r15` before overwriting them?
+
+## Week 5: Dec 7 – Dec 13, 2026 | Advanced Assembly: Stack Frames, Recursion & SIB Addressing
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 3.7–3.9 (Stack frame allocation, arrays, multi-dimensional pointers, nested structures).
+  - Thu–Fri: SIB addressing modes: `Imm(Rb, Ri, S)` where $S \in \{1, 2, 4, 8\}$; 16-byte stack alignment rule before `call`.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Implement recursive Fibonacci in [csi/01-computer-architecture/04-x86-64-assembly-further/fib.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/fib.asm). Enforce stack alignment and register preservation.
+  - Wed–Fri: Implement 2D row-major matrix lookup in [csi/01-computer-architecture/04-x86-64-assembly-further/matrix.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/matrix.asm) using `imul` and SIB addressing.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement floating-point cone volume in [csi/01-computer-architecture/04-x86-64-assembly-further/cone.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/cone.asm) using SSE2 scalar instructions (`mulsd`, `divsd`, `%xmm0`).
+  - Sun: Disassemble compiler output (`gcc -O2 -S`) for recursive C functions and compare against hand-written assembly.
+- Active Recall:
+  - What happens if the stack pointer `%rsp` is not aligned to a 16-byte boundary prior to executing a `call` instruction?
+
+## Week 6: Dec 14 – Dec 20, 2026 | Conquering Bomb Lab
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Reverse engineering control structures: switches with jump tables, while loops, recursion in assembly.
+  - Thu–Fri: GDB commands for binary analysis: `disas`, `x/Nuf <addr>`, `layout asm`, `layout regs`, `break`, `si`, `ni`.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon: Disassemble and defuse Phase 1 (string comparison) and Phase 2 (loop sequence) in [labs/02_bomblab/bomb](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/02_bomblab/bomb).
+  - Tue: Defuse Phase 3 (switch-case jump table disassembly).
+  - Wed: Defuse Phase 4 (recursive call stack analysis).
+  - Thu: Defuse Phase 5 (character indexing and array masking).
+  - Fri: Disassemble Phase 6 (linked list node traversal and pointer sorting).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Defuse Phase 6 by reconstructing node pointer structs and order logic.
+  - Sun: Find and defuse the Secret Phase (binary tree traversal). Complete full [labs/02_bomblab/answer.txt](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/02_bomblab/answer.txt).
+- Active Recall:
+  - How do you locate a jump table in memory and calculate the target jump address from the index register?
+
+## Week 7: Dec 21 – Dec 27, 2026 | Conquering Attack Lab (Phases 1–4)
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Section 3.12 (Buffer overflow, stack layout, code injection, stack protector canaries, $W \oplus X$ / NX).
+  - Thu–Fri: Return-Oriented Programming (ROP): gadget taxonomy (`pop %rdi; ret`), gadget farms, stack pivoting.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon: Execute Phase 1 (`ctarget` `touch1` return address redirection).
+  - Tue: Execute Phase 2 (`touch2` passing integer argument by value in `%rdi`).
+  - Wed: Execute Phase 3 (`touch3` passing pointer to cookie string; avoid stack collision with `hexmatch`).
+  - Thu: Review Phase 4 (`rtarget` ROP). Disassemble `start_farm` and `mid_farm`.
+  - Fri: Search and catalog ROP gadgets (`popq %rax`, `movq %rax, %rdi`).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Construct Phase 4 exploit chain. Overwrite return address with gadget addresses and cookie payload.
+  - Sun: Validate Phase 4 exploit. Document complete attack payloads in [labs/03_attacklab/P3.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/03_attacklab/P3.md). (Phase 5 optional bonus).
+- Active Recall:
+  - Why does `touch3` fail if the cookie string is placed inside `getbuf`'s stack frame?
+
+## Week 8: Dec 28, 2026 – Jan 3, 2027 | CPU Microarchitecture & Von Neumann Emulator
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 4.1–4.2 (Y86-64 instruction set, logic gates, ALU, hardware control languages).
+  - Thu–Fri: Instruction Fetch-Decode-Execute state machine, Program Counter update logic.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Inspect [csi/01-computer-architecture/01-virtual-machine/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/01-virtual-machine). Define 256-byte RAM, registers (`r1`, `r2`), Program Counter (`PC`).
+  - Wed–Fri: Implement opcode extraction, memory load/store, and ALU addition/subtraction in Go emulator.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement control transfer instructions (`jump`, `beqz`). Run unit test suite (`go test -v`).
+  - Sun: Implement immediate instructions (`addi`, `subi`). Assemble and run `sum_to_n` assembly on your emulator.
+- Active Recall:
+  - What constitutes the minimal architectural state of a CPU that must be preserved across clock cycles?
+
+## Week 9: Jan 4 – Jan 10, 2027 | Pipelining, Hazards & Data Forwarding
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 4.4–4.5 (Pipelining principles, throughput vs latency, pipeline registers).
+  - Thu–Fri: Onur Mutlu DDCA Lectures on Pipelining & Hazard Handling (Data Hazards, Control Hazards, Structural Hazards).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Trace 5-stage pipeline (Fetch, Decode, Execute, Memory, Write-back). Analyze Read-After-Write (RAW) data hazards.
+  - Wed–Fri: Deepen with [exercises/19_pipelining_hazards.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/19_pipelining_hazards.md). Trace hardware forwarding paths ($E \to E$, $M \to E$, $W \to E$).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Analyze the Load-Use hazard: prove why forwarding alone cannot resolve a load consumed immediately by the next instruction; diagram the 1-cycle bubble injection.
+  - Sun: Analyze branch prediction and branch misprediction penalty (2-bubble cancellation). Hand-trace execution cycle tables for a loop.
+- Active Recall:
+  - Why can data not be forwarded backward in time during a load-use hazard?
+
+## Week 10: Jan 11 – Jan 17, 2027 | Out-of-Order Execution & Modern Microarchitecture
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Onur Mutlu Computer Architecture lectures: Out-of-Order (OoO) Execution, Tomasulo’s Algorithm, Reservation Stations.
+  - Thu–Fri: Register Renaming (eliminating WAR/WAW hazards), Reorder Buffer (ROB), in-order commit.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Construct dependency graph of an assembly basic block. Identify true dependencies (RAW) vs false dependencies (WAR, WAW).
+  - Wed–Fri: Trace register renaming table transitions across multiple loop iterations.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Study branch predictors: 2-bit saturating counters, 2-level adaptive predictors, gshare, TAGE branch predictors.
+  - Sun: Synthesize CPU execution pipeline mental model: Front-End (Fetch, Decode, Rename) vs Back-End (Issue, Execute, Writeback, Commit).
+- Active Recall:
+  - How does register renaming eliminate Write-After-Read (WAR) and Write-After-Write (WAW) false hazards?
+
+## Week 11: Jan 18 – Jan 24, 2027 | Program Optimization & Instruction-Level Parallelism
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Chapter 5 (Optimizing Program Performance: compiler capabilities/limits, eliminating loop inefficiencies).
+  - Thu–Fri: Latency bound vs throughput bound; functional unit issue time and capacity.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Implement [csi/01-computer-architecture/05-low-level-optimization/pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c): replace 64-bit integer division with bitwise shifting.
+  - Wed–Fri: Implement loop unrolling and multiple accumulators in [csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Benchmark Cycles Per Element (CPE) for $1 \times 1, 2 \times 2, 4 \times 4$ unrolling. Observe how independent accumulators break loop-carried dependency chains.
+  - Sun: Benchmark Struct of Arrays (SoA) vs Array of Structs (AoS) in [csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go).
+- Active Recall:
+  - Why does simple $k \times 1$ loop unrolling fail to break the latency bound, while $k \times k$ unrolling with multiple accumulators breaks it?
+
+## Week 12: Jan 25 – Jan 31, 2027 | Linking & The ELF Object File Format
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Chapter 7 (Linking: compiler drivers, static linking, object files, relocatable ELF format).
+  - Thu–Fri: Symbol resolution (global, external, local symbols; strong vs weak symbols), symbol relocation.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Inspect ELF headers, section tables (`.text`, `.data`, `.bss`, `.rodata`), and symbol tables (`.symtab`) using `readelf -a` and `objdump -t`.
+  - Wed–Fri: Write multiple C files exhibiting duplicate strong symbol errors, uninitialized weak symbol resolution, and hidden static symbols.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Trace relocation entries (`.rela.text`, `.rela.data`). Calculate relocated addresses by hand for PC-relative and absolute references.
+  - Sun: Study Position-Independent Code (PIC), Global Offset Table (GOT), and Procedure Linkage Table (PLT) in shared dynamic libraries (`.so`).
+- Active Recall:
+  - How does the dynamic linker resolve a function call on first invocation using the PLT and GOT?
+
+## Week 13: Feb 1 – Feb 7, 2027 | Exceptional Control Flow & Process Lifecycle
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 8.1–8.4 (Exceptions: asynchronous interrupts, synchronous traps/faults/aborts; process abstraction, dual-mode execution).
+  - Thu–Fri: OSTEP Chapters 4, 5, 6 (Processes, Process API: `fork`, `exec`, `wait`, Limited Direct Execution).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Trace hardware trap entry: privilege switch from User to Kernel ring, saving user registers onto kernel stack, loading exception vector table.
+  - Wed–Fri: Practice process management C code: `fork()` process hierarchies, reaping child processes with `waitpid()`, and observing zombie processes.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement argument parsing and foreground command execution in [csi/01-computer-architecture/08-exceptional-control-flow/shell.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/08-exceptional-control-flow/shell.c).
+  - Sun: Inspect `/proc/<pid>/status` and `/proc/<pid>/maps` to observe process state transitions and memory mappings.
+- Active Recall:
+  - What is the difference between a trap, an interrupt, a fault, and an abort?
+
+## Week 14: Feb 8 – Feb 14, 2027 | Signals, Race Conditions & Shell Lab (shlab)
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Section 8.5 (Signals, pending and blocked vectors, async-signal safety).
+  - Thu–Fri: Race conditions between parent and child processes; atomic signal masking with `sigprocmask`.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Build signal handlers for `SIGINT` (Ctrl+C), `SIGTSTP` (Ctrl+Z), and `SIGCHLD`. Adhere to async-signal-safe functions only.
+  - Wed–Fri: Implement job control data structures (foreground, background, stopped jobs) in [labs/07_shlab/shlab-handout/tsh.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/07_shlab/shlab-handout/tsh.c).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Resolve the classic fork/SIGCHLD race condition: block `SIGCHLD` before `fork`, add child to job list, then unblock `SIGCHLD`.
+  - Sun: Verify `tsh.c` against reference shell `tshref` across all 16 traces (`trace01.txt` through `trace16.txt`). Pass all tests.
+- Active Recall:
+  - Why is calling `printf` or `malloc` inside a signal handler dangerous?
+
+## Week 15: Feb 15 – Feb 21, 2027 | Virtual Memory Topography & Address Translation
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Sections 9.1–9.5 (Virtual address space, physical addressing, pages, page tables, Page Faults, Translation Lookaside Buffer).
+  - Thu–Fri: OSTEP Chapters 13–19 (Address Spaces, Segmentation, Paging, Faster Translation via TLB, Multi-Level Page Tables).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Review [exercises/07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md). Verify `.text`, `.data`, `.bss`, heap, memory-mapped region, and stack addresses in C.
+  - Wed–Fri: Calculate multi-level page table math: 4-level x86-64 page tables (PGD, P4D, PUD, PMD, PTE) for 48-bit virtual address spaces with 4KB pages.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Trace complete address translation: Virtual Address $\to$ TLB Hit/Miss $\to$ Multi-Level Page Table Walk $\to$ Physical Address $\to$ L1 Cache Tag/Index.
+  - Sun: Experiment with `mmap` anonymous private mappings and shared file mappings in C.
+- Active Recall:
+  - Why does a multi-level page table drastically reduce memory footprint compared to a single-level page table for sparse address spaces?
+
+## Week 16: Feb 22 – Feb 28, 2027 | Dynamic Memory Allocation & Implicit Free Lists
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Section 9.9 (Dynamic Memory Allocation: `malloc`/`free`, throughput vs utilization, internal/external fragmentation).
+  - Thu–Fri: Boundary tag coalescing, header/footer design, block alignment constraints (8-byte / 16-byte).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Review [exercises/09_dynamic_memory_lifecycle.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.md) and implement [exercises/11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) in C.
+  - Wed–Fri: Implement an implicit free list memory allocator in [labs/06_malloclab/malloclab-handout/mm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/06_malloclab/malloclab-handout/mm.c) with first-fit search.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement immediate boundary-tag coalescing on `free` (four cases: previous/next block allocated/free).
+  - Sun: Benchmark implicit free list on `malloclab` traces. Analyze throughput bottlenecks ($O(N)$ free list scan).
+- Active Recall:
+  - How do boundary tags (footer tags) allow $O(1)$ constant-time coalescing with the preceding block in memory?
+
+## Week 17: Mar 1 – Mar 7, 2027 | Explicit Free Lists & Pointer Arithmetic in C
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Explicit free list design: embedding `next` and `prev` pointers directly inside the payload of freed memory blocks.
+  - Thu–Fri: Free list ordering policies: LIFO (Last-In-First-Out) vs Address-Ordered. Fragmentation trade-offs.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Re-architect `mm.c` block layout: add `prev` and `next` pointer offsets inside free blocks without increasing minimum block size.
+  - Wed–Fri: Implement doubly linked list insertion and deletion (`list_remove`, `list_insert`).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Connect explicit free list to `mm_malloc`, `mm_free`, and coalescing logic.
+  - Sun: Benchmark explicit free list on trace files. Validate that allocation search time scales with $O(\text{free\_blocks})$ instead of $O(\text{total\_blocks})$.
+- Active Recall:
+  - Why does an explicit free list require zero extra memory overhead for pointers compared to an implicit list?
+
+## Week 18: Mar 8 – Mar 14, 2027 | Segregated Free Lists & Malloc Lab Mastery
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Segregated free list architecture: size classes (powers of two: 32, 64, 128, 256, ...), segregated fits.
+  - Thu–Fri: Reallocation optimizations: in-place block extension when adjacent blocks are free.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Implement array of segregated free list root pointers in `mm.c`.
+  - Wed–Fri: Implement size class bucket selection using bitwise operations or `clz` (count leading zeros).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Tune segregated free list allocator for memory utilization and throughput (`./mdriver -V`).
+  - Sun: Target score $> 85/100$ on `malloclab`. Ensure zero memory leaks and clean heap consistency checks (`mm_checkheap`).
+- Active Recall:
+  - Why does a segregated free list approximate best-fit memory utilization while preserving constant-time first-fit speed?
+
+## Week 19: Mar 15 – Mar 21, 2027 | xv6 Kernel Architecture & System Calls
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: xv6 Book Chapter 1 (Operating System Interfaces); MIT 6.1810 Lecture 1 & 2 (OS Architecture, System Calls).
+  - Thu–Fri: Dual-mode execution on RISC-V: User mode (U-mode) vs Supervisor mode (S-mode) vs Machine mode (M-mode); `ecall` and `sret` instructions.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Build and boot [xv6-riscv](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv) in QEMU (`make qemu`). Inspect kernel boot sequence in `kernel/main.c`.
+  - Wed–Fri: Implement MIT Lab 2 (System calls): implement `trace` system call in [xv6-riscv/kernel/sysproc.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/sysproc.c).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement `sysinfo` system call to collect free memory bytes and process count.
+  - Sun: Verify user-space system call stub dispatch via `user/usys.S` and kernel dispatch table in `kernel/syscall.c`.
+- Active Recall:
+  - What happens to the CPU registers and program counter when a user program executes the RISC-V `ecall` instruction?
+
+## Week 20: Mar 22 – Mar 28, 2027 | xv6 Hardware Page Tables & Kernel Paging
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: xv6 Book Chapter 3 (Page Tables); RISC-V Sv39 paging architecture (3-level page tables, 39-bit virtual addresses, 56-bit physical addresses).
+  - Thu–Fri: `satp` (Supervisor Address Translation and Protection) register, kernel address space vs user address space.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Trace page table walking in [xv6-riscv/kernel/vm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/vm.c) (`walk()` function).
+  - Wed–Fri: Implement MIT Lab 3 (Page tables): print page table hierarchy (`vmprint`) showing PTE flags (`V`, `R`, `W`, `X`, `U`).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement shared user/kernel read-only page to accelerate `getpid()` without context switching to the kernel.
+  - Sun: Verify virtual memory isolation: attempt to access kernel physical memory from user space and observe page fault exception.
+- Active Recall:
+  - What are the physical steps taken by the RISC-V MMU when traversing a Sv39 3-level page table upon a TLB miss?
+
+## Week 21: Mar 29 – Apr 4, 2027 | xv6 Traps, Interrupts & Device Drivers
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: xv6 Book Chapter 4 (Traps and System Calls); Trapframe struct, `stvec` register, `sstatus`, `sepc`, `scause`.
+  - Thu–Fri: Trampoline page: mapping kernel trap code into user address space at `MAXVA`.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Trace trap lifecycle in [xv6-riscv/kernel/trap.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/trap.c): `uservec` $\to$ `usertrap` $\to$ `syscall` $\to$ `usertrapret` $\to$ `userret`.
+  - Wed–Fri: Implement MIT Lab 4 (Traps): implement stack frame backtrace using saved frame pointer (`%s0`/`%fp`).
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement user alarm system call (`sigalarm` / `sigreturn`): periodically interrupt execution and execute a user handler function.
+  - Sun: Verify trapframe register restoration in `sigreturn`. Ensure clean test passage on `alarmtest`.
+- Active Recall:
+  - Why must the trampoline page be mapped at the exact same virtual address in both user page tables and the kernel page table?
+
+## Week 22: Apr 5 – Apr 11, 2027 | xv6 Copy-on-Write (COW) Fork
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Virtual memory sharing, lazy allocation, page fault handlers.
+  - Thu–Fri: Copy-on-Write fork architecture: clearing `PTE_W`, setting COW software bit in PTE flags, physical page reference counting.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Implement physical page reference counting table in [xv6-riscv/kernel/kalloc.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/xv6-riscv/kernel/kalloc.c).
+  - Wed–Fri: Modify `uvmcopy()` in `kernel/vm.c` to map child pages to parent physical pages read-only instead of allocating new physical pages.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Handle page fault in `usertrap()` (`scause == 15` store page fault): allocate new physical page, copy data, map page writable, decrement old page reference count.
+  - Sun: Test and debug `cowtest`. Ensure memory reclamation when processes terminate. Pass all COW tests.
+- Active Recall:
+  - What race condition occurs if reference count increment/decrement operations in a COW kernel allocator are not protected by locks?
+
+## Week 23: Apr 12 – Apr 18, 2027 | System-Level I/O & Network Sockets
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Chapters 10 & 11 (Unix I/O, file descriptors, open file table, v-node table, standard I/O vs robust I/O).
+  - Thu–Fri: Internet protocol stack, IP addresses, DNS, TCP/IP sockets API (`socket`, `bind`, `listen`, `accept`, `connect`).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Trace file descriptor duplication using `dup2()`. Experiment with redirecting stdout/stdin in C.
+  - Wed–Fri: Build an echo client and iterative echo server using the CS:APP `Rio` (Robust I/O) package.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Inspect network packet captures from [csi/02-computer-networks/01-packet-capture-ctf](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/02-computer-networks/01-packet-capture-ctf).
+  - Sun: Implement basic HTTP/1.0 request parser and response generator in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c).
+- Active Recall:
+  - What is the difference between the open file table entry and the file descriptor table entry when a file is opened twice versus when `dup2` is called?
+
+## Week 24: Apr 19 – Apr 25, 2027 | Concurrent Programming & Multi-Threaded Proxy
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: CS:APP Chapter 12 (Concurrent Programming: process-based, I/O multiplexing, thread-based).
+  - Thu–Fri: OSTEP Chapters 26–30 (Concurrency, Threads, Locks, Condition Variables, Semaphores).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: POSIX threads (`pthread_create`, `pthread_join`, `pthread_detach`). Trace shared stack memory and race conditions on global counters.
+  - Wed–Fri: Refactor [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c) to spawn a detached worker thread per client connection.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Implement pre-threaded connection worker pool (Producer-Consumer pattern with circular bounded buffer and semaphores).
+  - Sun: Profile thread contention and benchmark concurrent proxy connections using `curl` and `driver.sh`.
+- Active Recall:
+  - Why is a detached thread required when threads do not need to be explicitly joined by the main parent thread?
+
+## Week 25: Apr 26 – May 2, 2027 | Thread Synchronization, Caching & Proxy Lab
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Readers-Writer Problem (favoring readers vs favoring writers); lock-free reads, coarse vs fine-grained locking.
+  - Thu–Fri: OSTEP Chapter 32 (Common Concurrency Bugs: deadlock conditions, hold-and-wait, circular wait prevention).
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Design an in-memory thread-safe LRU cache structure in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c) with maximum object size (100KB) and total cache size (1MB).
+  - Wed–Fri: Implement Readers-Writer lock synchronization protecting cache lookups and cache insertions.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Run automated Proxy Lab test driver (`./driver.sh`). Verify concurrent forwarding, HTTP header formatting, and cached content hits.
+  - Sun: Benchmark atomic counters vs mutexes vs Go channels in [csi/03-languages-and-compilers/05-concurrency-patterns/counter-service/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/03-languages-and-compilers/05-concurrency-patterns/counter-service).
+- Active Recall:
+  - What are the four Coffman conditions necessary for deadlock to occur?
+
+## Week 26: May 3 – May 9, 2027 | Modern High-Throughput Linux I/O & Memory Models
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Wed: Modern Linux Event Demultiplexing: `select` vs `poll` vs `epoll` ($O(1)$ readiness notification, edge-triggered vs level-triggered).
+  - Thu–Fri: Linux `io_uring`: shared memory ring buffers between user space and kernel space to eliminate syscall overhead.
+- Evening Exercises (8:00–9:30 PM):
+  - Mon–Tue: Build a non-blocking TCP server using Linux `epoll` (`epoll_create1`, `epoll_ctl`, `epoll_wait`).
+  - Wed–Fri: Study hardware memory consistency models: store buffers, invalidation queues, memory barriers (`mfence`), and C11 acquire-release atomics.
+- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
+  - Sat: Final integration synthesis: Connect Hardware $\to$ ISA $\to$ Compiler $\to$ Microarchitecture $\to$ OS Kernel $\to$ User Space Applications.
+  - Sun: Comprehensive retrospective and curriculum completion review.
+- Active Recall:
+  - Why does `epoll` scale to tens of thousands of idle connections ($O(1)$) while `select` degrades linearly ($O(N)$)?
+
+---
+
+# Verification & Milestone Tracking
+
+## Phase Milestones
+- Milestone 1 (End of Week 3): Cache Lab completed (Part A `csim` and Part B `trans` passing all autograder tests with full 53/53 score).
+- Milestone 2 (End of Week 7): Bomb Lab fully defused (Phases 1–6 + secret phase) and Attack Lab completed (Phases 1–4 ROP chain).
+- Milestone 3 (End of Week 11): 8-bit Von Neumann CPU emulator implemented and low-level loop unrolling optimization verified.
+- Milestone 4 (End of Week 14): Shell Lab (`tsh.c`) fully implemented with complete signal masking and job control.
+- Milestone 5 (End of Week 18): Malloc Lab (`mm.c`) segregated free list memory allocator exceeding 85/100 performance index.
+- Milestone 6 (End of Week 22): MIT 6.1810 / xv6 kernel labs passed (`syscall`, `pgtbl`, `traps`, `cow`).
+- Milestone 7 (End of Week 26): Proxy Lab (`proxy.c`) multi-threaded caching proxy passed; modern `epoll` and memory ordering mastered.

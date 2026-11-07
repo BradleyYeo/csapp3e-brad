@@ -1,9 +1,5 @@
 # 6 Month Curriculum
-Create a 6 month curriculum for me to learn Computer Architecture and Operating System Fundamentals based on [README.md](file;file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/README.md)  . I have 1.5 hours every weekday from 8 to 930pm for exercises and 1 hour from 630-730am for videos/theory. On weekends I have 2-5pm and 8-930pm for theory/exercises.
 
-I have read Bits and Bytes (done data lab of csapp3e), have difficulty doing bomblab and attack lab. I am currently doing cachelab.
-
-Create a Curriculum.md with the plan. Make it concise as I am going to use that document to update my calendar.
 **1. First Principles: How CS:APP 3e Fits with Hardware Courses**
 **CS:APP 3e (Computer Systems: A Programmer's Perspective)** lives strictly at the **Hardware/Software Interface** and **Systems Software** layers. Its fundamental question is: _"Given how modern hardware and operating systems work, how do I write fast, reliable, and secure C code?"_
 
