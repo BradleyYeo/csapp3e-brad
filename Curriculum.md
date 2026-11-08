@@ -4,7 +4,7 @@
 
 - Morning Theory Block (Monday to Friday, 6:30 AM – 7:30 AM, 1.0 hour):
   - Dedicated to conceptual textbook reading and lecture videos.
-  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, and Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/).
+  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), and [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/).
   - Lecture Video Tracks:
     - [Onur Mutlu: Digital Design & Computer Architecture Playlist](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd)
     - [CMU 15-213: Introduction to Computer Systems Playlist](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj)
@@ -57,6 +57,7 @@
 
 - Immediate Priority: Complete [labs/05_cachelab](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab) since memory hierarchy concepts and C data structure mechanics are active.
 - Ground-Up Assembly Foundation:
+  - Review [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/) to master two's complement arithmetic, sign extension, and signed vs unsigned jump semantics (`jg`/`jl` vs `ja`/`jb`).
   - Author x86-64 assembly in [csi/01-computer-architecture/03-x86-64-assembly-intro](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro) ([sum_to_n.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm), [binary_convert.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm), [pangram.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm)).
   - Author advanced assembly in [csi/01-computer-architecture/04-x86-64-assembly-further](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further) ([fib.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/fib.asm), [matrix.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/matrix.asm), [cone.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/04-x86-64-assembly-further/cone.asm)).
 - Lecture Track Integration:
@@ -106,6 +107,7 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapter 3 (Machine-Level Representation of Programs).
+  - [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/) (Sign-magnitude, two's complement, bias encoding, sign extension, and integer overflow conditions).
   - [CMU 15-213: Lectures 05–08 (Machine Programming Basics, Control, Procedures, Data)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Wei Yang: Machine Level Programming Lectures & Recitations](https://www.youtube.com/@weiyang2613/videos) (C Review, Assembly Basics, Stack Framing).
 - Hands-on Lab Targets:
@@ -272,16 +274,17 @@
 
 ## Week 4: Nov 30 – Dec 6, 2026 | x86-64 Assembly Authoring Foundations
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 3.1–3.6 (Registers, operand specifiers, data movement, arithmetic/logical operations).
+  - Mon–Wed: CS:APP Sections 3.1–3.6 (Registers, operand specifiers, data movement, arithmetic/logical operations) and [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/) (Sign-magnitude vs 2's complement, sign extension, and signed vs unsigned integer overflow).
   - Thu–Fri: [CMU 15-213: Lecture 05 & 06 (Machine Programming I & II)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: C Review & Assembly Basics](https://www.youtube.com/@weiyang2613/videos).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/sum_to_n.asm) using arithmetic loop and conditional jumps.
-  - Wed–Fri: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm) with ASCII parsing and bit shifts.
+  - Wed–Fri: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/binary_convert.asm) with ASCII parsing, two's complement accumulation, and bit shifts.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
   - Sat: Implement [csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/03-x86-64-assembly-intro/pangram.asm) with 26-bit bitmask tracking (`bts` / bitwise shift).
   - Sun: Verify all intro assembly tests via `make test`. Practice GDB register inspection (`info registers`, `p/x $rax`).
 - Active Recall:
   - Why must a callee function preserve `%rbx`, `%rbp`, and `%r12-%r15` before overwriting them?
+  - How does a CPU hardware adder detect two's complement signed overflow versus unsigned carry during an addition operation?
 
 ## Week 5: Dec 7 – Dec 13, 2026 | Advanced Assembly: Stack Frames, Recursion & SIB Addressing
 - Morning Theory (6:30–7:30 AM):
@@ -330,7 +333,7 @@
 
 ## Week 8: Dec 28, 2026 – Jan 3, 2027 | CPU Microarchitecture & Von Neumann Emulator
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 4.1–4.2 (Y86-64 instruction set, logic gates, ALU, hardware control languages).
+  - Mon–Wed: CS:APP Sections 4.1–4.2 (Y86-64 instruction set, logic gates, ALU, hardware control languages) and review [UC Berkeley CS 61C: Number Representation](https://notes.cs61c.org/content/number-rep/) (ALU condition flags: zero, sign, carry, and overflow).
   - Thu–Fri: [Onur Mutlu DDCA: Instruction Set Architectures & Von Neumann Model](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Inspect [csi/01-computer-architecture/01-virtual-machine/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/01-virtual-machine). Define 256-byte RAM, registers (`r1`, `r2`), Program Counter (`PC`).

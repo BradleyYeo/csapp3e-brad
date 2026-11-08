@@ -4,5 +4,6 @@
     "editor.lineHeight": 1.5
   },
   "markdown.preview.fontSize": 26,
-  "editor.mouseWheelZoom": true
+  "editor.mouseWheelZoom": true,
+  "python.defaultInterpreterPath": "/Users/bradleyyeo/.local/share/uv/python/cpython-3.15.2-macos-aarch64-none/bin/python3"
 }
