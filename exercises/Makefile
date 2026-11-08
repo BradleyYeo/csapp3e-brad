@@ -6,7 +6,7 @@ TARGETS = 01_pointer_traversal 02_anchored_matching 03_getline_ingestion 04_enum
 
 CFLAGS_SAN ?= -std=c23 -Wall -Wextra -Werror -pedantic -g -fsanitize=address,undefined -fno-omit-frame-pointer
 
-.PHONY: all test clean test-sanitizers valgrind-13
+.PHONY: all test test-python clean test-sanitizers valgrind-13
 
 all: $(TARGETS)
 
@@ -101,7 +101,17 @@ test: all
 	@./18_macro_fundamentals
 	@echo "Running Exercise 19..."
 	@./19_pipelining_hazards
+	@echo "Running Exercise 14 (Python Hoare Logic)..."
+	@python3 14_hoare_logic_refactoring.py
+	@echo "Running Exercise 20 (Python Pointer Chasing)..."
+	@python3 20_python_pointer_chasing.py --test
 	@echo "All tests passed successfully."
+
+test-python:
+	@echo "Running Exercise 14 (Python Hoare Logic)..."
+	@python3 14_hoare_logic_refactoring.py
+	@echo "Running Exercise 20 (Python Pointer Chasing)..."
+	@python3 20_python_pointer_chasing.py --test
 
 test-sanitizers: clean
 	@echo "Compiling exercises with AddressSanitizer and UndefinedBehaviorSanitizer..."
