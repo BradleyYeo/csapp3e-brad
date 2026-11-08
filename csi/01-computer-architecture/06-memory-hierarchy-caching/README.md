@@ -1,131 +1,110 @@
 # The Memory Hierarchy: Caching and Locality
 
-## Curriculum Reading Sequence
-- Layer 01: [CONCEPTS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/CONCEPTS.md) - Theory: geometry, address decoding, locality algebra, write policies, 3 Cs, matmul permutations, tiling
-- Layer 02: [cache_exercises.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_exercises.c) - 6 test-driven coding stages (no hardware needed)
-- Layer 03: Hands-on measurement: [loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c) and [matrix-multiply.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c) with `perf` / `cachegrind`
-- Layer 04: Self-test (recall questions below)
-- Next: [07-memory-hierarchy-data-layout](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout/README.md)
+## Curriculum Overview
+- Module path: [06-memory-hierarchy-caching/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching)
+- Textbook reference: CS:APP3e Chapter 6 (Sections 6.1–6.6)
+- Prerequisites: [01-bits-and-bytes/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/01-bits-and-bytes) and C bitwise arithmetic
+- Next module: [07-memory-hierarchy-data-layout/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout)
+- Estimated time: ~22 hours across 2 weeks
 
-## Textbook Reference
-- CS:APP3e Chapter 6, Sections 6.1-6.6
-
-## Workflow Per Stage
-- Read the matching section of CONCEPTS.md.
-- Close it. Write the answer on paper first (active recall).
-- Implement the TODO in `cache_exercises.c`.
-- Run `make test STAGE=n`. Each stage is independent.
-- Only after the stage passes (or after 30 minutes stuck), compare with `reference-solution/`.
-
-## Build and Run
-```bash
-make test              # all stages
-make test STAGE=3      # one stage
-make test-solution     # sanity check reference (spoilers)
-make clean
-```
+## Three-Layer Learning Methodology
+- Layer 1 (Theory & Active Recall): Read the theory, study the memory hierarchy and invariants, close the notes, and solve hand-trace calculations on paper before writing any code.
+- Layer 2 (Simulation & Software Instrumentation): Implement minimal, test-driven C simulation modules (`01`, `03`, `05`, `06`, `07`, `09`) to model cache behavior without hardware noise. The simulator written in `05` becomes the instrument for subsequent stages.
+- Layer 3 (Hardware Measurement & Validation): Run hardware profiling benchmarks (`04`, `08`, `10`) on real hardware (`perf`, Valgrind `cachegrind`, and native timers) to validate analytical predictions against CPU realities (cache lines, hardware prefetchers, and latency plateaus).
 
 ---
 
-# Part 1: Coding Stages (`cache_exercises.c`)
+# Practice Sequence & Roadmap
 
-## Stage 1: Geometry and Address Decoding
-- Functions: `compute_cache_geometry`, `decode_cache_address`, `decode_flawed_high_bit_index`
-- Concepts: $(S,E,B,m)$, tag/set/offset bit slicing, `1ULL` shifts, why set bits sit in the middle
-- Link: same bit-masking algebra as `bump_align_forward` in `exercises/11_bump_allocator`
-- Cache Lab link: needed for `cache_access` in `csim.c`
-
-## Stage 2: Analytical Miss Prediction
-- Functions: `predict_stride_miss_rate`, `predict_2d_loop_write_misses`
-- Concepts: Stride-k miss rate $\min(1, kw/B)$, working set vs capacity, narrow-row case (`option_five`)
-- Check: reproduces the numbers in `reference-solution/solution.md` (1,000,000 / 16,000,000 / 16,000 misses)
-
-## Stage 3: LRU Cache with Write Policies
-- Function: `sim_cache_access`
-- Concepts: hit/miss/eviction, LRU clock, dirty bit, write-back + write-allocate vs write-through + no-allocate
-- Trace to hand-verify first: `yi.trace` in [CONCEPTS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/CONCEPTS.md) (hits 4, misses 5, evictions 3)
-- Cache Lab link: this is `csim.c` plus a dirty bit
-
-## Stage 4: Conflict Misses and Padding
-- Functions: `is_set_aliasing`, `compute_row_padding_elements`
-- Concepts: critical stride $S \times B$, power-of-two aliasing, associativity as the hardware fix, padding as the software fix
-- Cache Lab link: why 64x64 transpose is adversarial
-
-## Stage 5: Matmul Loop Permutations
-- Functions: `sim_matmul_ijk`, `sim_matmul_jki`, `sim_matmul_ikj`
-- Concepts: per-inner-iteration miss table (1.125 / 2.0 / 0.25), register-held invariants
-- Predict first: write the expected miss ordering, then compare to printed counts
-
-## Stage 6: Tiling
-- Functions: `compute_max_tile_size`, `sim_matmul_tiled`
-- Concepts: $3T^2 w \le C$, capacity misses vs tiling
-- Stretch: change the test cache to `E=2` and explain why tiling then loses (tile rows alias into the same sets). Fix it with array padding from Stage 4.
+| Step | Topic | Mode | Target Files | Est. Time |
+|:---|:---|:---|:---|:---|
+| 00 | Overview & Design Principles | Theory | [00_overview.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/00_overview.md) | 1.0h |
+| 01 | Cache Geometry & Address Decoding | Code | [01_address_decoding.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/01_address_decoding.md), [01_address_decoding.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/01_address_decoding.c) | 1.5h |
+| 02 | Hand-Trace Drills | Paper | [02_hand_trace_drills.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/02_hand_trace_drills.md) | 1.5h |
+| 03 | Analytical Miss Prediction | Code | [03_miss_prediction.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/03_miss_prediction.md), [03_miss_prediction.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/03_miss_prediction.c) | 1.5h |
+| 04 | Loop Order Hardware Measurement | Measure | [04_loop_order_measure.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.md), [04_loop_order_measure.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c) | 2.0h |
+| 05 | LRU Cache Simulation & Write Policies | Code | [05_lru_cache_sim.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/05_lru_cache_sim.md), [05_lru_cache_sim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/05_lru_cache_sim.c) | 3.0h |
+| 06 | Conflict Misses & Cache Padding | Code | [06_conflict_misses.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/06_conflict_misses.md), [06_conflict_misses.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/06_conflict_misses.c) | 2.0h |
+| 07 | Matrix Multiply Loop Permutations | Code | [07_matmul_loop_orders.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/07_matmul_loop_orders.md), [07_matmul_loop_orders.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/07_matmul_loop_orders.c) | 2.0h |
+| 08 | Matrix Multiply Benchmark Ladder | Measure | [08_matmul_benchmark.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/08_matmul_benchmark/08_matmul_benchmark.md), [08_matmul_benchmark/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/08_matmul_benchmark) | 3.0h |
+| 09 | Cache Tiling (Blocking) | Code | [09_tiling.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/09_tiling.md), [09_tiling.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/09_tiling.c) | 2.0h |
+| 10 | Memory Mountain Throughput Sweep | Measure | [10_memory_mountain.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/10_memory_mountain.md), [10_memory_mountain.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/10_memory_mountain.c) | 2.0h |
+| 11 | Cumulative Self-Test & Recall | Recall | [11_self_test.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/11_self_test.md) | 1.0h |
 
 ---
 
-# Part 2: Hands-On Measurement (Predict, Then Measure)
+# Build and Execution Workflow
 
-## Exercise A: `loop-order.c`
-- Predict L1 write misses for `option_one`, `option_two`, `option_five` before running (formulas in CONCEPTS.md).
-- Measure (Linux or Colima x86-64 container; macOS has no Valgrind):
+## Practice Stub Commands
+- Build and run a single exercise:
+  - `make 01` (Address decoding)
+  - `make 03` (Miss rate prediction)
+  - `make 04` (Loop order hardware timing)
+  - `make 05` (LRU cache simulation)
+  - `make 06` (Conflict misses & padding)
+  - `make 07` (Matmul loop orders)
+  - `make 08` (4-stage matrix multiplication benchmark)
+  - `make 09` (Matrix multiplication tiling)
+  - `make 10` (Memory mountain throughput sweep)
+- Run all practice test suites:
+  - `make test` (Compiles all stubs and runs their unit test suites)
+- Clean all build binaries and debug artifacts:
+  - `make clean`
+
+## Reference Solution Verification
+- Run a single reference solution:
+  - `make solution-01`
+  - `make solution-03`
+  - `make solution-05`
+  - `make solution-06`
+  - `make solution-07`
+  - `make solution-09`
+  - `make solution-10`
+- Run the full reference solution suite:
+  - `make test-solution`
+- Detailed written solutions:
+  - [reference-solution/02_answers.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/02_answers.md) (Hand-trace solutions)
+  - [reference-solution/11_answers.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/11_answers.md) (Self-test recall solutions)
+  - [reference-solution/measurements_intel_linux.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/measurements_intel_linux.md) (Original Intel Linux hardware profiling numbers)
+
+## Containerized Linux Measurement (Colima / Docker)
+- macOS ARM64 does not support Linux performance counters (`perf`) or Valgrind `cachegrind`.
+- Build and run the x86-64 container for hardware-counter measurements:
   ```bash
-  gcc -O0 -g loop-order.c -o loop-order
-  valgrind --tool=cachegrind --cache-sim=yes ./loop-order
-  perf stat ./loop-order
+  docker build -t cache-perf .
+  docker run --rm -it -v $(pwd):/workspace -w /workspace cache-perf
+  valgrind --tool=cachegrind ./04_loop_order_measure
+  perf stat ./04_loop_order_measure
   ```
-- Compile at `-O1` and read the assembly. Why do both options become empty loops? Reproduce the fix from `solution.md` (pass the array via pointer).
-- Open question from your notes: why do `LLd` misses for `option_five` not match `D1` misses? Hint: the array is $128$ KB, which fits in the last-level cache, so repeated passes hit there.
-
-## Exercise B: `matrix-multiply.c`
-- Predict the D1 read-miss count for naive `ijk` at $N=512$ using the Stage 5 table.
-- Implement `fast_matrix_multiply` in stages and record speedup after each:
-  - `ikj` loop permutation (no transpose, no extra memory)
-  - Transpose `B` then `ijk`
-  - Tiling with `T` from Stage 6
-  - Tiling + multiple accumulators (ties back to Chapter 5)
-- Verify with a tolerance, not `!=`: floating-point addition is not associative.
-- Report results in a table: variant, `-O0`, `-O2`, D1 misses, speedup.
-
-## Exercise C: Memory Mountain (Stretch)
-- Write a program that reads a buffer of size `size` with stride `stride` and records throughput (MB/s).
-- Sweep `size` from 4 KB to 64 MB and `stride` from 1 to 64 elements.
-- Identify L1, L2, L3, DRAM plateaus. Compare to `lscpu` cache sizes.
-- Reference: CS:APP 6.6.1.
 
 ---
 
-# Active Recall Checkpoints
+# Architectural Concept Summary
 
-## Geometry and Addressing
-- A cache has $s=6$, $E=8$, $b=6$. What is its capacity, and what is its critical stride?
-- Why are the set index bits in the middle and not the top of the address?
-- Why does the cache store only the tag, not the full address?
+## Shared Simulator Infrastructure
+- Core declarations: [cache_sim.h](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_sim.h)
+- Structs:
+  - [`cache_geometry_t`](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_sim.h#L16-L23): Cache configuration tuple $(S, E, B, m, s, b)$.
+  - [`decoded_addr_t`](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_sim.h#L25-L29): Sliced tag, set index, and block offset.
+  - [`cache_line_t`](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_sim.h#L31-L37): Line state containing valid bit, dirty bit, tag, and LRU timestamp.
+  - [`sim_cache_t`](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_sim.h#L39-L51): Multi-set cache state, write policy flags, and access counters (hits, misses, evictions, writebacks).
+- Linking:
+  - [05_lru_cache_sim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/05_lru_cache_sim.c) wraps `main()` in `#ifndef NO_MAIN`.
+  - Exercises `06`, `07`, and `09` compile and link against `05_lru_cache_sim.c -DNO_MAIN`.
 
-## Locality and Miss Rates
-- What is the minimum miss rate of Stride-1 traversal of `double`s with 64-byte lines?
-- At what stride does the miss rate reach 100%?
-- Why does `x[4000][8]` column traversal miss only 50% of the time while `x[4000][4000]` misses 100%?
-
-## Policies
-- Why does write-back pair naturally with write-allocate?
-- When does a dirty eviction cost extra memory traffic?
-- Why do loop counters and accumulators never reach DRAM?
-
-## Conflicts and Capacity
-- Name the 3 Cs. Which one does tiling fix? Which does associativity fix?
-- Why are power-of-two matrix sizes pathological?
-- Why can tiling make things worse when associativity is low?
-
-## Matmul
-- Why does `ikj` beat `ijk` with identical arithmetic?
-- Why does `ikj` alone still degrade for large $N$?
-- Why does `matrix_equal` fail after reordering floating-point additions?
-
----
-
-# Mastery Checklist
-- Decode any address by hand for a given $(s, E, b)$.
-- Predict hit/miss for a short trace by hand (as you did for `yi.trace`).
-- Predict the miss count of a 2D loop nest within ~10% before measuring.
-- Explain from first principles why the 64x64 transpose needs $4 \times 4$ staging.
-- Teach someone why tiling needs $3T^2 w \le C$.
+## Key Invariants & Formulas
+- Address partitioning:
+  - $m = t + s + b$
+  - Block offset mask: `(1ULL << b) - 1`
+  - Set index mask: `(1ULL << s) - 1`
+  - Tag shift: `s + b`
+- Stride-$k$ miss rate:
+  - Miss rate $= \min(1.0, \frac{k \cdot w}{B})$ where $w$ is word size in bytes and $B$ is cache line size in bytes.
+- Critical stride:
+  - $\Delta_{\text{crit}} = S \times B$ bytes. Accesses strided by multiples of $\Delta_{\text{crit}}$ map to the identical cache set, inducing conflict thrashing when the number of competing arrays exceeds associativity $E$.
+- Matrix multiplication inner-loop miss profile ($B=64$, $w=8$, $\frac{B}{w} = 8$ elements/line):
+  - `ijk`: $A[i][k]$ hits (register), $B[k][j]$ misses $0.125$, $C[i][j]$ misses $1.0$ (writes) $\to 1.125$ misses/iter.
+  - `jki`: $A[i][k]$ misses $1.0$, $B[k][j]$ hits (register), $C[i][j]$ misses $1.0$ $\to 2.0$ misses/iter.
+  - `ikj`: $A[i][k]$ hits (register), $B[k][j]$ misses $0.125$, $C[i][j]$ misses $0.125$ $\to 0.25$ misses/iter.
+- Cache tiling working set bound:
+  - $3 \times T^2 \times w \le C$ (where $C$ is cache capacity in bytes).

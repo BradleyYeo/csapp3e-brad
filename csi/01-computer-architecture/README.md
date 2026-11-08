@@ -49,10 +49,10 @@ This module covers computer architecture, machine-level programming, memory hier
 - Problems: `pagecount.c`, `vec/dotproduct.c`.
 
 ### 6. The Memory Hierarchy: Caching and Locality
-- Directory: [06-memory-hierarchy-caching/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/01-computer-architecture/06-memory-hierarchy-caching)
+- Directory: [06-memory-hierarchy-caching/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching)
 - Core Concepts: Principle of Locality (spatial vs. temporal), cache lines, Stride-1 vs. Stride-$N$ memory access, loop order permutations ($ijk$, $jik$, $kij$), cache blocking / tiling, Valgrind Cachegrind profiling.
 - Textbook: CS:APP3e Chapter 6 (Sections 6.1–6.6).
-- Problems: `loop-order.c`, `matrix-multiply.c`.
+- Structure: Numbered curriculum sequence `00_overview.md` through `11_self_test.md` with standalone simulators, measurement harnesses, and reference solutions.
 
 ### 7. The Memory Hierarchy: Data Layout
 - Directory: [07-memory-hierarchy-data-layout/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/01-computer-architecture/07-memory-hierarchy-data-layout)

@@ -88,7 +88,7 @@
 - Hands-on Lab Targets:
   - [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c)
   - [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c)
-  - [csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c)
+  - [csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c)
   - [exercises/20_python_pointer_chasing.py](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/20_python_pointer_chasing.py) (Pointer chasing & memory layout optimization)
   - [sslotin/amh-code: cpu-cache benchmarks](https://github.com/sslotin/amh-code) (`latency.cc`, `associativity.cc`, `matrix-transpose.cc`)
 - Systems Practice Extension:
@@ -263,7 +263,7 @@
   - Mon–Wed: Ulrich Drepper's *What Every Programmer Should Know About Memory* (CPU Caches, Virtual Memory, NUMA).
   - Thu–Fri: Database storage layouts: slotted pages, B-Tree leaf pages, cell pointers.
 - Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Profile loop order cache efficiency in [csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c) using Valgrind `cachegrind`.
+  - Mon–Tue: Profile loop order cache efficiency in [csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c) using Valgrind `cachegrind`.
   - Wed–Fri: Run automated driver on `cachelab` (`./driver.py`). Verify full score (53/53 points).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
   - Sat–Sun: Begin [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite). Parse 100-byte SQLite database header, page size, and decode B-Tree leaf page cell pointers.
