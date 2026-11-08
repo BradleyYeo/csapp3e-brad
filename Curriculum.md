@@ -4,7 +4,7 @@
 
 - Morning Theory Block (Monday to Friday, 6:30 AM – 7:30 AM, 1.0 hour):
   - Dedicated to conceptual textbook reading and lecture videos.
-  - Textbooks: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), and Harris & Harris DDCA.
+  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, and Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/).
   - Lecture Video Tracks:
     - [Onur Mutlu: Digital Design & Computer Architecture Playlist](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd)
     - [CMU 15-213: Introduction to Computer Systems Playlist](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj)
@@ -14,7 +14,11 @@
     - [xv6 OS Kernel Walkthrough Playlist](https://www.youtube.com/watch?v=xieHeMeu1HQ&list=PLbtzT1TYeoMj_YvECDl0YqipVZqucZHXs)
 - Evening Laboratory Block (Monday to Friday, 8:00 PM – 9:30 PM, 1.5 hours):
   - Dedicated to hands-on coding, debugging, and lab execution.
-  - Workspace: Colima / Docker x86-64 containers for CS:APP labs; native / QEMU for RISC-V xv6; CodeCrafters CLI.
+  - Workspaces & Benchmark Repositories:
+    - Colima / Docker x86-64 containers for CS:APP labs.
+    - [sslotin/amh-code](https://github.com/sslotin/amh-code) (hardware micro-benchmarks for cache latency, bandwidth, associativity, and branch prediction).
+    - Native / QEMU for RISC-V xv6.
+    - CodeCrafters CLI.
 - Weekend Deep Work Blocks (Saturday and Sunday):
   - Afternoon Block (2:00 PM – 5:00 PM, 3.0 hours): Lab architecture, systems implementations, and CodeCrafters challenges.
   - Evening Block (8:00 PM – 9:30 PM, 1.5 hours): Code review, memory leak profiling with Valgrind, and active recall synthesis.
@@ -76,6 +80,8 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapter 6.
+  - [Sergey Slotin: Algorithms for Modern Hardware - CPU Caches: Latency](https://en.algorithmica.org/hpc/cpu-cache/latency/) (Pointer chasing & defeating prefetchers).
+  - [Sergey Slotin: Algorithms for Modern Hardware - Associativity & Cache Conflicts](https://en.algorithmica.org/hpc/cpu-cache/associativity/) (Conflict misses & set thrashing).
   - [CMU 15-213: Lecture 12 & 13 (The Memory Hierarchy & Cache Memories)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Onur Mutlu DDCA: Memory Hierarchy & Caches](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
   - Ulrich Drepper's *What Every Programmer Should Know About Memory* (Sections 1–4).
@@ -83,6 +89,8 @@
   - [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c)
   - [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c)
   - [csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c)
+  - [exercises/20_python_pointer_chasing.py](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/20_python_pointer_chasing.py) (Pointer chasing & memory layout optimization)
+  - [sslotin/amh-code: cpu-cache benchmarks](https://github.com/sslotin/amh-code) (`latency.cc`, `associativity.cc`, `matrix-transpose.cc`)
 - Systems Practice Extension:
   - [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite) (Stage 1 to Stage 3: Reading DB header, page sizes, and parsing table records from raw disk pages).
 
@@ -118,12 +126,14 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapters 4 & 5.
+  - [Sergey Slotin: Algorithms for Modern Hardware - Pipelining, Branching & Superscalar Execution](https://en.algorithmica.org/hpc/pipelining/).
   - [Onur Mutlu DDCA: Lectures 12–18 (Single-Cycle, Multi-Cycle, Pipelined Microarchitectures, Hazards & Branch Prediction)](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
   - [CMU 15-213: Lecture 09 & 10 (Code Optimization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - Mutlu CompArch (Tomasulo's Algorithm, Register Renaming, Reorder Buffer).
 - Hands-on Lab Targets:
   - [csi/01-computer-architecture/01-virtual-machine/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/01-virtual-machine) (Von Neumann emulator)
   - [exercises/19_pipelining_hazards.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/19_pipelining_hazards.md) (Hardware hazard analysis)
+  - [sslotin/amh-code: pipelining & branching benchmarks](https://github.com/sslotin/amh-code) (`branching.cc`, `superscalar.cc`)
   - [csi/01-computer-architecture/05-low-level-optimization/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization) ([pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c), [dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c))
   - [csi/01-computer-architecture/07-memory-hierarchy-data-layout/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout) (SoA vs AoS cache optimization)
 
@@ -223,23 +233,24 @@
 
 ## Week 1: Nov 9 – Nov 15, 2026 | Cache Geometry & csim.c
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 6.1–6.4 (Locality, SRAM vs DRAM, $(S, E, B)$ geometry).
+  - Mon–Wed: CS:APP Sections 6.1–6.4 (Locality, SRAM vs DRAM, $(S, E, B)$ geometry) and [Sergey Slotin AMH: CPU Caches: Latency](https://en.algorithmica.org/hpc/cpu-cache/latency/) (Measuring cache latency via cyclic permutation pointer chasing; hardware prefetcher defeat).
   - Thu–Fri: [CMU 15-213: Lecture 12 (Cache Memories)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Onur Mutlu DDCA: Caches](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Parse Valgrind `lackey` trace lines in [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c).
   - Wed–Fri: Implement cache set allocation, line tag comparison, and hit/miss/eviction accounting.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Implement LRU replacement policy using dynamic counter tracking in `csim.c`.
-  - Sun: Verify `csim.c` against `csim-ref` across all test traces (`yi.trace`, `dave.trace`, `long.trace`). Achieve 27/27 points on Part A.
+  - Sat: Implement LRU replacement policy using dynamic counter tracking in `csim.c`. Benchmark [sslotin/amh-code: latency.cc](https://github.com/sslotin/amh-code) in QEMU / Colima container to observe physical L1/L2/L3/RAM latency plateaus.
+  - Sun: Verify `csim.c` against `csim-ref` across all test traces (`yi.trace`, `dave.trace`, `long.trace`). Achieve 27/27 points on Part A. Run [exercises/20_python_pointer_chasing.py](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/20_python_pointer_chasing.py) to inspect pointer chasing slowdown in high-level runtimes.
 - Active Recall:
+  - Why does pointer chasing across random cyclic permutations defeat CPU stream prefetchers and allow direct measurement of true memory latency?
   - Why are Set Index bits placed in the middle of the address rather than the high-order bits?
 
 ## Week 2: Nov 16 – Nov 22, 2026 | Matrix Transpose Blocking ($32 \times 32$ & $64 \times 64$)
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Section 6.5–6.6 (Cache impact on program performance, memory mountain).
-  - Thu–Fri: Conflict miss analysis, diagonal self-eviction in matrix transposition.
+  - Mon–Wed: CS:APP Section 6.5–6.6 (Cache impact on program performance, memory mountain) and [Sergey Slotin AMH: Associativity & Cache Conflicts](https://en.algorithmica.org/hpc/cpu-cache/associativity/).
+  - Thu–Fri: Conflict miss analysis, diagonal self-eviction in matrix transposition, and [Sergey Slotin AMH: Cache-Oblivious Algorithms](https://en.algorithmica.org/hpc/cpu-cache/oblivious/).
 - Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Benchmark baseline transpose in [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c). Trace 1KB direct-mapped cache collisions ($s=5, E=1, b=5$).
+  - Mon–Tue: Benchmark baseline transpose in [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c). Trace 1KB direct-mapped cache collisions ($s=5, E=1, b=5$) and compare with [sslotin/amh-code: associativity.cc](https://github.com/sslotin/amh-code) power-of-two stride collisions.
   - Wed–Fri: Implement $8 \times 8$ blocking for $32 \times 32$ matrix. Use local register variables to avoid diagonal thrashing. Target $< 300$ misses.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
   - Sat: Implement $4 \times 4$ sub-block register staging for $64 \times 64$ matrix. Target $< 1300$ misses.
@@ -345,26 +356,26 @@
 
 ## Week 10: Jan 11 – Jan 17, 2027 | Out-of-Order Execution & Modern Microarchitecture
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: [Onur Mutlu DDCA: Branch Prediction & Out-of-Order Execution](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd); Tomasulo’s Algorithm, Reservation Stations.
+  - Mon–Wed: [Onur Mutlu DDCA: Branch Prediction & Out-of-Order Execution](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd) and [Sergey Slotin AMH: Branch Prediction](https://en.algorithmica.org/hpc/pipelining/branching/); Tomasulo’s Algorithm, Reservation Stations.
   - Thu–Fri: Register Renaming (eliminating WAR/WAW hazards), Reorder Buffer (ROB), in-order commit.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Construct dependency graph of an assembly basic block. Identify true dependencies (RAW) vs false dependencies (WAR, WAW).
   - Wed–Fri: Trace register renaming table transitions across multiple loop iterations.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Study branch predictors: 2-bit saturating counters, 2-level adaptive predictors, gshare, TAGE branch predictors.
+  - Sat: Study branch predictors: 2-bit saturating counters, 2-level adaptive predictors, gshare, TAGE branch predictors. Benchmark branch misprediction penalties using [sslotin/amh-code: branching.cc](https://github.com/sslotin/amh-code).
   - Sun: Synthesize CPU execution pipeline mental model: Front-End (Fetch, Decode, Rename) vs Back-End (Issue, Execute, Writeback, Commit).
 - Active Recall:
   - How does register renaming eliminate Write-After-Read (WAR) and Write-After-Write (WAW) false hazards?
 
 ## Week 11: Jan 18 – Jan 24, 2027 | Program Optimization & Instruction-Level Parallelism
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Chapter 5 (Optimizing Program Performance: compiler capabilities/limits, eliminating loop inefficiencies).
+  - Mon–Wed: CS:APP Chapter 5 (Optimizing Program Performance: compiler capabilities/limits, eliminating loop inefficiencies) and [Sergey Slotin AMH: Instruction-Level Parallelism](https://en.algorithmica.org/hpc/pipelining/tables/).
   - Thu–Fri: [CMU 15-213: Lecture 09 & 10 (Code Optimization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Latency bound vs throughput bound; functional unit issue time.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Implement [csi/01-computer-architecture/05-low-level-optimization/pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c): replace 64-bit integer division with bitwise shifting.
   - Wed–Fri: Implement loop unrolling and multiple accumulators in [csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Benchmark Cycles Per Element (CPE) for $1 \times 1, 2 \times 2, 4 \times 4$ unrolling. Observe how independent accumulators break loop-carried dependency chains.
+  - Sat: Benchmark Cycles Per Element (CPE) for $1 \times 1, 2 \times 2, 4 \times 4$ unrolling. Compare with [sslotin/amh-code: superscalar.cc](https://github.com/sslotin/amh-code) to observe port saturation and register pressure.
   - Sun: Benchmark Struct of Arrays (SoA) vs Array of Structs (AoS) in [csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go).
 - Active Recall:
   - Why does simple $k \times 1$ loop unrolling fail to break the latency bound, while $k \times k$ unrolling with multiple accumulators breaks it?
