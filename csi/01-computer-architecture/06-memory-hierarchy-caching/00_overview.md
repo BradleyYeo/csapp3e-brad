@@ -56,3 +56,4 @@
 - Constructed from 1 capacitor and 1 access transistor (1T1C) per bit.
 - High density ($10\times\text{--}20\times$ denser than SRAM), but reading discharges the capacitor (requiring immediate rewrite) and charge leaks over time (requiring periodic refresh intervals).
 - Physical wire distance and memory bus serialization impose a $\sim 200$-cycle latency wall.
+

@@ -75,3 +75,4 @@ $$T \le \sqrt{\frac{C_{\text{L1}}}{3 \times \text{sizeof}(\text{double})}}$$
 
 ### Question 5.3 Answer
 IEEE 754 floating-point addition is commutative but not associative: $(a + b) + c \neq a + (b + c)$. Intermediate rounding differences alter the lowest mantissa bits when summation order changes. Verification must use a bounded tolerance ($|A - B| < 10^{-9}$).
+

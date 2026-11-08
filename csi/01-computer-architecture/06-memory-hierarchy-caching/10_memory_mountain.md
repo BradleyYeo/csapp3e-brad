@@ -67,3 +67,4 @@ Throughput (MB/s)
 
 - Next Exercise: [11_self_test.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/11_self_test.md)
 - Reference Solution: [reference-solution/10_memory_mountain.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/10_memory_mountain.c)
+

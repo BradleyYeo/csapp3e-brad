@@ -53,3 +53,4 @@ int main(void) {
   printf("Reference Solution 06 PASSED!\n");
   return EXIT_SUCCESS;
 }
+

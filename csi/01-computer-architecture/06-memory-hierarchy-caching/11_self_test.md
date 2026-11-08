@@ -90,3 +90,4 @@ Before concluding this module, verify that you can:
 - Explain the physical difference between SRAM (L1/L2/L3) and DRAM (Main Memory).
 - Implement cache blocking (tiling) and calculate optimal tile size from hardware parameters.
 - Diagnose and eliminate conflict thrashing using row padding or associativity.
+

@@ -142,3 +142,4 @@ static inline void sim_cache_destroy(sim_cache_t *cache) {
 bool sim_cache_access(sim_cache_t *cache, uint64_t addr, mem_op_t op);
 
 #endif /* CACHE_SIM_H */
+

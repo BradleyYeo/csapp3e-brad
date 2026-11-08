@@ -57,3 +57,4 @@ Elements per cache line: L = 64 / 8 = 8 doubles.
 
 - Next Exercise: [08_matmul_benchmark/08_matmul_benchmark.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/08_matmul_benchmark/08_matmul_benchmark.md)
 - Reference Solution: [reference-solution/07_matmul_loop_orders.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/07_matmul_loop_orders.c)
+

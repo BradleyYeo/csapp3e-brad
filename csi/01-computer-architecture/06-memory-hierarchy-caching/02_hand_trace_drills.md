@@ -84,3 +84,4 @@ Trace each access into Set 0:
 
 - Check your answers against [reference-solution/02_answers.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/02_answers.md).
 - Proceed to coding: [03_miss_prediction.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/03_miss_prediction.md).
+

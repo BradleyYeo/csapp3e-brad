@@ -96,3 +96,4 @@ int main(void) {
   printf("Reference Solution 09 PASSED!\n");
   return EXIT_SUCCESS;
 }
+

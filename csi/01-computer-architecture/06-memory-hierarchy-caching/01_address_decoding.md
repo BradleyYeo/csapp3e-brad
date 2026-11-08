@@ -84,3 +84,4 @@ uint64_t tag       = addr >> (s + b);
 
 - Next Exercise: [02_hand_trace_drills.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/02_hand_trace_drills.md)
 - Reference Solution: [reference-solution/01_address_decoding.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/01_address_decoding.c)
+

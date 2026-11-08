@@ -85,3 +85,4 @@
 
 - Next Exercise: [04_loop_order_measure.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.md)
 - Reference Solution: [reference-solution/03_miss_prediction.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/03_miss_prediction.c)
+

@@ -53,3 +53,4 @@ Set 0 has 2 ways: `[Way 0, Way 1]`.
   - Way 1 receives Tag 2 (clk = 4).
 - Access 5 (`L 0x000`, Tag 0): **Cache Hit**! Tag 0 is still resident in Way 0 (clk = 5).
 - Access 6 (`L 0x040`, Tag 1): **Cache Miss**! Tag 1 was evicted in Access 4.
+

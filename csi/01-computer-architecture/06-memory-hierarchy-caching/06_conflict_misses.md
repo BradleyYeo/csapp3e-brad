@@ -64,3 +64,4 @@
 
 - Next Exercise: [07_matmul_loop_orders.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/07_matmul_loop_orders.md)
 - Reference Solution: [reference-solution/06_conflict_misses.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/06_conflict_misses.c)
+

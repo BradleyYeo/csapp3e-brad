@@ -89,3 +89,4 @@ int main(void) {
   printf("Exercise 06 PASSED!\n");
   return EXIT_SUCCESS;
 }
+

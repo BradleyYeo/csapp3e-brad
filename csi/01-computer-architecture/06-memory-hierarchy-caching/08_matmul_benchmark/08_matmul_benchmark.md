@@ -67,3 +67,4 @@ gcc -Wall -O2 matrix-multiply.c benchmark.c -o matmul -lm
 
 - Next Exercise: [09_tiling.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/09_tiling.md)
 - Reference Implementation: [reference-solution/08_matrix-multiply.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/08_matrix-multiply.c)
+

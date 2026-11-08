@@ -78,3 +78,4 @@
 
 - Next Exercise: [05_lru_cache_sim.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/05_lru_cache_sim.md)
 - Recorded Linux Benchmarks: [reference-solution/measurements_intel_linux.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/reference-solution/measurements_intel_linux.md)
+
