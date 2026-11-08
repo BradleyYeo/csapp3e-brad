@@ -662,7 +662,7 @@ static void test_stage_6(void) {
 
   /* For 32 KiB L1d and 8B doubles: 3 * 32^2 * 8 = 24,576 <= 32,768 -> T = 32 */
   assert(compute_max_tile_size(32768, 8) == 32);
-  /* For 1 KiB cache and 8B doubles: 3 * 4^2 * 8 = 384 <= 1024 (8^2 * 24 = 1536 > 1024) -> T = 4 */
+  /* For 1 KiB cache and 8B doubles: 3 * 4^2 * 8 = 384 <= 1024 (3 * 8^2 * 8 = 1536 > 1024) -> T = 4 */
   assert(compute_max_tile_size(1024, 8) == 4);
 
   const size_t n = 16;
@@ -677,12 +677,16 @@ static void test_stage_6(void) {
   }
 
   /*
-   * Small cache: s=3 (8 sets), E=2 (2-way), b=5 (32B line) -> 512B capacity.
-   * Full 16x16 matrix = 2048B (4x larger than cache), so untiled ikj evicts B on every row i.
-   * Tile size T = 4: 3 * 4 * 4 * 8B = 384B <= 512B, so tiles stay resident in cache!
+   * Small cache: s=3 (8 sets), E=4 (4-way), b=5 (32B line) -> 1 KiB capacity.
+   * Full 16x16 matrix = 2048B (2x larger than cache), so untiled ikj evicts B on every row i.
+   * Tile size T = 4: 3 * 4 * 4 * 8B = 384B <= 1024B, so tiles stay resident in cache!
+   *
+   * Why E=4 and not E=2? Row stride = 16 * 8B = 128B and critical stride = 8 * 32B = 256B,
+   * so tile rows i and i+2 alias to the same set. With only 2 ways, tiles of A, B and C
+   * (all same set mapping) thrash and tiling LOSES. Try E=2 afterwards and explain why.
    */
   sim_cache_t cache;
-  sim_cache_init(&cache, 3, 2, 5, WRITE_BACK_ALLOCATE);
+  sim_cache_init(&cache, 3, 4, 5, WRITE_BACK_ALLOCATE);
 
   sim_cache_reset_stats(&cache);
   sim_matmul_ikj(&cache, C_ikj, A, B, n);
@@ -699,7 +703,7 @@ static void test_stage_6(void) {
     assert(fabs(C_ikj[i] - C_tiled[i]) < 1e-9);
   }
 
-  printf("    [N=16 on 512B Cache] Untiled ikj misses: %llu | Tiled (T=4) misses: %llu\n",
+  printf("    [N=16 on 1KiB Cache] Untiled ikj misses: %llu | Tiled (T=4) misses: %llu\n",
          (unsigned long long)misses_untiled, (unsigned long long)misses_tiled);
   assert(misses_tiled > 0 && misses_tiled < misses_untiled);
 

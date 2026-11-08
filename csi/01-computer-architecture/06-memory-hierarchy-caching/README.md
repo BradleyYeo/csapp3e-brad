@@ -1,67 +1,131 @@
 # The Memory Hierarchy: Caching and Locality
 
-## Mental Models and Theoretical Foundations
-
-### The Principle of Locality
-- Programs with good locality access the same set of memory locations repeatedly (temporal locality) or access memory locations near recently accessed addresses (spatial locality).
-- Hardware caches exploit locality to provide the illusion of a massive memory system with the speed of static RAM (SRAM).
-
-### Hardware Cache Organization
-- A cache is characterized by a tuple $(S, E, B, m)$:
-  - $m$: Number of physical address bits.
-  - $S = 2^s$: Number of cache sets.
-  - $E$: Number of cache lines per set (associativity: $E=1$ is direct-mapped, $E>1$ is set-associative).
-  - $B = 2^b$: Cache line / block size in bytes (typically 64 bytes in modern x86 and ARM processors).
-- Address division:
-  $$\text{Address} = [\text{Tag } (t \text{ bits}) \mid \text{Set Index } (s \text{ bits}) \mid \text{Block Offset } (b \text{ bits})]$$
-- When a 4-byte `int` is accessed, an entire 64-byte cache line (holding 16 integers) is loaded from RAM into L1 cache. Subsequent sequential accesses to the next 15 integers will be instantaneous cache hits (Stride-1 access).
-
-### Stride-1 vs. Stride-N Memory Access Patterns
-- In row-major languages (C, C++, Go):
-  - Iterating across row columns $A[i][0], A[i][1], \dots, A[i][j]$ yields Stride-1 access: 1 miss every 16 elements (miss rate $\approx 6.25\%$).
-  - Iterating down column rows $A[0][j], A[1][j], \dots, A[i][j]$ yields Stride-$N$ access: every element access loads a distinct 64-byte line, evicting prior lines (miss rate $\approx 100\%$).
+## Curriculum Reading Sequence
+- Layer 01: [CONCEPTS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/CONCEPTS.md) - Theory: geometry, address decoding, locality algebra, write policies, 3 Cs, matmul permutations, tiling
+- Layer 02: [cache_exercises.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/cache_exercises.c) - 6 test-driven coding stages (no hardware needed)
+- Layer 03: Hands-on measurement: [loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c) and [matrix-multiply.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c) with `perf` / `cachegrind`
+- Layer 04: Self-test (recall questions below)
+- Next: [07-memory-hierarchy-data-layout](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout/README.md)
 
 ## Textbook Reference
-- **CS:APP3e**: Chapter 6 (*The Memory Hierarchy*), Sections 6.1–6.6.
+- CS:APP3e Chapter 6, Sections 6.1-6.6
 
-## Problem Set and Specifications
+## Workflow Per Stage
+- Read the matching section of CONCEPTS.md.
+- Close it. Write the answer on paper first (active recall).
+- Implement the TODO in `cache_exercises.c`.
+- Run `make test STAGE=n`. Each stage is independent.
+- Only after the stage passes (or after 30 minutes stuck), compare with `reference-solution/`.
 
-### Exercise 1: `loop-order.c` (Row-Major vs. Column-Major Access)
-- File: [loop-order.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/01-computer-architecture/06-memory-hierarchy-caching/loop-order.c)
-- Compares two loop orientations over a $4000 \times 4000$ 2D array of integers:
-  - `option_one`: Iterates $i$ then $j$ ($x[i][j] = i + j$). Stride-1 access.
-  - `option_two`: Iterates $i$ then $j$ ($x[j][i] = i + j$). Stride-4000 access.
-- Profiling Task:
-  - Measure execution time difference with `perf stat`:
-    ```bash
-    gcc -O0 loop-order.c -o loop-order && ./loop-order
-    ```
-  - Analyze cache line misses using Valgrind Cachegrind:
-    ```bash
-    valgrind --tool=cachegrind --cache-sim=yes ./loop-order
-    cg_annotate cachegrind.out.<pid>
-    ```
-  - Verify that `option_one` generates $\approx 1,000,000$ write misses ($\frac{16,000,000}{16}$) while `option_two` generates $\approx 16,000,000$ write misses.
+## Build and Run
+```bash
+make test              # all stages
+make test STAGE=3      # one stage
+make test-solution     # sanity check reference (spoilers)
+make clean
+```
 
-### Exercise 2: `matrix-multiply.c` (Matrix Multiplication Caching)
-- Objective: Compute matrix multiplication $C = A \times B$ for $N \times N$ matrices ($N = 1000$ doubles).
-- Baseline Naive: $i-j-k$ loop order in [matrix-multiply.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/BradfieldCSI/01-computer-architecture/06-memory-hierarchy-caching/matrix-multiply.c).
-- Cache Analysis:
-  - $A[i][k]$ has Stride-1 access.
-  - $B[k][j]$ has Stride-$N$ access (column stride, causing constant cache thrashing).
-- Optimization Strategies to implement in `fast_matrix_multiply`:
-  1. **Loop Permutation (i-k-j)**: Swap inner loops $j$ and $k$. The inner loop iterates over $j$, making accesses to both $B[k][j]$ and $C[i][j]$ sequential Stride-1!
-  2. **Matrix Transposition**: Transpose matrix $B$ before multiplication so that both arrays are scanned along rows.
-  3. **Cache Tiling / Blocking**: Partition matrices into $B \times B$ sub-matrices (e.g. $B = 32$) that fit comfortably in L1 cache ($32 \text{ KiB}$).
+---
 
-## Build and Verification
-- Compile and run benchmark:
+# Part 1: Coding Stages (`cache_exercises.c`)
+
+## Stage 1: Geometry and Address Decoding
+- Functions: `compute_cache_geometry`, `decode_cache_address`, `decode_flawed_high_bit_index`
+- Concepts: $(S,E,B,m)$, tag/set/offset bit slicing, `1ULL` shifts, why set bits sit in the middle
+- Link: same bit-masking algebra as `bump_align_forward` in `exercises/11_bump_allocator`
+- Cache Lab link: needed for `cache_access` in `csim.c`
+
+## Stage 2: Analytical Miss Prediction
+- Functions: `predict_stride_miss_rate`, `predict_2d_loop_write_misses`
+- Concepts: Stride-k miss rate $\min(1, kw/B)$, working set vs capacity, narrow-row case (`option_five`)
+- Check: reproduces the numbers in `reference-solution/solution.md` (1,000,000 / 16,000,000 / 16,000 misses)
+
+## Stage 3: LRU Cache with Write Policies
+- Function: `sim_cache_access`
+- Concepts: hit/miss/eviction, LRU clock, dirty bit, write-back + write-allocate vs write-through + no-allocate
+- Trace to hand-verify first: `yi.trace` in [CONCEPTS.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/CONCEPTS.md) (hits 4, misses 5, evictions 3)
+- Cache Lab link: this is `csim.c` plus a dirty bit
+
+## Stage 4: Conflict Misses and Padding
+- Functions: `is_set_aliasing`, `compute_row_padding_elements`
+- Concepts: critical stride $S \times B$, power-of-two aliasing, associativity as the hardware fix, padding as the software fix
+- Cache Lab link: why 64x64 transpose is adversarial
+
+## Stage 5: Matmul Loop Permutations
+- Functions: `sim_matmul_ijk`, `sim_matmul_jki`, `sim_matmul_ikj`
+- Concepts: per-inner-iteration miss table (1.125 / 2.0 / 0.25), register-held invariants
+- Predict first: write the expected miss ordering, then compare to printed counts
+
+## Stage 6: Tiling
+- Functions: `compute_max_tile_size`, `sim_matmul_tiled`
+- Concepts: $3T^2 w \le C$, capacity misses vs tiling
+- Stretch: change the test cache to `E=2` and explain why tiling then loses (tile rows alias into the same sets). Fix it with array padding from Stage 4.
+
+---
+
+# Part 2: Hands-On Measurement (Predict, Then Measure)
+
+## Exercise A: `loop-order.c`
+- Predict L1 write misses for `option_one`, `option_two`, `option_five` before running (formulas in CONCEPTS.md).
+- Measure (Linux or Colima x86-64 container; macOS has no Valgrind):
   ```bash
-  gcc -Wall -O2 matrix-multiply.c benchmark.c -o matmul && ./matmul 1000
+  gcc -O0 -g loop-order.c -o loop-order
+  valgrind --tool=cachegrind --cache-sim=yes ./loop-order
+  perf stat ./loop-order
   ```
-- Compare runtime of Naive vs. Fast implementation. Target speedup: $> 1.5\times$ to $2\times$.
+- Compile at `-O1` and read the assembly. Why do both options become empty loops? Reproduce the fix from `solution.md` (pass the array via pointer).
+- Open question from your notes: why do `LLd` misses for `option_five` not match `D1` misses? Hint: the array is $128$ KB, which fits in the last-level cache, so repeated passes hit there.
 
-## Active Recall Checkpoint
-- Given 64-byte cache lines and 8-byte `double` elements, what is the theoretical minimum miss rate for Stride-1 array traversal?
-- Why does the $i-k-j$ loop order significantly outperform $i-j-k$ in matrix multiplication even though both perform the exact same $N^3$ arithmetic operations?
-- What causes conflict misses in direct-mapped caches when traversing arrays with power-of-two dimensions?
+## Exercise B: `matrix-multiply.c`
+- Predict the D1 read-miss count for naive `ijk` at $N=512$ using the Stage 5 table.
+- Implement `fast_matrix_multiply` in stages and record speedup after each:
+  - `ikj` loop permutation (no transpose, no extra memory)
+  - Transpose `B` then `ijk`
+  - Tiling with `T` from Stage 6
+  - Tiling + multiple accumulators (ties back to Chapter 5)
+- Verify with a tolerance, not `!=`: floating-point addition is not associative.
+- Report results in a table: variant, `-O0`, `-O2`, D1 misses, speedup.
+
+## Exercise C: Memory Mountain (Stretch)
+- Write a program that reads a buffer of size `size` with stride `stride` and records throughput (MB/s).
+- Sweep `size` from 4 KB to 64 MB and `stride` from 1 to 64 elements.
+- Identify L1, L2, L3, DRAM plateaus. Compare to `lscpu` cache sizes.
+- Reference: CS:APP 6.6.1.
+
+---
+
+# Active Recall Checkpoints
+
+## Geometry and Addressing
+- A cache has $s=6$, $E=8$, $b=6$. What is its capacity, and what is its critical stride?
+- Why are the set index bits in the middle and not the top of the address?
+- Why does the cache store only the tag, not the full address?
+
+## Locality and Miss Rates
+- What is the minimum miss rate of Stride-1 traversal of `double`s with 64-byte lines?
+- At what stride does the miss rate reach 100%?
+- Why does `x[4000][8]` column traversal miss only 50% of the time while `x[4000][4000]` misses 100%?
+
+## Policies
+- Why does write-back pair naturally with write-allocate?
+- When does a dirty eviction cost extra memory traffic?
+- Why do loop counters and accumulators never reach DRAM?
+
+## Conflicts and Capacity
+- Name the 3 Cs. Which one does tiling fix? Which does associativity fix?
+- Why are power-of-two matrix sizes pathological?
+- Why can tiling make things worse when associativity is low?
+
+## Matmul
+- Why does `ikj` beat `ijk` with identical arithmetic?
+- Why does `ikj` alone still degrade for large $N$?
+- Why does `matrix_equal` fail after reordering floating-point additions?
+
+---
+
+# Mastery Checklist
+- Decode any address by hand for a given $(s, E, b)$.
+- Predict hit/miss for a short trace by hand (as you did for `yi.trace`).
+- Predict the miss count of a 2D loop nest within ~10% before measuring.
+- Explain from first principles why the 64x64 transpose needs $4 \times 4$ staging.
+- Teach someone why tiling needs $3T^2 w \le C$.

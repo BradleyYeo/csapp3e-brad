@@ -5,12 +5,13 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 #include "matrix-multiply.h"
 
 
 // Allocate space for an m x n matrix. Caller frees.
 double **matrix_alloc(int m, int n) {
-  double **matrix = malloc(m * sizeof(double));
+  double **matrix = malloc(m * sizeof(double *));
 
   for (int i = 0; i < m; i++)
     matrix[i] = calloc(n, sizeof(double));
@@ -32,11 +33,11 @@ void matrix_fill_random(double **matrix, int m, int n) {
       matrix[i][j] = (double)rand() / (double)RAND_MAX;
 }
 
-// Verify that two m x n matrices contain the same values
+// Verify that two m x n matrices contain the same values within float tolerance
 bool matrix_equal(double **A, double **B, int m, int n) {
   for (int i = 0; i < m; i++)
     for (int j = 0; j < n; j++)
-      if (A[i][j] != B[i][j])
+      if (fabs(A[i][j] - B[i][j]) > 1e-9)
         return false;
   return true;
 }
