@@ -279,3 +279,4 @@ flowchart LR
   $$(a + b) + c \neq a + (b + c)$$
   due to intermediate rounding of the 53-bit significand.
 - Verification Invariant: Always compare floating-point matrices using a bounded relative or absolute tolerance $\epsilon$ (e.g., $|C_{\text{naive}}[i][j] - C_{\text{fast}}[i][j]| < 10^{-9}$) rather than bit-exact `!=`.
+
