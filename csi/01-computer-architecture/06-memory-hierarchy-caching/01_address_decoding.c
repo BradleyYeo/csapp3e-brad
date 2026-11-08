@@ -26,10 +26,14 @@
 void compute_cache_geometry(uint32_t s, uint32_t E, uint32_t b,
                             cache_geometry_t *out) {
   // TODO: Implement cache geometry calculation using 1ULL
-  (void)s;
-  (void)E;
-  (void)b;
-  memset(out, 0, sizeof(*out));
+  out->s = s; /* Number of set index bits */
+  out->E = E; /* Associativity (lines per set) */
+  out->b = b; /* Number of block offset bits */
+  out->tag_bits = 64 - (s + b);
+  out->num_sets = 1ULL << s;
+  out->block_size = 1ULL << b;
+  out->capacity_bytes = out->num_sets * E * out->block_size;
+  out->critical_stride_bytes = out->num_sets * out->block_size;
 }
 
 /*
@@ -45,10 +49,10 @@ void compute_cache_geometry(uint32_t s, uint32_t E, uint32_t b,
  */
 decoded_addr_t decode_cache_address(uint64_t addr, uint32_t s, uint32_t b) {
   // TODO: Extract offset, set_index, and tag using bitwise shift and mask
-  (void)addr;
-  (void)s;
-  (void)b;
-  return (decoded_addr_t){0, 0, 0};
+  uint64_t tag = addr >> (s+b);
+  uint64_t set_index = (addr >> b) & ((1ULL << s) - 1);
+  uint64_t offset = addr & ((1ULL << b) - 1);
+  return (decoded_addr_t){tag, set_index, offset};
 }
 
 /*
@@ -101,11 +105,11 @@ int main(void) {
     uint64_t addr = 0x400000ULL + block * 64ULL;
     decoded_addr_t mid = decode_cache_address(addr, 4, 6);
     uint64_t high = decode_flawed_high_bit_index(addr, 4);
-    assert(mid.set_index == block); /* Middle bits cycle cleanly across sets 0..15 */
-    assert(high == 0ULL);           /* High bits all collide in Set 0! */
+    assert(mid.set_index ==
+           block);        /* Middle bits cycle cleanly across sets 0..15 */
+    assert(high == 0ULL); /* High bits all collide in Set 0! */
   }
 
   printf("Exercise 01 PASSED!\n");
   return EXIT_SUCCESS;
 }
-
