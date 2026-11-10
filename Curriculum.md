@@ -4,7 +4,7 @@
 
 - Morning Theory Block (Monday to Friday, 6:30 AM – 7:30 AM, 1.0 hour):
   - Dedicated to conceptual textbook reading and lecture videos.
-  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), and [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/).
+  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Hennessy & Patterson (H&P/P&H) *Computer Architecture: A Quantitative Approach* (7th Edition, with Kozyrakis), Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), and [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/).
   - Lecture Video Tracks:
     - [Onur Mutlu: Digital Design & Computer Architecture Playlist](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd)
     - [CMU 15-213: Introduction to Computer Systems Playlist](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj)
@@ -81,6 +81,7 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapter 6.
+  - Hennessy & Patterson (H&P 7th ed) Appendix B (Review of Memory Hierarchy: cache geometry, 3Cs miss classification, write policies) and Chapter 2 (§§2.1–2.3 Advanced Cache Optimizations, AMAT, and DRAM organization).
   - [Sergey Slotin: Algorithms for Modern Hardware - CPU Caches: Latency](https://en.algorithmica.org/hpc/cpu-cache/latency/) (Pointer chasing & defeating prefetchers).
   - [Sergey Slotin: Algorithms for Modern Hardware - Associativity & Cache Conflicts](https://en.algorithmica.org/hpc/cpu-cache/associativity/) (Conflict misses & set thrashing).
   - [CMU 15-213: Lecture 12 & 13 (The Memory Hierarchy & Cache Memories)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
@@ -128,6 +129,8 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapters 4 & 5.
+  - Hennessy & Patterson (H&P 7th ed) Appendix C (Pipelining: Basic and Intermediate Concepts: datapath, pipeline registers, hazard equations) and Chapter 3 (Instruction-Level Parallelism: dynamic scheduling, Tomasulo's algorithm, hardware speculation, ROB).
+  - Hennessy & Patterson (H&P 7th ed) Chapter 4 (Data-Level Parallelism in Vector, SIMD, and GPU Architectures).
   - [Sergey Slotin: Algorithms for Modern Hardware - Pipelining, Branching & Superscalar Execution](https://en.algorithmica.org/hpc/pipelining/).
   - [Onur Mutlu DDCA: Lectures 12–18 (Single-Cycle, Multi-Cycle, Pipelined Microarchitectures, Hazards & Branch Prediction)](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
   - [CMU 15-213: Lecture 09 & 10 (Code Optimization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
@@ -173,6 +176,7 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapter 9.
+  - Hennessy & Patterson (H&P 7th ed) Chapter 2 (§2.4 Virtual Memory, Protection, and Fast Address Translation: TLBs, page table organization, and VIPT vs PIPT cache design).
   - [CMU 15-213: Lectures 17–19 (Virtual Memory Systems & Dynamic Memory Allocation)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Wei Yang: Lecture 19 (Dynamic Memory Allocation Basic Concepts & Free Lists)](https://www.youtube.com/@weiyang2613/videos).
   - [UC Berkeley CS 162: Lectures 10–12 (Address Translation, Multi-Level Paging, TLBs & Demand Paging)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
@@ -216,6 +220,7 @@
 ### Core Resources
 - Theory & Lectures:
   - CS:APP 3e Chapters 10, 11, 12.
+  - Hennessy & Patterson (H&P 7th ed) Chapter 5 (Thread-Level Parallelism: symmetric shared-memory architectures, cache coherence protocols [MSI/MESI/MOESI], false sharing, memory consistency models [Sequential Consistency, Total Store Order], and hardware synchronization primitives).
   - [CMU 15-213: Lectures 20–25 (Network Programming, Sockets, Concurrency, Synchronization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Wei Yang: Recitation 13 (Proxy Lab) & Recitation 14 (Synchronization)](https://www.youtube.com/@weiyang2613/videos).
   - [UC Berkeley CS 162: Lectures 04–07 (Concurrency, Synchronization, Monitors, Semaphores, Deadlock)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
@@ -235,7 +240,7 @@
 
 ## Week 1: Nov 9 – Nov 15, 2026 | Cache Geometry & csim.c
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 6.1–6.4 (Locality, SRAM vs DRAM, $(S, E, B)$ geometry) and [Sergey Slotin AMH: CPU Caches: Latency](https://en.algorithmica.org/hpc/cpu-cache/latency/) (Measuring cache latency via cyclic permutation pointer chasing; hardware prefetcher defeat).
+  - Mon–Wed: CS:APP Sections 6.1–6.4 (Locality, SRAM vs DRAM, $(S, E, B)$ geometry), H&P 7th ed Appendix B (Review of Memory Hierarchy: cache line mapping, tags/indices, 3Cs miss classification), and [Sergey Slotin AMH: CPU Caches: Latency](https://en.algorithmica.org/hpc/cpu-cache/latency/) (Measuring cache latency via cyclic permutation pointer chasing; hardware prefetcher defeat).
   - Thu–Fri: [CMU 15-213: Lecture 12 (Cache Memories)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Onur Mutlu DDCA: Caches](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Parse Valgrind `lackey` trace lines in [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c).
@@ -249,7 +254,7 @@
 
 ## Week 2: Nov 16 – Nov 22, 2026 | Matrix Transpose Blocking ($32 \times 32$ & $64 \times 64$)
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Section 6.5–6.6 (Cache impact on program performance, memory mountain) and [Sergey Slotin AMH: Associativity & Cache Conflicts](https://en.algorithmica.org/hpc/cpu-cache/associativity/).
+  - Mon–Wed: CS:APP Section 6.5–6.6 (Cache impact on program performance, memory mountain), H&P 7th ed Chapter 2 (§§2.1–2.2 Advanced Cache Optimizations: non-blocking caches, critical word first, compiler blocking), and [Sergey Slotin AMH: Associativity & Cache Conflicts](https://en.algorithmica.org/hpc/cpu-cache/associativity/).
   - Thu–Fri: Conflict miss analysis, diagonal self-eviction in matrix transposition, and [Sergey Slotin AMH: Cache-Oblivious Algorithms](https://en.algorithmica.org/hpc/cpu-cache/oblivious/).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Benchmark baseline transpose in [labs/05_cachelab/cachelab-handout/trans.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/trans.c). Trace 1KB direct-mapped cache collisions ($s=5, E=1, b=5$) and compare with [sslotin/amh-code: associativity.cc](https://github.com/sslotin/amh-code) power-of-two stride collisions.
@@ -259,6 +264,7 @@
   - Sun: Optimize $61 \times 67$ irregular matrix with rectangular blocking ($16 \times 16$ or $17 \times 17$). Target $< 2000$ misses.
 - Active Recall:
   - Why does an $8 \times 8$ block fail for a $64 \times 64$ matrix on a 1KB direct-mapped cache?
+  - In H&P's quantitative cache model, what is the formula for Average Memory Access Time (AMAT), and how do Miss Status Holding Registers (MSHRs) enable non-blocking caches to overlap miss latency?
 
 ## Week 3: Nov 23 – Nov 29, 2026 | Cache Synthesis & CodeCrafters SQLite Page Formats
 - Morning Theory (6:30–7:30 AM):
@@ -333,7 +339,7 @@
 
 ## Week 8: Dec 28, 2026 – Jan 3, 2027 | CPU Microarchitecture & Von Neumann Emulator
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 4.1–4.2 (Y86-64 instruction set, logic gates, ALU, hardware control languages) and review [UC Berkeley CS 61C: Number Representation](https://notes.cs61c.org/content/number-rep/) (ALU condition flags: zero, sign, carry, and overflow).
+  - Mon–Wed: CS:APP Sections 4.1–4.2 (Y86-64 instruction set, logic gates, ALU, hardware control languages), H&P 7th ed Appendix C (Datapath structure, instruction execution phases), and review [UC Berkeley CS 61C: Number Representation](https://notes.cs61c.org/content/number-rep/) (ALU condition flags: zero, sign, carry, and overflow).
   - Thu–Fri: [Onur Mutlu DDCA: Instruction Set Architectures & Von Neumann Model](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Inspect [csi/01-computer-architecture/01-virtual-machine/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/01-virtual-machine). Define 256-byte RAM, registers (`r1`, `r2`), Program Counter (`PC`).
@@ -346,7 +352,7 @@
 
 ## Week 9: Jan 4 – Jan 10, 2027 | Pipelining, Hazards & Data Forwarding
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 4.4–4.5 (Pipelining principles, throughput vs latency, pipeline registers).
+  - Mon–Wed: CS:APP Sections 4.4–4.5 (Pipelining principles, throughput vs latency, pipeline registers) and H&P 7th ed Appendix C (§C.2–§C.3 Data hazards, forwarding condition logic equations, load-use interlocks, branch stalls).
   - Thu–Fri: [Onur Mutlu DDCA: Lectures 14–16 (Pipelined Microarchitecture, Hazards, Stalls, and Data Forwarding)](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Trace 5-stage pipeline (Fetch, Decode, Execute, Memory, Write-back). Analyze Read-After-Write (RAW) data hazards.
@@ -359,8 +365,8 @@
 
 ## Week 10: Jan 11 – Jan 17, 2027 | Out-of-Order Execution & Modern Microarchitecture
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: [Onur Mutlu DDCA: Branch Prediction & Out-of-Order Execution](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd) and [Sergey Slotin AMH: Branch Prediction](https://en.algorithmica.org/hpc/pipelining/branching/); Tomasulo’s Algorithm, Reservation Stations.
-  - Thu–Fri: Register Renaming (eliminating WAR/WAW hazards), Reorder Buffer (ROB), in-order commit.
+  - Mon–Wed: H&P 7th ed Chapter 3 (§§3.1–3.6 Instruction-Level Parallelism: Dynamic scheduling via Tomasulo's algorithm, reservation stations, Common Data Bus [CDB]), [Onur Mutlu DDCA: Branch Prediction & Out-of-Order Execution](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd), and [Sergey Slotin AMH: Branch Prediction](https://en.algorithmica.org/hpc/pipelining/branching/).
+  - Thu–Fri: H&P 7th ed Chapter 3 (§§3.7–3.9 Hardware-based speculation, Reorder Buffer [ROB], in-order commit, precise exceptions, and register renaming).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Construct dependency graph of an assembly basic block. Identify true dependencies (RAW) vs false dependencies (WAR, WAW).
   - Wed–Fri: Trace register renaming table transitions across multiple loop iterations.
@@ -369,11 +375,12 @@
   - Sun: Synthesize CPU execution pipeline mental model: Front-End (Fetch, Decode, Rename) vs Back-End (Issue, Execute, Writeback, Commit).
 - Active Recall:
   - How does register renaming eliminate Write-After-Read (WAR) and Write-After-Write (WAW) false hazards?
+  - In Tomasulo's algorithm with a Reorder Buffer (ROB), why must instruction commit occur in-order even though issue and execution occur out-of-order?
 
 ## Week 11: Jan 18 – Jan 24, 2027 | Program Optimization & Instruction-Level Parallelism
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Chapter 5 (Optimizing Program Performance: compiler capabilities/limits, eliminating loop inefficiencies) and [Sergey Slotin AMH: Instruction-Level Parallelism](https://en.algorithmica.org/hpc/pipelining/tables/).
-  - Thu–Fri: [CMU 15-213: Lecture 09 & 10 (Code Optimization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Latency bound vs throughput bound; functional unit issue time.
+  - Mon–Wed: CS:APP Chapter 5 (Optimizing Program Performance: compiler capabilities/limits, eliminating loop inefficiencies), H&P 7th ed Chapter 1 (CPU performance equation: $\text{CPU Time} = \text{IC} \times \text{CPI} \times \text{Cycle Time}$), and [Sergey Slotin AMH: Instruction-Level Parallelism](https://en.algorithmica.org/hpc/pipelining/tables/).
+  - Thu–Fri: H&P 7th ed Chapter 4 (Data-Level Parallelism in SIMD and Vector Architectures) and [CMU 15-213: Lecture 09 & 10 (Code Optimization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Latency bound vs throughput bound; functional unit issue time.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Implement [csi/01-computer-architecture/05-low-level-optimization/pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c): replace 64-bit integer division with bitwise shifting.
   - Wed–Fri: Implement loop unrolling and multiple accumulators in [csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c).
@@ -422,7 +429,7 @@
 
 ## Week 15: Feb 15 – Feb 21, 2027 | Virtual Memory Topography & Address Translation
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Sections 9.1–9.5 (Virtual address space, physical addressing, pages, page tables, Page Faults, Translation Lookaside Buffer).
+  - Mon–Wed: CS:APP Sections 9.1–9.5 (Virtual address space, physical addressing, pages, page tables, Page Faults, Translation Lookaside Buffer) and H&P 7th ed Chapter 2 (§2.4 Fast address translation with TLBs, page table walks, and Virtually Indexed Physically Tagged [VIPT] caches).
   - Thu–Fri: [CMU 15-213: Lectures 16 & 17 (Virtual Memory: Concepts & Systems)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [UC Berkeley CS 162: Lectures 10 & 11 (Address Translation, Multi-Level Paging, TLBs)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and OSTEP Chapters 13–19 (Address Spaces, Paging, TLBs).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Review [exercises/07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md). Verify `.text`, `.data`, `.bss`, heap, memory-mapped region, and stack addresses in C.
@@ -550,7 +557,7 @@
 
 ## Week 25: Apr 26 – May 2, 2027 | Thread Synchronization, Caching & CodeCrafters Redis (Part 2)
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: [Wei Yang: Recitation 13 (Proxy Lab Caching)](https://www.youtube.com/@weiyang2613/videos) and [UC Berkeley CS 162: Lecture 06 (Monitors, Condition Variables, Readers-Writers)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Readers-Writer Problem (favoring readers vs favoring writers); coarse vs fine-grained locking.
+  - Mon–Wed: H&P 7th ed Chapter 5 (§§5.1–5.3 Shared-memory multiprocessors, cache coherence problem, snooping bus protocols [MSI/MESI], write-invalidate vs write-update, and false sharing), [Wei Yang: Recitation 13 (Proxy Lab Caching)](https://www.youtube.com/@weiyang2613/videos), and [UC Berkeley CS 162: Lecture 06 (Monitors, Condition Variables, Readers-Writers)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Readers-Writer Problem (favoring readers vs favoring writers); coarse vs fine-grained locking.
   - Thu–Fri: OSTEP Chapter 32 (Common Concurrency Bugs) and [UC Berkeley CS 162: Lecture 07 (Deadlock & Priority Inversion)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Deadlock conditions, hold-and-wait, circular wait prevention.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Design an in-memory thread-safe LRU cache structure in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c) with maximum object size (100KB) and total cache size (1MB).
@@ -559,11 +566,12 @@
   - Sat–Sun: Complete [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis). Implement `SET` with expiration (`PX`), `GET`, in-memory key-value eviction, and RDB snapshot parsing.
 - Active Recall:
   - What are the four Coffman conditions necessary for deadlock to occur?
+  - In the MESI protocol, why does an attempt to write to a cache line in the Shared (S) state generate an invalidation request on the bus rather than writing directly?
 
 ## Week 26: May 3 – May 9, 2027 | High-Throughput Linux I/O & CodeCrafters Kafka
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: Modern Linux Event Demultiplexing: `select` vs `poll` vs `epoll` ($O(1)$ readiness notification, edge-triggered vs level-triggered) and [UC Berkeley CS 162: Lecture 16 (Networking, Sockets, and I/O Multiplexing)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
-  - Thu–Fri: Linux `io_uring` and hardware memory consistency models: store buffers, invalidation queues, memory barriers (`mfence`), and C11 acquire-release atomics.
+  - Thu–Fri: H&P 7th ed Chapter 5 (§§5.6–5.7 Memory Consistency Models: Sequential Consistency vs Total Store Order [TSO], store buffering with forwarding, and memory barriers), Linux `io_uring`, and C11 acquire-release atomics.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Build a non-blocking TCP server using Linux `epoll` (`epoll_create1`, `epoll_ctl`, `epoll_wait`).
   - Wed–Fri: Benchmark atomic counters vs mutexes vs Go channels in [csi/03-languages-and-compilers/05-concurrency-patterns/counter-service/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/03-languages-and-compilers/05-concurrency-patterns/counter-service).
@@ -571,6 +579,7 @@
   - Sat–Sun: Capstone project: [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka). Implement binary Kafka protocol serialization, commit log file writes to disk, and message batching.
 - Active Recall:
   - Why does `epoll` scale to tens of thousands of idle connections ($O(1)$) while `select` degrades linearly ($O(N)$)?
+  - Under x86-64's Total Store Order (TSO) memory model, why can a store operation be delayed past subsequent loads to different memory locations without an explicit memory fence?
 
 ---
 
