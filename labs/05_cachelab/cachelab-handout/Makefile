@@ -31,7 +31,7 @@ trans.o: trans.c
 STAGE ?= 1
 SANFLAGS ?= -fsanitize=address,undefined -fno-omit-frame-pointer
 
-.PHONY: test test-unit test-memcheck
+.PHONY: test test-unit test-memcheck test-leaks
 test: test-unit csim
 	@chmod +x tests/run_traces.sh
 	@if [ $(STAGE) -ge 5 ]; then ./tests/run_traces.sh; fi
@@ -40,10 +40,22 @@ test-unit:
 	$(CC) $(CFLAGS) $(SANFLAGS) -DSTAGE=$(STAGE) -o tests/test_csim tests/test_csim.c cachelab.c
 	./tests/test_csim
 
-# Leak check (Linux/container only): make test-memcheck STAGE=4
+# Leak check (Linux/container only): make test-memcheck STAGE=3
 test-memcheck:
+	@if ! command -v valgrind >/dev/null 2>&1; then \
+		echo "Error: valgrind is not available in the current host environment (macOS does not support Valgrind)."; \
+		echo "Use one of the following alternatives:"; \
+		echo "  1) Native macOS leak check: make test-leaks STAGE=$(STAGE)"; \
+		echo "  2) Linux Docker container:  docker run --rm -v \"\$$(pwd)\":/app cachelab-env make test-memcheck STAGE=$(STAGE)"; \
+		exit 1; \
+	fi
 	$(CC) $(CFLAGS) -DSTAGE=$(STAGE) -o tests/test_csim tests/test_csim.c cachelab.c
 	valgrind --leak-check=full --error-exitcode=1 ./tests/test_csim
+
+# Native macOS leak check (uses /usr/bin/leaks): make test-leaks STAGE=3
+test-leaks:
+	$(CC) $(CFLAGS) -DSTAGE=$(STAGE) -o tests/test_csim tests/test_csim.c cachelab.c
+	leaks --atExit -- ./tests/test_csim
 
 #
 # Clean the src dirctory
@@ -55,4 +67,4 @@ clean:
 	rm -f test-trans tracegen
 	rm -f trace.all trace.f* trace.tmp
 	rm -f .csim_results .marker
-	rm -rf tests/test_csim tests/test_csim.dSYM
+	rm -rf tests/test_csim* tests/*.dSYM

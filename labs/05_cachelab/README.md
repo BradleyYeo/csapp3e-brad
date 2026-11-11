@@ -72,9 +72,17 @@ docker run -it --rm \
 | `make test STAGE=4` | `cache_access` | Set/tag decoding, offset ignored, cold miss vs eviction, filling every way before evicting, LRU order, hits refreshing recency |
 | `make test STAGE=5` | `main` loop | All 8 graded traces, `I` lines ignored, `M` = 2 accesses, `-v` output format |
 
-- Leak check (Linux container only, because Valgrind isn't available on macOS):
+- Leak check on native macOS (using `/usr/bin/leaks`):
   ```bash
-  make test-memcheck STAGE=4
+  make test-leaks STAGE=3
+  ```
+- Leak check via Linux container (Valgrind Memcheck):
+  ```bash
+  # From labs/05_cachelab directory:
+  docker run --rm -v "$(pwd)/cachelab-handout":/app cachelab-env make test-memcheck STAGE=3
+
+  # Or inside the interactive container shell:
+  make test-memcheck STAGE=3
   ```
 - Test sources: [tests/test_csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/tests/test_csim.c) and [tests/run_traces.sh](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/tests/run_traces.sh).
 

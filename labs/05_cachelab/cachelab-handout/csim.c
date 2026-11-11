@@ -130,7 +130,6 @@ void cache_init(cache_t *cache, int s, int E, int b) {
       cache->sets[i].lines[j].clk = 0;
     }
   }
-  // free(cache->sets[i].lines);
 }
 
 /*
@@ -148,7 +147,15 @@ void cache_init(cache_t *cache, int s, int E, int b) {
  * Free all dynamically allocated line arrays and the set array to ensure zero
  * Valgrind leaks.
  */
-
+void cache_destroy(cache_t *cache) {
+  if (cache == nullptr || cache->sets == nullptr) {
+    return;
+  }
+  int S = 1 << cache->s; // number of cache sets 2^s
+  for (int i = 0; i < S; i++) {
+    free(cache->sets[i].lines);
+  }
+}
 /*
  * TODO: Implement cache_access:
  * Extract set index = (addr >> b) & ((1ULL << s) - 1)
@@ -158,8 +165,9 @@ void cache_init(cache_t *cache, int s, int E, int b) {
  * If full, find LRU line (smallest timestamp) and evict
  * Returns CACHE_HIT, CACHE_MISS, or CACHE_MISS | CACHE_EVICT.
  */
+int cache_access(cache_t *cache, uint64_t addr, int clk){}
 
-int main(int argc, char *argv[]) {
+    int main(int argc, char *argv[]) {
   args_t args = parse_args(argc, argv);
 
   FILE *fp = fopen(args.t, "r");
