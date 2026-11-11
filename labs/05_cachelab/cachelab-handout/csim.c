@@ -154,7 +154,10 @@ void cache_destroy(cache_t *cache) {
   int S = 1 << cache->s; // number of cache sets 2^s
   for (int i = 0; i < S; i++) {
     free(cache->sets[i].lines);
+    cache->sets[i].lines = nullptr;
   }
+  free(cache->sets);
+  cache->sets = nullptr;
 }
 /*
  * TODO: Implement cache_access:
@@ -165,7 +168,7 @@ void cache_destroy(cache_t *cache) {
  * If full, find LRU line (smallest timestamp) and evict
  * Returns CACHE_HIT, CACHE_MISS, or CACHE_MISS | CACHE_EVICT.
  */
-int cache_access(cache_t *cache, uint64_t addr, int clk){}
+// int cache_access(cache_t *cache, uint64_t addr, int clk){}
 
     int main(int argc, char *argv[]) {
   args_t args = parse_args(argc, argv);
