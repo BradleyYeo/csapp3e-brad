@@ -11,6 +11,7 @@
     - [Wei Yang: CMU 15-213 Lectures & Lab Recitations Channel](https://www.youtube.com/@weiyang2613/videos)
     - [MIT 6.S081 / 6.1810: Operating System Engineering Playlist](https://www.youtube.com/watch?v=J3LCzufEYt0&list=PLTsf9UeqkReZHXWY9yJvTwLJWYYPcKEqK)
     - [UC Berkeley CS 162: Operating Systems and Systems Programming Playlist](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC)
+    - [UW-Madison CS 537: Operating Systems (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-)
     - [xv6 OS Kernel Walkthrough Playlist](https://www.youtube.com/watch?v=xieHeMeu1HQ&list=PLbtzT1TYeoMj_YvECDl0YqipVZqucZHXs)
 - Evening Laboratory Block (Monday to Friday, 8:00 PM – 9:30 PM, 1.5 hours):
   - Dedicated to hands-on coding, debugging, and lab execution.
@@ -157,6 +158,7 @@
   - [CMU 15-213: Lecture 14 & 15 (Exceptional Control Flow: Exceptions, Processes, Signals)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Wei Yang: Lecture 14 (Exceptional Control Flow & Processes)](https://www.youtube.com/@weiyang2613/videos).
   - [UC Berkeley CS 162: Lectures 02 & 03 (Four Fundamental OS Abstractions, Dual-Mode Operation & Process Control)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
+  - [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Processes, Process API, & Limited Direct Execution).
   - OSTEP Chapters 4–6 (Processes, Process API, Limited Direct Execution).
 - Hands-on Lab Targets:
   - [labs/07_shlab/shlab-handout/tsh.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/07_shlab/shlab-handout/tsh.c) (CS:APP Shell Lab)
@@ -180,6 +182,7 @@
   - [CMU 15-213: Lectures 17–19 (Virtual Memory Systems & Dynamic Memory Allocation)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Wei Yang: Lecture 19 (Dynamic Memory Allocation Basic Concepts & Free Lists)](https://www.youtube.com/@weiyang2613/videos).
   - [UC Berkeley CS 162: Lectures 10–12 (Address Translation, Multi-Level Paging, TLBs & Demand Paging)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
+  - [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Memory Virtualization, Paging, TLBs, & Page Replacement).
   - OSTEP Chapters 13–22 (Virtual Memory, Address Translation, Paging, TLB, Page Replacement).
 - Hands-on Lab Targets:
   - [exercises/07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md)
@@ -224,6 +227,7 @@
   - [CMU 15-213: Lectures 20–25 (Network Programming, Sockets, Concurrency, Synchronization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj).
   - [Wei Yang: Recitation 13 (Proxy Lab) & Recitation 14 (Synchronization)](https://www.youtube.com/@weiyang2613/videos).
   - [UC Berkeley CS 162: Lectures 04–07 (Concurrency, Synchronization, Monitors, Semaphores, Deadlock)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
+  - [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Threads, Locks, Condition Variables, Semaphores, & Concurrency Bugs).
   - OSTEP Chapters 26–32 (Concurrency, Locks, Condition Variables, Semaphores).
   - Mutlu Computer Architecture lectures on Memory Consistency & Cache Coherence.
 - Hands-on Lab Targets:
@@ -406,7 +410,7 @@
 ## Week 13: Feb 1 – Feb 7, 2027 | Exceptional Control Flow & Process Lifecycle
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 8.1–8.4 (Exceptions: asynchronous interrupts, synchronous traps/faults/aborts; process abstraction, dual-mode execution).
-  - Thu–Fri: [CMU 15-213: Lecture 14 (ECF: Exceptions & Processes)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [Wei Yang: Lecture 14 (Exceptional Control Flow)](https://www.youtube.com/@weiyang2613/videos), and [UC Berkeley CS 162: Lectures 02 & 03 (Four Fundamental OS Abstractions, Dual-Mode Operation & Process Control)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
+  - Thu–Fri: [CMU 15-213: Lecture 14 (ECF: Exceptions & Processes)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [Wei Yang: Lecture 14 (Exceptional Control Flow)](https://www.youtube.com/@weiyang2613/videos), [UC Berkeley CS 162: Lectures 02 & 03 (Four Fundamental OS Abstractions, Dual-Mode Operation & Process Control)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Processes & Limited Direct Execution).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Trace hardware trap entry: privilege switch from User to Kernel ring, saving user registers onto kernel stack, loading exception vector table.
   - Wed–Fri: Practice process management C code: `fork()` process hierarchies, reaping child processes with `waitpid()`, and observing zombie processes.
@@ -430,7 +434,7 @@
 ## Week 15: Feb 15 – Feb 21, 2027 | Virtual Memory Topography & Address Translation
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 9.1–9.5 (Virtual address space, physical addressing, pages, page tables, Page Faults, Translation Lookaside Buffer) and H&P 7th ed Chapter 2 (§2.4 Fast address translation with TLBs, page table walks, and Virtually Indexed Physically Tagged [VIPT] caches).
-  - Thu–Fri: [CMU 15-213: Lectures 16 & 17 (Virtual Memory: Concepts & Systems)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [UC Berkeley CS 162: Lectures 10 & 11 (Address Translation, Multi-Level Paging, TLBs)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and OSTEP Chapters 13–19 (Address Spaces, Paging, TLBs).
+  - Thu–Fri: [CMU 15-213: Lectures 16 & 17 (Virtual Memory: Concepts & Systems)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [UC Berkeley CS 162: Lectures 10 & 11 (Address Translation, Multi-Level Paging, TLBs)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Paging & TLBs), and OSTEP Chapters 13–19 (Address Spaces, Paging, TLBs).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Review [exercises/07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md). Verify `.text`, `.data`, `.bss`, heap, memory-mapped region, and stack addresses in C.
   - Wed–Fri: Calculate multi-level page table math: 4-level x86-64 page tables (PGD, P4D, PUD, PMD, PTE) for 48-bit virtual address spaces with 4KB pages.
@@ -442,7 +446,7 @@
 
 ## Week 16: Feb 22 – Feb 28, 2027 | Dynamic Memory Allocation & Implicit Free Lists
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Section 9.9 (Dynamic Memory Allocation: `malloc`/`free`, throughput vs utilization, internal/external fragmentation) and [UC Berkeley CS 162: Lecture 12 (Demand Paging & Page Replacement)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
+  - Mon–Wed: CS:APP Section 9.9 (Dynamic Memory Allocation: `malloc`/`free`, throughput vs utilization, internal/external fragmentation), [UC Berkeley CS 162: Lecture 12 (Demand Paging & Page Replacement)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Beyond Physical Memory & Page Replacement).
   - Thu–Fri: [CMU 15-213: Lecture 18 (Dynamic Memory Allocation: Basic Concepts)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: Lecture 19 (Dynamic Memory Allocation)](https://www.youtube.com/@weiyang2613/videos).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Review [exercises/09_dynamic_memory_lifecycle.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.md) and implement [exercises/11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) in C.
@@ -545,7 +549,7 @@
 
 ## Week 24: Apr 19 – Apr 25, 2027 | Concurrent Programming & CodeCrafters Redis (Part 1)
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Chapter 12 (Concurrent Programming: process-based, I/O multiplexing, thread-based) and [UC Berkeley CS 162: Lectures 04 & 05 (Concurrency, Synchronization, Locks, Semaphores)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
+  - Mon–Wed: CS:APP Chapter 12 (Concurrent Programming: process-based, I/O multiplexing, thread-based), [UC Berkeley CS 162: Lectures 04 & 05 (Concurrency, Synchronization, Locks, Semaphores)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Concurrency & Locks).
   - Thu–Fri: [CMU 15-213: Lectures 22 & 23 (Concurrent Programming & Synchronization Basics)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: Recitation 14 (Synchronization)](https://www.youtube.com/@weiyang2613/videos).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: POSIX threads (`pthread_create`, `pthread_join`, `pthread_detach`). Trace shared stack memory and race conditions on global counters.
@@ -558,7 +562,7 @@
 ## Week 25: Apr 26 – May 2, 2027 | Thread Synchronization, Caching & CodeCrafters Redis (Part 2)
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: H&P 7th ed Chapter 5 (§§5.1–5.3 Shared-memory multiprocessors, cache coherence problem, snooping bus protocols [MSI/MESI], write-invalidate vs write-update, and false sharing), [Wei Yang: Recitation 13 (Proxy Lab Caching)](https://www.youtube.com/@weiyang2613/videos), and [UC Berkeley CS 162: Lecture 06 (Monitors, Condition Variables, Readers-Writers)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Readers-Writer Problem (favoring readers vs favoring writers); coarse vs fine-grained locking.
-  - Thu–Fri: OSTEP Chapter 32 (Common Concurrency Bugs) and [UC Berkeley CS 162: Lecture 07 (Deadlock & Priority Inversion)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Deadlock conditions, hold-and-wait, circular wait prevention.
+  - Thu–Fri: OSTEP Chapter 32 (Common Concurrency Bugs), [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Condition Variables, Semaphores, & Concurrency Bugs), and [UC Berkeley CS 162: Lecture 07 (Deadlock & Priority Inversion)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Deadlock conditions, hold-and-wait, circular wait prevention.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Design an in-memory thread-safe LRU cache structure in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c) with maximum object size (100KB) and total cache size (1MB).
   - Wed–Fri: Implement Readers-Writer lock synchronization protecting cache lookups and cache insertions. Run `./driver.sh`.
