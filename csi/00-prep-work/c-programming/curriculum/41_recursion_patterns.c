@@ -29,10 +29,8 @@
  * - If *s != '\0', how do you express total length in terms of s + 1?
  */
 static size_t rec_strlen(const char *s) {
-  if (*s == '\0') {
-    return 0;
-  }
-  return rec_strlen(s + 1) + 1;
+  (void)s;
+  return 0; /* TODO: implement */
 }
 
 /*
@@ -49,11 +47,9 @@ static size_t rec_strlen(const char *s) {
  */
 static size_t rec_count_char(const char *s, char target) {
   // TODO: Implement conditional linear pointer recursion
-  if (*s == '\0') {
-    return 0;
-  }
-
-  return (*s == target) + rec_count_char(s + 1, target);
+  (void)s;
+  (void)target;
+  return 0;
 }
 
 /*
@@ -73,13 +69,9 @@ static size_t rec_count_char(const char *s, char target) {
  */
 static bool rec_contains(const char *s, char target) {
   // TODO: Implement linear search with early termination
-  if (*s == '\0') {
-    return false;
-  }
-  if (*s == target) {
-    return true;
-  }
-  return rec_contains(s+1, target);
+  (void)s;
+  (void)target;
+  return false;
 }
 
 /*
@@ -96,13 +88,9 @@ static bool rec_contains(const char *s, char target) {
  * - If *prefix == *text, what are the arguments to the recursive call?
  */
 static bool rec_starts_with(const char *prefix, const char *text) {
-  if (*prefix == '\0') {
-    return true;
-  }
-  if (*prefix == *text) {
-    return rec_starts_with(prefix+1, text+1);
-  }
-  return false;
+  (void)prefix;
+  (void)text;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -134,11 +122,11 @@ static bool rec_starts_with(const char *prefix, const char *text) {
  */
 static bool rec_match_one_or_more(char target, const char *rest,
                                   const char *text) {
-  if (*text != target) {
-    return false;
-  }
-  return rec_match_one_or_more(target, rest, text + 1) || rec_starts_with(rest, text + 1);
-  }
+  (void)target;
+  (void)rest;
+  (void)text;
+  return false; /* TODO: implement */
+}
 
 int main(void) {
   printf("Running Exercise 17: Recursion Patterns tests...\n\n");

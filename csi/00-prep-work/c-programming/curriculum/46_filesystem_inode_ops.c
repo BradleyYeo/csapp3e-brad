@@ -48,41 +48,7 @@ extern void *sbrk(intptr_t increment);
  * - rmdir(): Removes an empty directory.
  */
 static bool test_directory_lifecycle(void) {
-  char orig_cwd[1024];
-  if (getcwd(orig_cwd, sizeof(orig_cwd)) == nullptr) {
-    return false;
-  }
-
-  const char *sandbox = "test_sandbox_dir";
-  // Clean up any stale directory from previous failed run
-  rmdir(sandbox);
-
-  // 1. Create directory with read, write, execute permissions for owner
-  if (mkdir(sandbox, 0755) != 0) {
-    return false;
-  }
-
-  // 2. Change into directory
-  if (chdir(sandbox) != 0) {
-    rmdir(sandbox);
-    return false;
-  }
-
-  // 3. Verify '.' has at least 2 hard links (itself and parent's link to it)
-  struct stat st;
-  if (stat(".", &st) != 0 || !S_ISDIR(st.st_mode) || st.st_nlink < 2) {
-    chdir(orig_cwd);
-    rmdir(sandbox);
-    return false;
-  }
-
-  // 4. Return to original directory
-  if (chdir(orig_cwd) != 0) {
-    return false;
-  }
-
-  // 5. Remove directory
-  return (rmdir(sandbox) == 0);
+  return false; /* TODO: implement */
 }
 
 /*
@@ -98,87 +64,7 @@ static bool test_directory_lifecycle(void) {
  * - unlink(): Removing first directory entry. File data persists through link 2 (st_nlink -> 1).
  */
 static bool test_hard_link_invariant(void) {
-  const char *file1 = "temp_inode_file_1.txt";
-  const char *file2 = "temp_inode_file_2.txt";
-  const char payload[] = "systems_inode_persistence_test";
-  const size_t len = sizeof(payload) - 1;
-
-  // Clean up any stale files
-  unlink(file1);
-  unlink(file2);
-
-  // 1. Create original file
-  int fd = open(file1, O_CREAT | O_RDWR | O_TRUNC, 0644);
-  if (fd < 0) {
-    return false;
-  }
-  if (write(fd, payload, len) != (ssize_t)len) {
-    close(fd);
-    unlink(file1);
-    return false;
-  }
-
-  // 2. Query inode metadata via fstat
-  struct stat st1;
-  if (fstat(fd, &st1) != 0) {
-    close(fd);
-    unlink(file1);
-    return false;
-  }
-  assert(st1.st_nlink == 1);
-  ino_t original_inode = st1.st_ino;
-
-  // 3. Create a hard link: file2 -> same inode as file1
-  if (link(file1, file2) != 0) {
-    close(fd);
-    unlink(file1);
-    return false;
-  }
-
-  // 4. Inspect inode link count via open fd
-  struct stat st_linked;
-  if (fstat(fd, &st_linked) != 0) {
-    close(fd);
-    unlink(file1);
-    unlink(file2);
-    return false;
-  }
-  // Hard link incremented the inode's reference count to 2
-  assert(st_linked.st_nlink == 2);
-  assert(st_linked.st_ino == original_inode);
-  close(fd);
-
-  // 5. Unlink original filename file1
-  if (unlink(file1) != 0) {
-    unlink(file2);
-    return false;
-  }
-
-  // 6. Invariant Verification: file2 still points to original inode with full content!
-  int fd2 = open(file2, O_RDONLY);
-  if (fd2 < 0) {
-    unlink(file2);
-    return false;
-  }
-
-  struct stat st2;
-  if (fstat(fd2, &st2) != 0) {
-    close(fd2);
-    unlink(file2);
-    return false;
-  }
-  assert(st2.st_ino == original_inode);
-  assert(st2.st_nlink == 1); // Back down to 1 link
-
-  char read_buf[64];
-  memset(read_buf, 0, sizeof(read_buf));
-  ssize_t bytes_read = read(fd2, read_buf, sizeof(read_buf) - 1);
-  close(fd2);
-
-  assert(bytes_read == (ssize_t)len && strcmp(read_buf, payload) == 0);
-
-  // Final cleanup: unlink second link, now inode reference count is 0 (disk blocks reclaimed)
-  return (unlink(file2) == 0);
+  return false; /* TODO: implement */
 }
 
 /*
@@ -191,27 +77,7 @@ static bool test_hard_link_invariant(void) {
  * - unlink(): Removes the FIFO from the VFS namespace.
  */
 static bool test_mknod_fifo(void) {
-  const char *fifo_path = "test_named_pipe.fifo";
-  unlink(fifo_path);
-
-  // Create FIFO special file
-  if (mknod(fifo_path, S_IFIFO | 0644, 0) != 0) {
-    return false;
-  }
-
-  struct stat st;
-  if (stat(fifo_path, &st) != 0) {
-    unlink(fifo_path);
-    return false;
-  }
-
-  // Invariant: mknod created a FIFO node in the VFS
-  if (!S_ISFIFO(st.st_mode)) {
-    unlink(fifo_path);
-    return false;
-  }
-
-  return (unlink(fifo_path) == 0);
+  return false; /* TODO: implement */
 }
 
 /*
@@ -226,43 +92,7 @@ static bool test_mknod_fifo(void) {
  * - sbrk(-increment): Contracts the program break downward, returning memory to kernel.
  */
 static bool test_program_break_sbrk(void) {
-  // Query initial program break
-  void *initial_break = sbrk(0);
-  if (initial_break == (void *)-1) {
-    return false;
-  }
-
-  // Grow the heap by 1024 bytes
-  intptr_t alloc_size = 1024;
-  void *prev_break = sbrk(alloc_size);
-  if (prev_break == (void *)-1) {
-    return false;
-  }
-
-  // Invariant 1: Return value of sbrk is the PREVIOUS break
-  assert(prev_break == initial_break);
-
-  // Invariant 2: Current break has advanced by alloc_size
-  void *new_break = sbrk(0);
-  assert((char *)new_break == (char *)initial_break + alloc_size);
-
-  // Verify memory is readable and writable
-  volatile uint8_t *heap_mem = (volatile uint8_t *)prev_break;
-  heap_mem[0] = 0xAA;
-  heap_mem[alloc_size - 1] = 0x55;
-  assert(heap_mem[0] == 0xAA && heap_mem[alloc_size - 1] == 0x55);
-
-  // Attempt to contract the heap back to initial break
-  void *rewound_break = sbrk(-alloc_size);
-  if (rewound_break != (void *)-1) {
-    void *final_break = sbrk(0);
-    // On Linux, the break contracts; on Darwin, sbrk does not contract backward
-    if (final_break == initial_break) {
-      assert(final_break == initial_break);
-    }
-  }
-
-  return true;
+  return false; /* TODO: implement */
 }
 
 #if defined(__clang__)
@@ -271,6 +101,19 @@ static bool test_program_break_sbrk(void) {
 
 int main(void) {
   printf("Running Exercise 16: VFS Inodes, Directories, Special Nodes & Heap Break...\n");
+
+  // Harness scaffolding: run the drills inside a sandbox directory so their
+  // temp files and subdirectories stay contained, then clean up and leave.
+  const char *sandbox = "csi_46_sandbox";
+  char orig_cwd[1024];
+  if (getcwd(orig_cwd, sizeof(orig_cwd)) == nullptr) {
+    return EXIT_FAILURE;
+  }
+  // Best effort: a stale sandbox from a previous interrupted run is reused
+  mkdir(sandbox, 0755);
+  if (chdir(sandbox) != 0) {
+    return EXIT_FAILURE;
+  }
 
   // Test 1: Directory lifecycle (mkdir, chdir, rmdir)
   assert(test_directory_lifecycle() == true);
@@ -287,6 +130,13 @@ int main(void) {
   // Test 4: Heap boundary manipulation via sbrk
   assert(test_program_break_sbrk() == true);
   printf("  [PASS] Drill 4: sbrk heap expansion, read/write, and contraction verified.\n");
+
+  // Harness cleanup: leave the sandbox and remove it (fails only if a drill
+  // leaked an artifact, which is itself a bug the drills must not have).
+  if (chdir(orig_cwd) != 0) {
+    return EXIT_FAILURE;
+  }
+  rmdir(sandbox);
 
   printf("[PASS] Exercise 16: All VFS, inode, and memory break system calls verified successfully.\n");
   return EXIT_SUCCESS;

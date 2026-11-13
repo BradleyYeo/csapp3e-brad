@@ -31,22 +31,9 @@
  * Expected output: true if regular file with valid size, false otherwise.
  */
 static bool get_file_len(int fd, size_t *len_out) {
-  if (fd < 0 || len_out == nullptr) {
-    return false;
-  }
-
-  struct stat sb; // stores file metadata
-  if (fstat(fd, &sb) != 0) { // write metadata directly to sb
-    return false; // retruns false immediately if FD is inaccessible or invalid
-  }
-
-  // Only regular files can be mapped; sockets, pipes, and FIFOs cannot
-  if (!S_ISREG(sb.st_mode)) {
-    return false; // If the descriptor does not refer to a regular file, get_file_len aborts early and returns false.
-  }
-
-  *len_out = (size_t)sb.st_size;
-  return true;
+  (void)fd;
+  (void)len_out;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -63,21 +50,11 @@ static bool get_file_len(int fd, size_t *len_out) {
  * Expected output: pointer to mapped memory, or nullptr on failure.
  */
 static const char *map_file_ro(int fd, size_t len) {
-  if (fd < 0 || len == 0) {
-    return nullptr;
-  }
-
-  void *addr = mmap(nullptr, len, PROT_READ, MAP_PRIVATE, fd, 0);
-  if (addr == MAP_FAILED) {
-    return nullptr;
-  }
-
-  // Hint to Linux kernel readahead engine for sequential streaming
-  #ifdef MADV_SEQUENTIAL
-  madvise(addr, len, MADV_SEQUENTIAL);
-  #endif
-
-  return (const char *)addr;
+  (void)fd;
+  (void)len;
+  /* TODO: implement — PROT_READ + MAP_PRIVATE mapping of len bytes, nullptr on
+   * MAP_FAILED; optionally madvise(.., MADV_SEQUENTIAL) under an #ifdef. */
+  return nullptr;
 }
 
 /*
@@ -93,11 +70,10 @@ static const char *map_file_ro(int fd, size_t len) {
  * Expected output: pointer to matching byte, or nullptr if not found.
  */
 static const char *find_byte_bounded(const char *buf, size_t len, char target) {
-  if (buf == nullptr || len == 0) {
-    return nullptr;
-  }
-
-  return (const char *)memchr(buf, target, len);
+  (void)buf;
+  (void)len;
+  (void)target;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -109,11 +85,9 @@ static const char *find_byte_bounded(const char *buf, size_t len, char target) {
  * Expected output: true on successful unmapping, false otherwise.
  */
 static bool unmap_file(const char *addr, size_t len) {
-  if (addr == nullptr || len == 0) {
-    return false;
-  }
-
-  return munmap((void *)addr, len) == 0;
+  (void)addr;
+  (void)len;
+  return false; /* TODO: implement */
 }
 
 /*

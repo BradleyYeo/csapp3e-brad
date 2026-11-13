@@ -40,37 +40,8 @@
  * - waitpid(): Blocks until specified child terminates, reaps zombie, extracts exit status.
  */
 static bool test_fork_and_wait(int expected_exit_code) {
-  pid_t parent_pid = getpid();
-  assert(parent_pid > 0);
-
-  pid_t pid = fork();
-  if (pid < 0) {
-    return false; // fork failed
-  }
-
-  if (pid == 0) {
-    // Child process execution path
-    pid_t my_pid = getpid();
-    if (my_pid == parent_pid) {
-      exit(EXIT_FAILURE); // Invariant check: Child PID must differ from parent
-    }
-    // Perform task and exit with status code
-    exit(expected_exit_code);
-  }
-
-  // Parent process execution path
-  int status = 0;
-  pid_t reaped_pid = waitpid(pid, &status, 0);
-  if (reaped_pid != pid) {
-    return false;
-  }
-
-  // Verify child exited normally and check reported status byte
-  if (!WIFEXITED(status) || WEXITSTATUS(status) != expected_exit_code) {
-    return false;
-  }
-
-  return true;
+  (void)expected_exit_code;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -82,38 +53,7 @@ static bool test_fork_and_wait(int expected_exit_code) {
  * - waitpid(): Reaps signaled child and inspects signal termination via WIFSIGNALED.
  */
 static bool test_signal_kill(void) {
-  pid_t pid = fork();
-  if (pid < 0) {
-    return false;
-  }
-
-  if (pid == 0) {
-    // Child sleeps indefinitely until killed
-    while (true) {
-      sleep(10);
-    }
-    exit(EXIT_SUCCESS);
-  }
-
-  // Parent sleeps briefly to allow child to schedule, then dispatches SIGTERM
-  usleep(20000); // 20ms
-
-  if (kill(pid, SIGTERM) != 0) {
-    return false;
-  }
-
-  int status = 0;
-  pid_t reaped = waitpid(pid, &status, 0);
-  if (reaped != pid) {
-    return false;
-  }
-
-  // Verify process was killed by a signal and that signal was SIGTERM
-  if (!WIFSIGNALED(status) || WTERMSIG(status) != SIGTERM) {
-    return false;
-  }
-
-  return true;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -125,50 +65,9 @@ static bool test_signal_kill(void) {
  * - close(): Decrements reference count on open file table entry.
  */
 static bool test_fd_redirection(const char *temp_path, const char *payload) {
-  int fd = open(temp_path, O_CREAT | O_WRONLY | O_TRUNC, 0644);
-  if (fd < 0) {
-    return false;
-  }
-
-  // Save current stdout
-  int saved_stdout = dup(STDOUT_FILENO);
-  if (saved_stdout < 0) {
-    close(fd);
-    return false;
-  }
-
-  // Redirect stdout to our open file
-  if (dup2(fd, STDOUT_FILENO) < 0) {
-    close(fd);
-    close(saved_stdout);
-    return false;
-  }
-  close(fd); // Original fd is no longer needed; STDOUT_FILENO now refers to the file
-
-  // Writes to stdout now land directly in the file
-  size_t len = strlen(payload);
-  ssize_t written = write(STDOUT_FILENO, payload, len);
-
-  // Restore original stdout
-  dup2(saved_stdout, STDOUT_FILENO);
-  close(saved_stdout);
-
-  if (written != (ssize_t)len) {
-    return false;
-  }
-
-  // Verify file contents by reading back
-  int verify_fd = open(temp_path, O_RDONLY);
-  if (verify_fd < 0) {
-    return false;
-  }
-
-  char buf[64];
-  memset(buf, 0, sizeof(buf));
-  ssize_t bytes_read = read(verify_fd, buf, sizeof(buf) - 1);
-  close(verify_fd);
-
-  return (bytes_read == (ssize_t)len && strcmp(buf, payload) == 0);
+  (void)temp_path;
+  (void)payload;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -184,85 +83,9 @@ static bool test_fd_redirection(const char *temp_path, const char *payload) {
  * - execvp(): Overlays process address space with new program executable.
  */
 static bool test_pipeline_execution(char *output_buf, size_t max_output) {
-  int pipefd[2];
-  if (pipe(pipefd) != 0) {
-    return false;
-  }
-
-  // Pipe to capture child2 stdout back into parent
-  int capture_pipe[2];
-  if (pipe(capture_pipe) != 0) {
-    close(pipefd[0]);
-    close(pipefd[1]);
-    return false;
-  }
-
-  // Fork First Child (Producer: writes to pipefd[1])
-  pid_t pid1 = fork();
-  if (pid1 < 0) {
-    return false;
-  }
-
-  if (pid1 == 0) {
-    // Child 1: Connect stdout to pipefd[1]
-    close(pipefd[0]);        // Close unused read end
-    close(capture_pipe[0]);  // Unused in child 1
-    close(capture_pipe[1]);  // Unused in child 1
-
-    dup2(pipefd[1], STDOUT_FILENO);
-    close(pipefd[1]);
-
-    char *argv[] = {"echo", "kernel pipelines work", nullptr};
-    execvp(argv[0], argv);
-    // Only reachable if execvp fails
-    exit(EXIT_FAILURE);
-  }
-
-  // Fork Second Child (Consumer: reads from pipefd[0], writes to capture_pipe[1])
-  pid_t pid2 = fork();
-  if (pid2 < 0) {
-    return false;
-  }
-
-  if (pid2 == 0) {
-    // Child 2: Connect stdin to pipefd[0], stdout to capture_pipe[1]
-    close(pipefd[1]);        // Close unused write end
-    close(capture_pipe[0]);  // Close unused capture read end
-
-    dup2(pipefd[0], STDIN_FILENO);
-    close(pipefd[0]);
-
-    dup2(capture_pipe[1], STDOUT_FILENO);
-    close(capture_pipe[1]);
-
-    char *argv[] = {"tr", "a-z", "A-Z", nullptr};
-    execvp(argv[0], argv);
-    // Only reachable if execvp fails
-    exit(EXIT_FAILURE);
-  }
-
-  // Parent: Close pipefd ends so Child 2 observes EOF when Child 1 exits
-  close(pipefd[0]);
-  close(pipefd[1]);
-  close(capture_pipe[1]); // Close capture write end so parent reads EOF
-
-  // Read transformed output from capture pipe
-  ssize_t total_read = 0;
-  ssize_t bytes = 0;
-  while ((bytes = read(capture_pipe[0], output_buf + total_read, max_output - 1 - total_read)) > 0) {
-    total_read += bytes;
-  }
-  output_buf[total_read] = '\0';
-  close(capture_pipe[0]);
-
-  // Reap both children to eliminate zombies
-  int status1 = 0;
-  int status2 = 0;
-  waitpid(pid1, &status1, 0);
-  waitpid(pid2, &status2, 0);
-
-  return (WIFEXITED(status1) && WEXITSTATUS(status1) == 0 &&
-          WIFEXITED(status2) && WEXITSTATUS(status2) == 0);
+  (void)output_buf;
+  (void)max_output;
+  return false; /* TODO: implement */
 }
 
 int main(void) {
