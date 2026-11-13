@@ -14,8 +14,8 @@ int main() {
   // Added table heading
   printf("\tFarenheit to Celsius\n");
   while (fahr <= upper) {
-    celsius = (5.0 / 9.0) * (fahr - 32.0);
-    printf("\t%3.0f %6.1f\n", fahr, celsius);
-    fahr = fahr + step;
+    celsius = (fahr -32) * 5/9;
+    fahr += step;
+    printf("%f  |   %f \n", fahr, celsius);
   }
 }

@@ -140,3 +140,7 @@ Earlier drafts superseded by a polished version of the *same* exercise (e.g.
 tab-stops (re-does 1-20/1-21), 5-13 `tail` (same line-pointer concept as 5-7),
 7-4 minscanf draft, duplicate `03_bump_allocator.md` and `06_valgrind_fundamentals.md`
 guides, and scratch `test.c`/`test.txt`.
+
+wsl -d Ubuntu
+cd /mnt/c/Users/P0109783/Documents/csapp3e-brad/csi/00-prep-work/c-programming/curriculum
+make 02_kr103_temp_f_to_c && ./02_kr103_temp_f_to_c 
