@@ -43,7 +43,7 @@ typedef struct {
  * - If read returns -1 and errno == EINTR (system call interrupted by signal), retry immediately.
  * - If read returns -1 with any other errno, return false.
  */
-static bool safe_read_byte(int fd, uint8_t *byte_out) {
+[[maybe_unused]] static bool safe_read_byte(int fd, uint8_t *byte_out) {
   (void)fd;
   (void)byte_out;
   return false; /* TODO: implement */
@@ -58,7 +58,7 @@ static bool safe_read_byte(int fd, uint8_t *byte_out) {
  * - If write returns -1 and errno == EINTR, retry immediately.
  * - If write returns -1 with any other errno, return false.
  */
-static bool safe_write_byte(int fd, uint8_t byte) {
+[[maybe_unused]] static bool safe_write_byte(int fd, uint8_t byte) {
   (void)fd;
   (void)byte;
   return false; /* TODO: implement */

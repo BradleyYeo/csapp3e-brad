@@ -1,65 +1,66 @@
-/* 	Write the function strrindex(s,t) , which returns the position of the 
+/* 	Write the function strrindex(s,t) , which returns the position of the
 rightmost occurrence of t in s , or -1 if there is none. */
 
+/* NOTE: striindex in the book is much more succinct - can be converted into this with 1 additional variable */
+
+/* Here the function is pointer-based: it yields the pointer into s instead
+of the index (index == found ? ptr - s : -1), and nullptr instead of -1. */
+
+/* nullptr is a C23 keyword; define it for older dialects */
+#if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
+#ifndef nullptr
+#define nullptr NULL
+#endif
+#endif
+
 #include<stdio.h>
-#define MAXLENGTH 200/* Max line length */
-int getLine(char s[], int lim);
-int strrindex(char s[], char t[]);
+#include<assert.h>
+#include<stdlib.h>
+
+const char *strrindex(const char *s, const char *t);
 
 int main() {
-    char s[MAXLENGTH];
-    char t[] = "a";
-    
-    while (getLine(s, MAXLENGTH)) {
-        /* printf("Enter pattern to search for\n"); Avoid inputting pattern using getLine -> it will always have a '\n' at the end which will not match*/ 
-        /* getLine(t, MAXLENGTH); */
-        printf("The rightmost occurrence of %s in %s is at %d", t, s, strrindex(s, t)); //index %d", strrindex(s, t))
-    }
+    const char *s;
 
-    return 0;
+    s = "abcabc";
+    assert(strrindex(s, "abc") == s + 3);
+
+    s = "hello";
+    assert(strrindex(s, "l") == s + 3);
+    assert(strrindex(s, "z") == nullptr);
+    assert(strrindex(s, "hello") == s);
+
+    s = "aaaa";
+    assert(strrindex(s, "aa") == s + 2);
+
+    s = "abababa";
+    assert(strrindex(s, "aba") == s + 4);
+
+    s = "abc";
+    assert(strrindex(s, "abcd") == nullptr);
+
+    s = "the cat in the hat";
+    assert(strrindex(s, "the") == s + 11);
+
+    s = "mississippi";
+    assert(strrindex(s, "issi") == s + 4);
+
+    s = "xabcx";
+    assert(strrindex(s, "abc") == s + 1);
+
+    printf("[PASS] Exercise 24: strrindex verified.\n");
+    return EXIT_SUCCESS;
 }
 
-int getLine(char s[], int lim) {
-    int i = 0;
-    int c;
-    while (i < lim - 1 && (c = getchar()) != EOF && c != '\n') {
-        s[i++] = c;
-    }
-    if (c == '\n')
-        s[i++] = c;
-    s[i] = '\0';
-    
-    return i;
+/*
+ * strrindex(s, t): locates the rightmost occurrence of t inside s.
+ * Input:  s - haystack, t - needle, both NUL-terminated.
+ * Output: pointer to the first character of the last match in s,
+ *         or nullptr when t does not occur in s. Overlapping matches
+ *         count: needle "aa" in "aaaa" is found at s + 2.
+ */
+const char *strrindex(const char *s, const char *t) {
+    (void)s;
+    (void)t;
+    return nullptr; /* TODO: implement */
 }
-
-/* NOTE: striindex in the book is much more succinct - can be converted into this with 1 additional variable */
-int strrindex(char s[], char t[]) {
-    int i = 0, j = 0, matchIndex = -1, curMatchIndex = 0;
-
-    /* Either of the two is empty */
-    if (s[i] == '\0' || t[j] == '\0') {
-        return -1;
-    }
-
-    while (s[i] != '\0') {
-        if (s[i] == t[j]) { /* chars match */
-            ++i;
-            ++j;
-            if (t[j] == '\0') { /* If complete match found */
-                matchIndex = curMatchIndex;
-                ++curMatchIndex;
-                i = curMatchIndex; /* Start matching i again from next index */
-                j = 0;
-            }
-        } else if (j != 0) { /* chars dont match and j not equal to 0 -> move j to start */
-            j = 0;
-        } else { /* chars dont match and j is equal to 0 -> increase i */
-            ++curMatchIndex;
-            i = curMatchIndex;
-        }
-    }
-
-    return matchIndex;
-
-}
-
