@@ -13,7 +13,8 @@ DRILLS = 20_pointer_traversal 21_anchored_matching 22_enum_state_machine \
          34_dynamic_memory_lifecycle 35_memory_safety_sanitizers \
          36_bump_allocator 37_valgrind_fundamentals 41_recursion_patterns \
          42_macro_fundamentals 45_mmap_search 46_filesystem_inode_ops \
-         47_pipe_pingpong 48_process_pipeline_exec 50_pipelining_hazards
+         47_pipe_pingpong 48_process_pipeline_exec
+# 50_pipelining_hazards excluded: its test-stub section is an unfinished TODO — completing it IS the exercise.
 
 # 17_kr301 excluded on purpose: it has a syntax error — fixing it IS the exercise.
 KR = 01_hello_world 02_kr103_temp_f_to_c 03_kr105_temp_for_loop \
@@ -22,8 +23,9 @@ KR = 01_hello_world 02_kr103_temp_f_to_c 03_kr105_temp_for_loop \
      10_kr120_detab 11_kr122_fold_lines 12_kr123_remove_comments \
      13_kr201_type_ranges 14_kr203_htoi 15_kr206_setbits 16_kr208_rightrot \
      18_kr303_expand_ranges 19_kr305_itob 24_kr401_strrindex 25_kr503_strcat \
-     26_kr504_strend 27_kr505_strn_family 29_pointer_decay 33_kr507_sortlines \
+     27_kr505_strn_family 29_pointer_decay 33_kr507_sortlines \
      38_kr803_malloc_flushbuf 43_kr706_compare_files 44_kr801_fcopy
+# 26_kr504_strend excluded: functions only, no main — write the test main as part of the exercise.
 
 KR_LINKED = 28_kr501_getch_ungetch 40_kr602_getword_groups
 
@@ -36,6 +38,11 @@ kr: $(KR) $(KR_LINKED)
 
 $(DRILLS): %: %.c
 	$(CC) $(CFLAGS_STRICT) -o $@ $<
+
+# 42 teaches macros and uses 0b... literals; allow the GNU extension there
+42_macro_fundamentals: CFLAGS_STRICT += -Wno-gnu-binary-literal
+# 48 uses usleep(), a POSIX extension hidden by strict -std=c23
+48_process_pipeline_exec: CFLAGS_STRICT += -D_DEFAULT_SOURCE
 
 $(KR): %: %.c
 	$(CC) $(CFLAGS_KR) -o $@ $<

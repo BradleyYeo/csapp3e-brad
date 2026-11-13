@@ -19,6 +19,13 @@ make test-sanitizers
 
 Single file: `make 20_pointer_traversal && ./20_pointer_traversal`
 
+> ⚠️ Build and run from a **Linux (ext4) filesystem** (e.g. clone the repo under `~` in
+> WSL). Drills 45–48 create directories, hard links, FIFOs, and pipes; NTFS mounts
+> under `/mnt/c` don't emulate inodes faithfully and 46 will abort there.
+
+Targets 17, 26, and 50 are deliberately outside `make all` — they're incomplete on
+purpose (fix-it exercises); see their rows below.
+
 ---
 
 ## Stage A — Language foundations (K&R Ch. 1–3)
@@ -57,7 +64,7 @@ Control flow, character I/O, arrays, bit arithmetic. All single-file.
 | 23 | `23_char_group_slicing.{c,md}` | pointer subtraction, memcpy null-termination invariant |
 | 24 | `24_kr401_strrindex.c` | rightmost substring search |
 | 25 | `25_kr503_strcat.c` | **repair target** — remove malloc for in-place concat, `const char *t`, fix `getstrlen` UB (see REMEDIATION Phase A) |
-| 26 | `26_kr504_strend.c` | suffix match with end-pointer arithmetic, no `[]` |
+| 26 | `26_kr504_strend.c` | suffix match with end-pointer arithmetic, no `[]` — functions only; **write the test `main` yourself** (not in default build) |
 | 27 | `27_kr505_strn_family.c` | bounded string ops, length-limit discipline |
 | 28 | `28_kr501_getch_ungetch.c` | pushback buffering (`make 28_kr501_getch_ungetch` links `_resources/getch.c`) |
 
@@ -101,7 +108,7 @@ Control flow, character I/O, arrays, bit arithmetic. All single-file.
 | # | File | Concept |
 |---|---|---|
 | 49 | `49_hoare_logic_refactoring.{py,md}` | specs, loop invariants, refinement (`python3 49_hoare_logic_refactoring.py`) |
-| 50 | `50_pipelining_hazards.{c,md}` | hazard units vs data/control hazards |
+| 50 | `50_pipelining_hazards.{c,md}` | hazard units vs data/control hazards — **repair target**: the test-stub section doesn't compile; completing it is the exercise (not in default build) |
 | 51 | `51_python_pointer_chasing.{py,md}` | references vs pointers, transfer check |
 
 **Graduation:** `../projects/ls_clone` and `../projects/malloc_clone` — nothing here
