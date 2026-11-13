@@ -31,11 +31,13 @@
  * - Rule 2: The entire macro replacement expression must be enclosed in outer parentheses: (...).
  */
 
-/* Flawed macro without argument and expression wrapping */
-#define BAD_SCALE_OFFSET(base, idx, stride) base + idx * stride
+/* TODO: define BAD_SCALE_OFFSET(base, idx, stride) — deliberately flawed
+ * scale/offset with NO argument or expression wrapping, so compound arguments
+ * tear (Invariants 1 and 2 violated). */
 
-/* Correct macro with full argument and expression parenthesization */
-#define SAFE_SCALE_OFFSET(base, idx, stride) (((base) + ((idx) * (stride))))
+/* TODO: define SAFE_SCALE_OFFSET(base, idx, stride) — base + idx * stride with
+ * every parameter reference parenthesised AND the whole replacement expression
+ * parenthesised (Invariants 1 and 2 satisfied). */
 
 /*
  * Bit testing macro:
@@ -43,8 +45,11 @@
  * In C, '!=' has higher precedence than '&'.
  * Therefore: val & 1U << bit != 0 parses as: val & ((1U << bit) != 0), which degrades to val & 1!
  */
-#define BAD_IS_BIT_SET(val, bit) val & (1U << bit) != 0
-#define SAFE_IS_BIT_SET(val, bit) ((((val) & (1U << (bit)))) != 0U)
+/* TODO: define BAD_IS_BIT_SET(val, bit) — deliberately flawed bit test that
+ * relies on bare `val & (1U << bit) != 0` so '!=' binds tighter than '&'. */
+
+/* TODO: define SAFE_IS_BIT_SET(val, bit) — bit test with bitwise operation in
+ * full relational isolation before the comparison against zero (Invariant 3). */
 
 /*
  * Exercise 2: Statement Atomicity & The do { ... } while (0) Semicolon Idiom
@@ -62,12 +67,9 @@
  *   3. It introduces a private local block scope for temporary variables.
  */
 
-#define SWAP_TYPED(a, b, type) \
-  do {                         \
-    type _swap_tmp = (a);      \
-    (a) = (b);                 \
-    (b) = _swap_tmp;           \
-  } while (0)
+/* TODO: define SWAP_TYPED(a, b, type) — swap two same-typed lvalues through a
+ * block-scoped temporary, expanded as ONE atomic statement that still requires
+ * the caller's trailing semicolon (safe in an unbraced if/else). */
 
 /*
  * Exercise 3: Preprocessor Operators: Stringification (#) and Token Concatenation (##)
