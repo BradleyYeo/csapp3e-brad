@@ -82,25 +82,23 @@
  *   you MUST introduce an intermediate indirection macro.
  */
 
-/* Direct stringification (inhibits prescan) */
-#define STR_DIRECT(x) #x
+/* TODO: define STR_DIRECT(x) — stringify the argument exactly as written
+ * (parameter is an operand of '#', so argument prescan is inhibited). */
 
-/* Two-level stringification (forces macro prescan expansion) */
-#define STR(x) STR_DIRECT(x)
+/* TODO: define STR(x) — two-level stringification: route the argument through
+ * one intermediate macro so it is macro-expanded before it is stringified. */
 
 /*
  * Macro-based Code Generator: Generates typed min functions using token pasting.
  * In C, before C11 _Generic or C++ templates, token pasting was the primary mechanism
  * for generic algorithms and typed container instantiation.
  */
-#define DEFINE_TYPED_MIN(type, name)                      \
-  static inline type min_##name(type a, type b) {         \
-    return (a < b) ? a : b;                               \
-  }
+/* TODO: define DEFINE_TYPED_MIN(type, name) — paste 'min_' and 'name' with '##'
+ * to emit a static inline function of return type 'type' taking two 'type'
+ * parameters and yielding the smaller one. */
 
-DEFINE_TYPED_MIN(int, int)
-DEFINE_TYPED_MIN(double, dbl)
-DEFINE_TYPED_MIN(uint64_t, u64)
+/* TODO: instantiate min_int (int), min_dbl (double) and min_u64 (uint64_t)
+ * with DEFINE_TYPED_MIN once the macro above is defined. */
 
 /*
  * Exercise 4: Linux Systems & Kernel Idioms (ARRAY_SIZE, offsetof, container_of)
@@ -121,12 +119,14 @@ DEFINE_TYPED_MIN(uint64_t, u64)
  */
 
 /* Compile-time assertion that evaluates to zero on success and fails compilation on error */
-#define BUILD_BUG_ON_ZERO(e) (0 * sizeof(struct { int _dummy : 1 - 2 * (int)!!(e); }))
+/* TODO: define BUILD_BUG_ON_ZERO(e) — expression worth 0 when (e) is false;
+ * when (e) is true it must make the translation unit ill-formed. */
 
 /* Safe array size with pointer decay prevention */
-#define ARRAY_SIZE_SAFE(arr) \
-  (sizeof(arr) / sizeof((arr)[0]) + \
-   BUILD_BUG_ON_ZERO(__builtin_types_compatible_p(typeof(arr), typeof(&(arr)[0]))))
+/* TODO: define ARRAY_SIZE_SAFE(arr) — element count of a real array that also
+ * rejects a decayed pointer at compile time, by combining sizeof with
+ * BUILD_BUG_ON_ZERO and __builtin_types_compatible_p on typeof(arr) vs
+ * typeof(&(arr)[0]). */
 
 /*
  * Byte offset of member within struct:
@@ -135,9 +135,9 @@ DEFINE_TYPED_MIN(uint64_t, u64)
  * triggering runtime null-pointer dereference checks during unevaluated expressions.
  */
 #if defined(__has_builtin) && __has_builtin(__builtin_offsetof)
-#define MY_OFFSETOF(type, member) __builtin_offsetof(type, member)
+/* TODO: define MY_OFFSETOF(type, member) via __builtin_offsetof */
 #else
-#define MY_OFFSETOF(type, member) ((size_t)&(((type *)0)->member))
+/* TODO: define MY_OFFSETOF(type, member) via the C89 null-address form */
 #endif
 
 /*
@@ -145,10 +145,11 @@ DEFINE_TYPED_MIN(uint64_t, u64)
  * Computes: (type *)((char *)ptr - offsetof(type, member))
  * Includes type-check temporary pointer to ensure ptr type matches member type.
  */
-#define CONTAINER_OF_SAFE(ptr, type, member) __extension__ ({ \
-  const typeof(((type *)0)->member) *__mptr = (ptr);          \
-  (type *)((char *)__mptr - MY_OFFSETOF(type, member));       \
-})
+/* TODO: define CONTAINER_OF_SAFE(ptr, type, member) — recover the containing
+ * struct from a member pointer: (type *)((char *)ptr - MY_OFFSETOF(type,
+ * member)), char-casting first so the subtraction is byte-wise, and routing
+ * through a type-checked temporary of the member's own type. Needs a
+ * statement expression (guard with __extension__ under -pedantic). */
 
 /* Intrusive data structure representation for testing */
 struct IntrusiveListNode {
@@ -179,18 +180,18 @@ struct LinuxProcessTask {
  */
 
 /* Unsafe macro: evaluates arguments twice */
-#define UNSAFE_MAX(a, b) ((a) > (b) ? (a) : (b))
+/* TODO: define UNSAFE_MAX(a, b) — ternary maximum that references EACH
+ * parameter twice, so a side-effecting argument runs twice. */
 
 /* Safe macro: evaluates arguments exactly once using statement expression and temporary bindings */
-#define SAFE_MAX_EXPR(a, b) __extension__ ({ \
-  typeof(a) _eval_a = (a);                   \
-  typeof(b) _eval_b = (b);                   \
-  _eval_a > _eval_b ? _eval_a : _eval_b;     \
-})
+/* TODO: define SAFE_MAX_EXPR(a, b) — maximum as a statement expression that
+ * binds each argument to a typeof temporary exactly once. */
 
 /* Idiomatic C23 standard inline function alternative */
 static inline int safe_max_func(int a, int b) {
-  return (a > b) ? a : b;
+  (void)a;
+  (void)b;
+  return 0; /* TODO: implement */
 }
 
 int main(void) {
