@@ -43,20 +43,12 @@ typedef struct {
  * Uses calloc to zero-initialize the memory block.
  */
 static AllocStatus buffer_create(Buffer *buf, size_t initial_cap) {
-  if (buf == nullptr || initial_cap == 0) {
-    return ALLOC_INVALID_ARG;
-  }
-
-  buf->data = calloc(initial_cap, sizeof(uint8_t));
-  if (buf->data == nullptr) {
-    buf->size = 0;
-    buf->capacity = 0;
-    return ALLOC_OUT_OF_MEMORY;
-  }
-
-  buf->size = 0;
-  buf->capacity = initial_cap;
-  return ALLOC_SUCCESS;
+  (void)buf;
+  (void)initial_cap;
+  /* TODO: implement — ALLOC_INVALID_ARG on bad args, calloc(initial_cap,
+   * sizeof(uint8_t)) into buf->data, ALLOC_OUT_OF_MEMORY when calloc fails.
+   * Stub allocates nothing so no later assert can free an unowned pointer. */
+  return ALLOC_INVALID_ARG;
 }
 
 /*
@@ -64,14 +56,10 @@ static AllocStatus buffer_create(Buffer *buf, size_t initial_cap) {
  * Defining dangling pointers out of existence (Jimmy Koppel).
  */
 static void buffer_destroy(Buffer *buf) {
-  if (buf == nullptr) {
-    return;
-  }
-
-  free(buf->data);
-  buf->data = nullptr;
-  buf->size = 0;
-  buf->capacity = 0;
+  (void)buf;
+  /* TODO: implement — free(buf->data), then set data = nullptr, size = 0,
+   * capacity = 0. Stub frees nothing, so a stubbed buffer_create can never
+   * produce a double free before the first assert runs. */
 }
 
 /*
@@ -93,23 +81,9 @@ static void buffer_destroy(Buffer *buf) {
  * - Return ALLOC_SUCCESS.
  */
 static AllocStatus buffer_append(Buffer *buf, uint8_t byte) {
-  if (buf == nullptr || buf->data == nullptr) {
-    return ALLOC_INVALID_ARG;
-  }
-
-  if (buf->size == buf->capacity) {
-    size_t new_cap = (buf->capacity == 0) ? 1 : buf->capacity * 2;
-    uint8_t *temp = realloc(buf->data, new_cap * sizeof(uint8_t));
-    if (temp == nullptr) {
-      return ALLOC_OUT_OF_MEMORY;
-    }
-    buf->data = temp;
-    buf->capacity = new_cap;
-  }
-
-  buf->data[buf->size] = byte;
-  buf->size++;
-  return ALLOC_SUCCESS;
+  (void)buf;
+  (void)byte;
+  return ALLOC_INVALID_ARG; /* TODO: implement */
 }
 
 /*
@@ -126,23 +100,8 @@ static AllocStatus buffer_append(Buffer *buf, uint8_t byte) {
  * - Return ALLOC_SUCCESS or ALLOC_OUT_OF_MEMORY.
  */
 static AllocStatus buffer_shrink_to_fit(Buffer *buf) {
-  if (buf == nullptr || buf->data == nullptr) {
-    return ALLOC_INVALID_ARG;
-  }
-
-  if (buf->size == buf->capacity) {
-    return ALLOC_SUCCESS;
-  }
-
-  size_t target_cap = (buf->size == 0) ? 1 : buf->size;
-  uint8_t *temp = realloc(buf->data, target_cap * sizeof(uint8_t));
-  if (temp == nullptr) {
-    return ALLOC_OUT_OF_MEMORY;
-  }
-
-  buf->data = temp;
-  buf->capacity = target_cap;
-  return ALLOC_SUCCESS;
+  (void)buf;
+  return ALLOC_INVALID_ARG; /* TODO: implement */
 }
 
 /*
@@ -158,23 +117,11 @@ static AllocStatus buffer_shrink_to_fit(Buffer *buf) {
  * - Return ALLOC_SUCCESS or ALLOC_OUT_OF_MEMORY.
  */
 static AllocStatus buffer_clone(Buffer *dest, const Buffer *src) {
-  if (dest == nullptr || src == nullptr || src->data == nullptr) {
-    return ALLOC_INVALID_ARG;
-  }
-
-  dest->data = malloc(src->capacity * sizeof(uint8_t));
-  if (dest->data == nullptr) {
-    dest->size = 0;
-    dest->capacity = 0;
-    return ALLOC_OUT_OF_MEMORY;
-  }
-
-  if (src->size > 0) {
-    memcpy(dest->data, src->data, src->size);
-  }
-  dest->size = src->size;
-  dest->capacity = src->capacity;
-  return ALLOC_SUCCESS;
+  (void)dest;
+  (void)src;
+  /* TODO: implement — leave dest untouched on the stub path so it can never
+   * alias (and double free) src's storage. */
+  return ALLOC_INVALID_ARG;
 }
 
 int main(void) {

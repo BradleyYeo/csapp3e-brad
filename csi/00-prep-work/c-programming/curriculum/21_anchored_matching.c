@@ -22,9 +22,9 @@
  * Output: true if [a-zA-Z0-9_], false otherwise.
  * Example: 'a' -> true, '_' -> true, '!' -> false
  */
-static bool is_word_char(char c) {
-  unsigned char uc = (unsigned char)c;
-  return isalnum(uc) || c == '_';
+[[maybe_unused]] static bool is_word_char(char c) {
+  (void)c;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -34,21 +34,9 @@ static bool is_word_char(char c) {
  * Example: text="cat", pattern="c" -> true; text="cat", pattern="a" -> false
  */
 static bool match_here(const char *text, const char *pattern) {
-  if (pattern[0] == '\0') {
-    return true;
-  }
-
-  if (text[0] == '\0') {
-    return false;
-  }
-
-  // Handle \w escape sequence
-  if (pattern[0] == '\\' && pattern[1] == 'w') {
-    return is_word_char(text[0]);
-  }
-
-  // Literal character match
-  return text[0] == pattern[0];
+  (void)text;
+  (void)pattern;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -58,13 +46,9 @@ static bool match_here(const char *text, const char *pattern) {
  * Example: text="apple", pattern="l" -> true
  */
 static bool find_pattern(const char *text, const char *pattern) {
-  for (const char *cursor = text; *cursor != '\0'; ++cursor) {
-    if (match_here(cursor, pattern)) {
-      return true;
-    }
-  }
-
-  return false;
+  (void)text;
+  (void)pattern;
+  return false; /* TODO: implement */
 }
 
 int main(void) {

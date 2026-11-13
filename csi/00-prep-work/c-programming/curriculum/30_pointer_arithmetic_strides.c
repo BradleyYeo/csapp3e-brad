@@ -39,11 +39,9 @@ typedef struct {
  * - Return advanced pointer address.
  */
 static const void *advance_bytes(const void *base, size_t byte_offset) {
-  if (base == nullptr) {
-    return nullptr;
-  }
-  const unsigned char *byte_ptr = (const unsigned char *)base;
-  return (const void *)(byte_ptr + byte_offset);
+  (void)base;
+  (void)byte_offset;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -57,10 +55,10 @@ static const void *advance_bytes(const void *base, size_t byte_offset) {
  * - Must use byte stride calculation (advance_bytes), no array bracket indexing.
  */
 static const void *get_element_at(const void *base, size_t index, size_t elem_size) {
-  if (base == nullptr || elem_size == 0) {
-    return nullptr;
-  }
-  return advance_bytes(base, index * elem_size);
+  (void)base;
+  (void)index;
+  (void)elem_size;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -75,19 +73,10 @@ static const void *get_element_at(const void *base, size_t index, size_t elem_si
  * - Return true if (uintptr_t)ptr >= (uintptr_t)start AND (uintptr_t)ptr < (uintptr_t)end.
  */
 static bool is_pointer_within_bounds(const void *ptr, const void *start, const void *end) {
-  if (ptr == nullptr || start == nullptr || end == nullptr) {
-    return false;
-  }
-
-  uintptr_t u_ptr = (uintptr_t)ptr;
-  uintptr_t u_start = (uintptr_t)start;
-  uintptr_t u_end = (uintptr_t)end;
-
-  if (u_start >= u_end) {
-    return false;
-  }
-
-  return (u_ptr >= u_start && u_ptr < u_end);
+  (void)ptr;
+  (void)start;
+  (void)end;
+  return false; /* TODO: implement */
 }
 
 int main(void) {

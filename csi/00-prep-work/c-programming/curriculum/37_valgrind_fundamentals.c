@@ -76,38 +76,11 @@ typedef struct ScopeEnvironment {
  *   which will trigger uninitialized value diagnostics when read.
  */
 static SymbolEntry *symbol_entry_create(const char *key, const char *val, int symbol_id, int is_constant) {
-  if (key == nullptr || val == nullptr) {
-    return nullptr;
-  }
-
-  SymbolEntry *entry = malloc(sizeof(SymbolEntry));
-  if (entry == nullptr) {
-    return nullptr;
-  }
-
-  size_t klen = strlen(key);
-  entry->key = malloc(klen + 1);
-  if (entry->key == nullptr) {
-    free(entry);
-    return nullptr;
-  }
-  memcpy(entry->key, key, klen + 1);
-
-  size_t vlen = strlen(val);
-  entry->val = malloc(vlen + 1);
-  if (entry->val == nullptr) {
-    free(entry->key);
-    free(entry);
-    return nullptr;
-  }
-  memcpy(entry->val, val, vlen + 1);
-
-  entry->val_len = vlen;
-  entry->symbol_id = symbol_id;
-  entry->is_constant = is_constant;
-  entry->next = nullptr;
-
-  return entry;
+  (void)key;
+  (void)val;
+  (void)symbol_id;
+  (void)is_constant;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -119,25 +92,15 @@ static SymbolEntry *symbol_entry_create(const char *key, const char *val, int sy
  * - Defensive check: Reject nullptr env or entry.
  */
 static ScopeEnvironment *scope_env_create(int scope_level, ScopeEnvironment *parent) {
-  ScopeEnvironment *env = malloc(sizeof(ScopeEnvironment));
-  if (env == nullptr) {
-    return nullptr;
-  }
-  env->scope_level = scope_level;
-  env->symbol_count = 0;
-  env->head = nullptr;
-  env->parent = parent;
-  return env;
+  (void)scope_level;
+  (void)parent;
+  return nullptr; /* TODO: implement */
 }
 
 static bool scope_env_insert(ScopeEnvironment *env, SymbolEntry *entry) {
-  if (env == nullptr || entry == nullptr) {
-    return false;
-  }
-  entry->next = env->head;
-  env->head = entry;
-  env->symbol_count++;
-  return true;
+  (void)env;
+  (void)entry;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -155,24 +118,8 @@ static bool scope_env_insert(ScopeEnvironment *env, SymbolEntry *entry) {
  *   are reported as "indirectly lost".
  */
 static void scope_env_destroy(ScopeEnvironment *env) {
-  if (env == nullptr) {
-    return;
-  }
-
-  SymbolEntry *curr = env->head;
-  while (curr != nullptr) {
-    SymbolEntry *next = curr->next;
-    free(curr->key);
-    curr->key = nullptr;
-    free(curr->val);
-    curr->val = nullptr;
-    free(curr);
-    curr = next;
-  }
-
-  env->head = nullptr;
-  env->symbol_count = 0;
-  free(env);
+  (void)env;
+  /* TODO: implement */
 }
 
 /*
@@ -187,16 +134,11 @@ static void scope_env_destroy(ScopeEnvironment *env) {
  * - Must use memmove() to handle overlapping regions correctly.
  */
 static bool symbol_entry_shift_value(SymbolEntry *entry, size_t dest_offset, size_t src_offset, size_t count) {
-  if (entry == nullptr || entry->val == nullptr) {
-    return false;
-  }
-  if (src_offset + count > entry->val_len || dest_offset + count > entry->val_len) {
-    return false;
-  }
-
-  /* Safe for overlapping source and destination */
-  memmove(entry->val + dest_offset, entry->val + src_offset, count);
-  return true;
+  (void)entry;
+  (void)dest_offset;
+  (void)src_offset;
+  (void)count;
+  return false; /* TODO: implement */
 }
 
 /*

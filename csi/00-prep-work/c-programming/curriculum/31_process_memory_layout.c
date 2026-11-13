@@ -93,31 +93,9 @@ static void sample_nested_stack(uintptr_t *out_addr) {
 #endif
 
 static SegmentType classify_segment(uintptr_t addr, const MemoryBounds *bounds) {
-  if (addr == 0 || bounds == nullptr) {
-    return SEG_UNKNOWN;
-  }
-
-  if (addr < bounds->data_sample) {
-    return SEG_TEXT;
-  } else if (addr < bounds->bss_sample) {
-    return SEG_DATA;
-  } else if (IS_ASAN) {
-    if (addr >= bounds->heap_sample) {
-      return SEG_HEAP;
-    } else if (addr >= bounds->stack_sample - 0x10000000) {
-      return SEG_STACK;
-    } else {
-      return SEG_BSS;
-    }
-  } else {
-    if (addr < bounds->heap_sample) {
-      return SEG_BSS;
-    } else if (addr < bounds->stack_sample) {
-      return SEG_HEAP;
-    } else {
-      return SEG_STACK;
-    }
-  }
+  (void)addr;
+  (void)bounds;
+  return SEG_UNKNOWN; /* TODO: implement */
 }
 
 /*
@@ -132,12 +110,8 @@ static SegmentType classify_segment(uintptr_t addr, const MemoryBounds *bounds) 
  *     parent_frame > child_local, returning a positive offset.
  */
 static ptrdiff_t calculate_stack_growth_offset(uintptr_t parent_frame) {
-  if (parent_frame == 0) {
-    return 0;
-  }
-
-  int child_local = 0;
-  return (ptrdiff_t)(parent_frame - (uintptr_t)&child_local);
+  (void)parent_frame;
+  return 0; /* TODO: implement */
 }
 
 int main(void) {

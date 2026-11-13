@@ -25,25 +25,13 @@
  * Example: "a1b2c" -> 2
  */
 static size_t count_digits(const char *text) {
-  size_t count = 0;
-
-  for (const char *p = text; *p != '\0'; ++p) {
-    if (isdigit((unsigned char)*p)) {
-      count++;
-    }
-  }
-
-  return count;
+  (void)text;
+  return 0; /* TODO: implement */
 }
 
 static size_t count_alpha(const char *text) {
-  size_t count = 0;
-  for (const char *p = text; *p != 0; ++p) {
-    if (isalpha((unsigned char)*p)) {
-      count++;
-    }
-  }
-  return count;
+  (void)text;
+  return 0; /* TODO: implement */
 }
 
 /*
@@ -54,13 +42,8 @@ static size_t count_alpha(const char *text) {
  * Example: "alpha9omega" -> pointer to '9'
  */
 static const char *find_first_digit(const char *text) {
-  for (const char *p = text; *p != '\0'; ++p) {
-    if (isdigit((unsigned char)*p)) {
-      return p;
-    }
-  }
-
-  return nullptr;
+  (void)text;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -71,27 +54,8 @@ static const char *find_first_digit(const char *text) {
  * Example: "a1b2c" -> pointer to '2'
  */
 static const char *find_last_digit(const char *text) {
-  // Guard against null pointer or empty string.
-  if (text == nullptr || *text == '\0') {
-    return nullptr;
-  }
-  const char *p = text;
-  // Advance pointer to the null terminator '\0'.
-  while (*p != '\0') {
-    ++p;
-  }
-  // Traverse backward while cursor is strictly greater than buffer start.
-  while (p > text) {
-    // Decrement first, check if character is digit, and return match.
-    --p;
-    if (isdigit((unsigned char)*p)) {
-      return p;
-    }
-  }
-
-  // Return nullptr when no digit exists in buffer.
-
-  return nullptr;
+  (void)text;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -107,17 +71,9 @@ static const char *find_last_digit(const char *text) {
  */
 
 static bool match_prefix(const char *text, const char *prefix) {
-  if (text == nullptr || prefix == nullptr) {
-    return false;
-  } else if (*prefix == '\0') {
-    return true;
-  }
-  const char *s = text;
-  while (*s == *prefix && *prefix != '\0') {
-    s++;
-    prefix++;
-  }
-  return *prefix == '\0';
+  (void)text;
+  (void)prefix;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -132,18 +88,9 @@ static bool match_prefix(const char *text, const char *prefix) {
  * - Slide cursor through text; call match_prefix(cursor, pattern) at each step.
  */
 static const char *find_substring(const char *text, const char *pattern) {
-  if (pattern == nullptr || text == nullptr) {
-    return nullptr;
-  }
-  if (*pattern == '\0') {
-    return text;
-  }
-  for (const char *cursor = text; *cursor != '\0'; ++cursor) {
-    if (match_prefix(cursor, pattern)) {
-      return cursor;
-    }
-  }
-  return nullptr;
+  (void)text;
+  (void)pattern;
+  return nullptr; /* TODO: implement */
 }
 
 

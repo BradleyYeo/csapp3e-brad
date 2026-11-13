@@ -25,34 +25,9 @@
  * Example: stream containing "hello\n" -> returns "hello", *out_len = 5
  */
 static char *read_trimmed_line(FILE *stream, size_t *out_len) {
-  char *line = nullptr;
-  size_t cap = 0;
-  ssize_t read_bytes =
-      getline(&line, &cap, stream); // getline dynamically sizes the buffer to
-                                    // fit lines of arbitrary length.
-
-  if (read_bytes == -1) {
-    free(line);
-    return nullptr;
-  }
-
-  // O(1) trailing newline removal
-  if (read_bytes > 0 && line[read_bytes - 1] == '\n') {
-    line[read_bytes - 1] = '\0';
-    read_bytes--;
-  }
-
-  // Also strip carriage return \r if present (e.g. CRLF)
-  if (read_bytes > 0 && line[read_bytes - 1] == '\r') {
-    line[read_bytes - 1] = '\0';
-    read_bytes--;
-  }
-
-  if (out_len != nullptr) {
-    *out_len = (size_t)read_bytes;
-  }
-
-  return line;
+  (void)stream;
+  (void)out_len;
+  return nullptr; /* TODO: implement */
 }
 
 int main(void) {

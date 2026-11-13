@@ -40,39 +40,8 @@ enum MatchResult
  */
 static enum PatternKind classify_token(const char *pattern)
 {
-  if (pattern == nullptr || pattern[0] == '\0')
-  {
-    return PATTERN_INVALID;
-  }
-
-  // Handle escape sequences
-  if (pattern[0] == '\\')
-  {
-    if (pattern[1] == 'd' && pattern[2] == '\0')
-    {
-      return PATTERN_DIGIT;
-    }
-    if (pattern[1] == 'w' && pattern[2] == '\0')
-    {
-      return PATTERN_WORD;
-    }
-    if (pattern[1] == 's' && pattern[2] == '\0')
-    {
-      return PATTERN_WHITESPACE;
-    }
-    if (pattern[1] == 'x' && pattern[2] == '\0') {
-      return PATTERN_HEX_DIGIT;
-    }
-    return PATTERN_INVALID;
-  }
-
-  // Single literal character
-  if (pattern[1] == '\0')
-  {
-    return PATTERN_LITERAL;
-  }
-
-  return PATTERN_INVALID;
+  (void)pattern;
+  return PATTERN_INVALID; /* TODO: implement */
 }
 
 /*
@@ -81,25 +50,11 @@ static enum PatternKind classify_token(const char *pattern)
  * Output: true if character satisfies token predicate, false otherwise.
  * Example: c='5', kind=PATTERN_DIGIT -> true
  */
-static bool test_char(char c, enum PatternKind kind)
+[[maybe_unused]] static bool test_char(char c, enum PatternKind kind)
 {
-  unsigned char uc = (unsigned char)c;
-
-  switch (kind)
-  {
-  case PATTERN_DIGIT:
-    return isdigit(uc);
-
-  case PATTERN_WORD:
-    return isalnum(uc) || c == '_';
-  case PATTERN_WHITESPACE:
-    return isspace(uc);
-  case PATTERN_HEX_DIGIT:
-    return isxdigit(uc);
-  case PATTERN_LITERAL:
-  case PATTERN_INVALID:
-    return false;
-  }
+  (void)c;
+  (void)kind;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -110,32 +65,9 @@ static bool test_char(char c, enum PatternKind kind)
  */
 static enum MatchResult match_string(const char *line, const char *pattern)
 {
-  enum PatternKind kind = classify_token(pattern);
-
-  if (kind == PATTERN_INVALID)
-  {
-    return MATCH_SYNTAX_ERROR;
-  }
-
-  for (const char *cursor = line; *cursor != '\0'; ++cursor)
-  {
-    if (kind == PATTERN_LITERAL)
-    {
-      if (*cursor == pattern[0])
-      {
-        return MATCH_FOUND;
-      }
-    }
-    else
-    {
-      if (test_char(*cursor, kind))
-      {
-        return MATCH_FOUND;
-      }
-    }
-  }
-
-  return MATCH_NOT_FOUND;
+  (void)line;
+  (void)pattern;
+  return MATCH_NOT_FOUND; /* TODO: implement */
 }
 
 int main(void)

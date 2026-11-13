@@ -34,24 +34,10 @@
  * Populates *start_out and *len_out.
  */
 static bool get_group_bounds(const char *pattern, const char **start_out, size_t *len_out) {
-  if (pattern == nullptr || pattern[0] != '[') {
-    return false;
-  }
-
-  const char *start = pattern + 1;
-  if (*start  == '^') {
-    start++;
-  }
-
-  const char *end = strchr(start, ']');
-
-  if (end == nullptr) {
-    return false;
-  }
-
-  *start_out = start;
-  *len_out = (size_t)(end - start);
-  return true;
+  (void)pattern;
+  (void)start_out;
+  (void)len_out;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -70,17 +56,11 @@ static bool get_group_bounds(const char *pattern, const char **start_out, size_t
  * Expected output: true on successful copy and null-termination, false on overflow.
  */
 static bool slice_to_buffer(const char *src, size_t len, char *dest, size_t capacity) {
-  if (src == nullptr || dest == nullptr) {
-    return false;
-  }
-
-  // Prevent buffer overflow: must leave space for terminating null byte
-  if (len >= capacity) {
-    return false;
-  }
-  memcpy(dest, src, len);
-  dest[len] = '\0';
-  return true;
+  (void)src;
+  (void)len;
+  (void)dest;
+  (void)capacity;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -97,11 +77,9 @@ static bool slice_to_buffer(const char *src, size_t len, char *dest, size_t capa
  * Expected output: pointer to first matching character in text, or nullptr.
  */
 static const char *find_any_char(const char *text, const char *charset) {
-  if (text == nullptr || charset == nullptr) {
-    return nullptr;
-  }
-
-  return strpbrk(text, charset);
+  (void)text;
+  (void)charset;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -116,17 +94,9 @@ static const char *find_any_char(const char *text, const char *charset) {
  * Expected output: true if any character in charset exists in text.
  */
 static bool match_charset_rec(const char *text, const char *charset) {
-  if (text == nullptr || *text == '\0') {
-    return false;
-  }
-
-  const char *candidate = strpbrk(text, charset);
-  if (candidate == nullptr) {
-    return false;
-  }
-
-  // Found a candidate match at *candidate
-  return true;
+  (void)text;
+  (void)charset;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -138,51 +108,21 @@ static bool match_charset_rec(const char *text, const char *charset) {
  * Expected output: true if any char in group matches input_line, false otherwise.
  */
 static bool match_pos_bracket_grp(const char *input_line, const char *pattern) {
-  const char *start = nullptr;
-  size_t len = 0;
-
-  if (!get_group_bounds(pattern, &start, &len)) {
-    return false;
-  }
-
-  char charset[256];
-  if (!slice_to_buffer(start, len, charset, sizeof(charset))) {
-    return false;
-  }
-
-  return match_charset_rec(input_line, charset);
+  (void)input_line;
+  (void)pattern;
+  return false; /* TODO: implement */
 }
 
-static bool not_match_charset_rec(const char *text, const char *charset) {
-  if (text == nullptr || *text == '\0') {
-    return false;
-  }
-  const size_t candidate = strcspn(text, charset);
-  if (candidate == 0) {
-    return false;
-  }
-
-  if (candidate > 0) {
-    return true;
-  }
-
-  return true;
+[[maybe_unused]] static bool not_match_charset_rec(const char *text, const char *charset) {
+  (void)text;
+  (void)charset;
+  return false; /* TODO: implement */
 }
 
 static bool match_neg_bracket_grp(const char *input_line, const char *pattern) {
-  const char *start = nullptr;
-  size_t len = 0;
-
-  if (!get_group_bounds(pattern, &start, &len)) {
-    return false;
-  }
-
-  char charset[256];
-  if (!slice_to_buffer(start, len, charset, sizeof(charset))) {
-    return false;
-  }
-
-  return not_match_charset_rec(input_line, charset);
+  (void)input_line;
+  (void)pattern;
+  return false; /* TODO: implement */
 }
 
 int main(void) {

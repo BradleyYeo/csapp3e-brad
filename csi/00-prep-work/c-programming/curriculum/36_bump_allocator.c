@@ -69,7 +69,8 @@ typedef struct {
  * - Must use bitwise manipulation: (n & (n - 1)) clears the lowest set bit.
  */
 static inline bool is_power_of_two(size_t n) {
-  return (n != 0) && ((n & (n - 1)) == 0);
+  (void)n;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -82,7 +83,9 @@ static inline bool is_power_of_two(size_t n) {
  * - If addr is already aligned, return addr unchanged.
  */
 static inline uintptr_t bump_align_forward(uintptr_t addr, size_t align) {
-  return (addr + (align - 1)) & ~(uintptr_t)(align - 1);
+  (void)addr;
+  (void)align;
+  return 0; /* TODO: implement */
 }
 
 /*
@@ -97,13 +100,10 @@ static inline uintptr_t bump_align_forward(uintptr_t addr, size_t align) {
  * - Return BUMP_OK.
  */
 static BumpStatus bump_init(BumpAllocator *alloc, void *memory_block, size_t capacity_bytes) {
-  if (alloc == nullptr || memory_block == nullptr || capacity_bytes == 0) {
-    return BUMP_ERR_INVALID_ARG;
-  }
-  alloc->buffer = (uint8_t *)memory_block;
-  alloc->capacity = capacity_bytes;
-  alloc->offset = 0;
-  return BUMP_OK;
+  (void)alloc;
+  (void)memory_block;
+  (void)capacity_bytes;
+  return BUMP_ERR_INVALID_ARG; /* TODO: implement */
 }
 
 /*
@@ -125,37 +125,10 @@ static BumpStatus bump_init(BumpAllocator *alloc, void *memory_block, size_t cap
  * - Return pointer to allocated memory block ((void *)aligned_addr).
  */
 static void *bump_alloc(BumpAllocator *alloc, size_t size, size_t align) {
-  if (alloc == nullptr || alloc->buffer == nullptr) {
-    return nullptr;
-  }
-  if (align == 0) {
-    align = alignof(max_align_t);
-  }
-  if (!is_power_of_two(align)) {
-    return nullptr;
-  }
-
-  uintptr_t current_addr = (uintptr_t)(alloc->buffer + alloc->offset);
-  uintptr_t aligned_addr = bump_align_forward(current_addr, align);
-  size_t padding = (size_t)(aligned_addr - current_addr);
-
-  if (size == 0) {
-    if (alloc->offset + padding > alloc->capacity) {
-      return nullptr;
-    }
-    return (void *)aligned_addr;
-  }
-
-  if (size > SIZE_MAX - padding || (padding + size) > SIZE_MAX - alloc->offset) {
-    return nullptr;
-  }
-
-  if (alloc->offset + padding + size > alloc->capacity) {
-    return nullptr;
-  }
-
-  alloc->offset += (padding + size);
-  return (void *)aligned_addr;
+  (void)alloc;
+  (void)size;
+  (void)align;
+  return nullptr; /* TODO: implement */
 }
 
 /*
@@ -166,9 +139,8 @@ static void *bump_alloc(BumpAllocator *alloc, size_t size, size_t align) {
  * - Reclaims all allocated blocks in O(1) time.
  */
 static void bump_reset(BumpAllocator *alloc) {
-  if (alloc != nullptr) {
-    alloc->offset = 0;
-  }
+  (void)alloc;
+  /* TODO: implement */
 }
 
 /*
@@ -179,10 +151,8 @@ static void bump_reset(BumpAllocator *alloc) {
  * - Return 0 if alloc is nullptr.
  */
 static BumpMarker bump_save(const BumpAllocator *alloc) {
-  if (alloc == nullptr) {
-    return 0;
-  }
-  return alloc->offset;
+  (void)alloc;
+  return 0; /* TODO: implement */
 }
 
 /*
@@ -195,11 +165,9 @@ static BumpMarker bump_save(const BumpAllocator *alloc) {
  * - Return true.
  */
 static bool bump_restore(BumpAllocator *alloc, BumpMarker marker) {
-  if (alloc == nullptr || marker > alloc->offset) {
-    return false;
-  }
-  alloc->offset = marker;
-  return true;
+  (void)alloc;
+  (void)marker;
+  return false; /* TODO: implement */
 }
 
 /*
@@ -210,10 +178,8 @@ static bool bump_restore(BumpAllocator *alloc, BumpMarker marker) {
  * - Return 0 if alloc is nullptr or offset > capacity.
  */
 static size_t bump_available(const BumpAllocator *alloc) {
-  if (alloc == nullptr || alloc->offset > alloc->capacity) {
-    return 0;
-  }
-  return alloc->capacity - alloc->offset;
+  (void)alloc;
+  return 0; /* TODO: implement */
 }
 
 /*
@@ -225,12 +191,9 @@ static size_t bump_available(const BumpAllocator *alloc) {
  *   AND (uintptr_t)ptr < ((uintptr_t)alloc->buffer + alloc->capacity).
  */
 static bool bump_owns(const BumpAllocator *alloc, const void *ptr) {
-  if (alloc == nullptr || alloc->buffer == nullptr || ptr == nullptr) {
-    return false;
-  }
-  uintptr_t u_ptr = (uintptr_t)ptr;
-  uintptr_t u_base = (uintptr_t)alloc->buffer;
-  return (u_ptr >= u_base && u_ptr < (u_base + alloc->capacity));
+  (void)alloc;
+  (void)ptr;
+  return false; /* TODO: implement */
 }
 
 int main(void) {
