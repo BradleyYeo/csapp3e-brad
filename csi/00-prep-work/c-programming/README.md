@@ -7,13 +7,12 @@ comes first.
 
 ---
 
-## 1. The five stations
+## 1. The stations
 
 | Directory | What it is | Job it does for you |
 |---|---|---|
 | `diagnostic/` | Self-quizzing files (`1.c`–`4.c`) with questions embedded in comments, answers already written out | **Measure** — find what you don't actually know |
-| `Exercises/` | K&R *The C Programming Language* Ch. 1–8, plus [`Exercises.md`](Exercises/Exercises.md) — a Phase A–D remediation curriculum targeting your known weak spots | **Repair** — fix the specific misconceptions the diagnostics exposed |
-| `c-exercises/` | 20 numbered drills (`.c` + `.md` pairs) with a Makefile and tests; graded curriculum in [`02_README.md`](c-exercises/02_README.md), reading layers in [`01_FUNDAMENTALS.md`](c-exercises/01_FUNDAMENTALS.md) | **Drill** — deliberate practice on pointers, memory, sanitizers, POSIX |
+| `curriculum/` | K&R exercises and the systems drills **merged into one numbered sequence (01→51)**; `curriculum/README.md` is the authoritative order, `_resources/REMEDIATION.md` carries the Phase A–D repair notes | **Repair + Drill** — one path, duplicates removed |
 | `c3/` | CSAPP Chapter 3 (machine-level representation) exercises; [`run.sh`](c3/run.sh) compiles a C file to x86-64 assembly | **Translate** — tie C source to what the compiler actually emits |
 | `projects/` | `ls_clone` (+ guide with 5 exercises) and `malloc_clone` (5 stages: implicit coalescer → explicit freelist → tcmalloc) | **Integrate** — everything at once, nothing handed to you |
 
@@ -33,9 +32,9 @@ For each exercise, run this cycle — **never skip step 1 or 4**:
    comment block, like you already did in `diagnostic/1.c`) what you expect: output,
    `sizeof` values, whether it compiles, whether it crashes and where.
 2. **Implement / fix.** Only now touch the code. Compile:
-   `make -C c-exercises <name> && ./c-exercises/<name>`
+   `make -C curriculum <name> && ./curriculum/<name>`
 3. **Run under instrumentation.** Anything involving memory gets run *both* ways:
-   `make -C c-exercises test-sanitizers` and `valgrind --leak-check=full ./<binary>`.
+   `make -C curriculum test-sanitizers` and `valgrind --leak-check=full ./<binary>`.
    A program that "works" without ASan but fails with it is a failed exercise.
 4. **Explain the diff.** Where prediction ≠ reality, don't move on until you can
    write one paragraph explaining the mechanism (stride, decay, segment, lifetime).
@@ -50,23 +49,15 @@ For each exercise, run this cycle — **never skip step 1 or 4**:
 ### Week 0: calibrate
 Do all four `diagnostic/*.c` files cold: cover the answers, write your response, grade
 yourself. Mark every miss. These misses define your personal curriculum — the
-[remediation plan](Exercises/Exercises.md) in `Exercises/Exercises.md` was already
-built from an earlier calibration; re-validate it against today's misses.
+[remediation plan](curriculum/_resources/REMEDIATION.md) was already built from an
+earlier calibration; re-validate it against today's misses.
 
-### Phase A–D: work the remediation curriculum, not the K&R chapters linearly
-`Exercises/Exercises.md` sequences the *specific K&R files you own* by concept
-(pointer decay → string immutability → bounded ops → stack lifetimes → double
-indirection → POSIX I/O → the ls project). Follow it in that order. Each stage ends
-with concrete Key Tasks — those are your acceptance criteria.
-
-Run the matching `c-exercises/` drills **in parallel** as the drill layer:
-
-| Remediation phase | Pair these drills |
-|---|---|
-| A — pointers & memory layout | `01`, `05`, `07`, `08` |
-| B — allocation & lifetime | `03`, `09`, `10`, `11`, `13` |
-| C — POSIX I/O & processes | `06`, `12`, `15`, `16` |
-| D — integration | `14`, then the projects |
+### Phases A–D: work `curriculum/` in ascending number, not K&R chapters linearly
+The 01→51 sequence already encodes the remediation phases (K&R fundamentals →
+pointer/string drills → memory model & lifetime → multi-file programs → POSIX →
+transfer). Files marked **repair target** in `curriculum/README.md` carry concrete
+Key Tasks from `_resources/REMEDIATION.md` — those are your acceptance criteria.
+If a fresh diagnostic miss points somewhere the numbering doesn't stress, renumber.
 
 ### Weekly machine-level pass
 Once a week, take one pointer/memory concept and verify it in the compiler's output
@@ -90,8 +81,8 @@ a solved file reads like trivia. So:
 - **Redo, don't reread.** Every 3–7 days, delete your working code for 2–3 older
   exercises (keep the file in git; the commits are your answer key) and reimplement
   from the prompt only.
-- **Trigger the bugs on purpose.** In `10_memory_safety_sanitizers.c` and
-  `13_valgrind_fundamentals.c`, use the `--trigger-*` flags regularly. Learning to
+- **Trigger the bugs on purpose.** In `35_memory_safety_sanitizers.c` and
+  `37_valgrind_fundamentals.c`, use the `--trigger-*` flags regularly. Learning to
   *read* an ASan report beats learning to avoid needing one.
 - **Quiz from the journal.** Turn each `PROGRESS.md` "thought X, actual Y" line into
   a prediction question and re-answer it cold before starting a new session.
@@ -111,5 +102,5 @@ An exercise is finished when you can, **cold and without the file open**:
 3. run it clean under both ASan and valgrind.
 
 Three "no"s in a row on step 1 across a topic = that topic goes back on the
-diagnostic list. The curriculum in `Exercises/Exercises.md` is a living document —
-rewrite its phases from your latest misses, not from its original ones.
+diagnostic list. The numbering in `curriculum/README.md` is a living document —
+re-sequence it from your latest misses, not from its original ones.
