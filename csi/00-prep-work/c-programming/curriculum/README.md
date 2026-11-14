@@ -110,6 +110,7 @@ Control flow, character I/O, arrays, bit arithmetic. All single-file.
 | 49 | `49_hoare_logic_refactoring.{py,md}` | specs, loop invariants, refinement (`python3 49_hoare_logic_refactoring.py`) |
 | 50 | `50_pipelining_hazards.{c,md}` | hazard units vs data/control hazards — **repair target**: the test-stub section doesn't compile; completing it is the exercise (not in default build) |
 | 51 | `51_python_pointer_chasing.{py,md}` | references vs pointers, transfer check |
+| 52 | `52_dangling_refs_and_leaks.{c,md}` | identify, fix, and prevent dangling references and memory leaks (Stage C extension) |
 
 **Graduation:** `../projects/ls_clone` and `../projects/malloc_clone` — nothing here
 is considered done until those build clean under sanitizers.

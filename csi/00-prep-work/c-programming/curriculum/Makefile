@@ -31,7 +31,8 @@ EXERCISES = 03_kr105_temp_for_loop 04_kr106_eof_value 05_kr108_count_blanks \
             36_bump_allocator 37_valgrind_fundamentals 38_kr803_malloc_flushbuf \
             40_kr602_getword_groups 41_recursion_patterns 42_macro_fundamentals \
             43_kr706_compare_files 45_mmap_search 46_filesystem_inode_ops \
-            47_pipe_pingpong 48_process_pipeline_exec
+            47_pipe_pingpong 48_process_pipeline_exec \
+            52_dangling_refs_and_leaks
 
 # Fix-the-existing-code targets (REMEDIATION.md). 17 and 50 deliberately do
 # NOT compile — the syntax/TODO errors are the exercise. Build with `make repair`.

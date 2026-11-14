@@ -191,4 +191,4 @@ State 3: Writing byte and incrementing size
 ---
 
 # Next Step in Curriculum
-Proceed to [11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) to build a custom monotonic arena allocator with bitwise alignment and bulk reset capabilities.
+Proceed to [36_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/curriculum/36_bump_allocator.md) for custom monotonic arena allocation, and [52_dangling_refs_and_leaks.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/curriculum/52_dangling_refs_and_leaks.md) for focused drills on identifying, fixing, and preventing dangling references and memory leaks.
