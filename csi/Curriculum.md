@@ -4,7 +4,7 @@
 
 - Morning Theory Block (Monday to Friday, 6:30 AM – 7:30 AM, 1.0 hour):
   - Dedicated to conceptual textbook reading and lecture videos.
-  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Hennessy & Patterson (H&P/P&H) *Computer Architecture: A Quantitative Approach* (7th Edition, with Kozyrakis), Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), and [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/).
+  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Hennessy & Patterson (H&P/P&H) *Computer Architecture: A Quantitative Approach* (7th Edition, with Kozyrakis), Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/), and [MIT 6.172: Performance Engineering of Software Systems (Fall 2018)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/).
   - Lecture Video Tracks:
     - [Onur Mutlu: Digital Design & Computer Architecture Playlist](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd)
     - [CMU 15-213: Introduction to Computer Systems Playlist](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj)
@@ -26,7 +26,7 @@
 - Total Time Allocation:
   - Weekday: 2.5 hours/day $\times$ 5 days = 12.5 hours/week.
   - Weekend: 4.5 hours/day $\times$ 2 days = 9.0 hours/week.
-  - Cumulative: 21.5 hours/week $\times$ 26 weeks = 559 hours total.
+  - Cumulative: 21.5 hours/week $\times$ 63 active weeks (~1,354 hours total, Jan 5, 2027 – Apr 4, 2028, with a planned 2-week blackout from May 1 – May 15, 2027 and built-in recovery/review weeks).
 
 ## Deliberate Practice Rules
 
@@ -70,9 +70,11 @@
 
 ---
 
-# Six-Month Curriculum Progression
+# 15-Month Curriculum Progression (Jan 5, 2027 – Apr 4, 2028)
 
-## Phase 1: Memory Hierarchy & Cache Lab Completion (Weeks 1–3: Nov 9 – Nov 29, 2026)
+> **Schedule Blackout (May 1 – May 15, 2027):** Nothing scheduled. Full rest / travel window between Week 17 (Apr 26 – Apr 30) and Week 18 (May 17 – May 23).
+
+## Phase 1: Memory Hierarchy & Cache Lab Completion (Weeks 1–3: Jan 5 – Jan 24, 2027)
 
 ### Focus & Objectives
 - Master the $(S, E, B, m)$ hardware cache geometry, set indexing arithmetic, and LRU replacement policies.
@@ -94,12 +96,13 @@
   - [csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c)
   - [exercises/20_python_pointer_chasing.py](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/20_python_pointer_chasing.py) (Pointer chasing & memory layout optimization)
   - [sslotin/amh-code: cpu-cache benchmarks](https://github.com/sslotin/amh-code) (`latency.cc`, `associativity.cc`, `matrix-transpose.cc`)
+  - [MIT 6.172 (Fall 2018): HW1 (C Primer & Setup), HW2 (Profiling Serial Merge Sort), & HW8 (Caching and Cachegrind / Cache-Oblivious Algorithms)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/)
 - Systems Practice Extension:
   - [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite) (Stage 1 to Stage 3: Reading DB header, page sizes, and parsing table records from raw disk pages).
 
 ---
 
-## Phase 2: Assembly Fluency & Conquering Bomb + Attack Lab (Weeks 4–7: Nov 30 – Dec 27, 2026)
+## Phase 2: Assembly Fluency & Conquering Bomb + Attack Lab (Weeks 4–8: Jan 25 – Feb 28, 2027)
 
 ### Focus & Objectives
 - Build authoring fluency in x86-64 assembly conforming to System V AMD64 ABI.
@@ -120,7 +123,7 @@
 
 ---
 
-## Phase 3: Processor Architecture, Pipelining & Optimization (Weeks 8–11: Dec 28, 2026 – Jan 24, 2027)
+## Phase 3: Processor Architecture, Pipelining & Optimization (Weeks 9–12: Mar 1 – Mar 28, 2027)
 
 ### Focus & Objectives
 - Understand digital logic, sequential execution, pipelining, and hazard resolution.
@@ -142,10 +145,11 @@
   - [sslotin/amh-code: pipelining & branching benchmarks](https://github.com/sslotin/amh-code) (`branching.cc`, `superscalar.cc`)
   - [csi/01-computer-architecture/05-low-level-optimization/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization) ([pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c), [dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c))
   - [csi/01-computer-architecture/07-memory-hierarchy-data-layout/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout) (SoA vs AoS cache optimization)
+  - [MIT 6.172 (Fall 2018): HW3 (Vectorization / SIMD), HW5 (Theory of Performance Engineering / Bentley Rules), & Project 1 (Bit Hacks)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/)
 
 ---
 
-## Phase 4: Linking & Exceptional Control Flow (Weeks 12–14: Jan 25 – Feb 14, 2027)
+## Phase 4: Linking & Exceptional Control Flow (Weeks 13–16: Mar 29 – Apr 25, 2027)
 
 ### Focus & Objectives
 - Understand object files, symbol resolution, relocation, dynamic linking, and ELF binaries.
@@ -168,7 +172,7 @@
 
 ---
 
-## Phase 5: Virtual Memory & Dynamic Storage Allocators (Weeks 15–18: Feb 15 – Mar 14, 2027)
+## Phase 5: Virtual Memory & Dynamic Storage Allocators (Weeks 17–20: Apr 26 – Apr 30 & May 17 – Jun 6, 2027; Blackout May 1 – May 15)
 
 ### Focus & Objectives
 - Master multi-level page tables, TLBs, page faults, address translation math, and `mmap`.
@@ -189,12 +193,13 @@
   - [exercises/09_dynamic_memory_lifecycle.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.md)
   - [exercises/11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md)
   - [labs/06_malloclab/malloclab-handout/mm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/06_malloclab/malloclab-handout/mm.c) (Explicit and Segregated Free Lists)
+  - [MIT 6.172 (Fall 2018): HW6 (Simple Storage Allocation) & Project 3 (Serial Dynamic Memory Allocation)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/)
 - Systems Practice Extension:
   - [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite) (Stage 4 to Stage 7: B-Tree interior nodes, table scans, and index searches).
 
 ---
 
-## Phase 6: OS Kernel Engineering with xv6 (Weeks 19–22: Mar 15 – Apr 11, 2027)
+## Phase 6: OS Kernel Engineering with xv6 (Weeks 21–25: Jun 7 – Jul 11, 2027)
 
 ### Focus & Objectives
 - Step inside the kernel boundary to inspect how OS primitives are implemented on physical hardware.
@@ -213,7 +218,7 @@
 
 ---
 
-## Phase 7: Concurrency, Network I/O & High-Performance Systems (Weeks 23–26: Apr 12 – May 9, 2027)
+## Phase 7: Concurrency, Network I/O & High-Performance Systems (Weeks 26–30: Jul 12 – Aug 15, 2027)
 
 ### Focus & Objectives
 - Master POSIX threads, synchronization primitives (mutexes, semaphores), race conditions, and deadlocks.
@@ -234,20 +239,54 @@
   - [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c)
   - [csi/02-computer-networks/03-http-reverse-proxy/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/02-computer-networks/03-http-reverse-proxy)
   - [csi/03-languages-and-compilers/05-concurrency-patterns/counter-service/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/03-languages-and-compilers/05-concurrency-patterns/counter-service)
+  - [MIT 6.172 (Fall 2018): HW4 (Cilk & Reducer Hyperobjects), HW7 (Dynamic-Analysis Tools), HW9 (Deterministic Execution), & HW10 (Data Synchronization)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/)
 - Systems Practice Extension:
   - [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis) (TCP server, RESP protocol parser, concurrent client connections, TTL expiration, RDB persistence).
   - [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka) (Commit log storage format, binary wire protocol serialization, partition fetch streaming).
 
 ---
 
+## Phase 8: MIT 6.172 Performance Engineering Capstone Projects (Weeks 31–42: Aug 16 – Nov 7, 2027)
+
+### Focus & Objectives
+- Synthesize assembly, caching, vectorization, memory allocation, and parallel execution into large-scale C performance engineering projects.
+- Master `perf`, `callgrind`, `cachegrind`, `cilksan` race detection, work/span parallelism analysis, and cache-oblivious / spatial data structures.
+- Complete MIT 6.172 Project 2 (Collision Detection) and Project 4 (Leiserchess).
+
+### Core Resources
+- Theory & Lectures:
+  - [MIT 6.172 Fall 2018 Lecture Videos & Notes](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/) (Bentley Rules, Bit Hacks, Assembly & Microarchitecture, Cilk Parallelism, Nondeterminism & Synchronization, Cache-Efficient Algorithms, Domain-Specific Optimization).
+- Hands-on Lab Targets:
+  - [MIT 6.172 Project 2: Collision Detection](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/) (Quadtrees, spatial hashing, SoA layout, SIMD, Cilk parallelization).
+  - [MIT 6.172 Project 4: Leiserchess](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/) (Bitboard representation, Principal Variation Search [PVS], transposition tables, parallel alpha-beta pruning, `perf` hotspot elimination).
+
+---
+
+## Phase 9: Systems Capstones, Apple-Ecosystem Tooling & Portfolio (Weeks 43–63: Nov 8, 2027 – Apr 4, 2028)
+
+### Focus & Objectives
+- Complete production-grade storage, caching, and streaming systems from scratch using the full CS:APP + OSTEP + MIT 6.172 toolkit.
+- Bridge Linux/x86-64 skills to Apple Silicon (**ARM64 disassembly, `lldb`, Instruments/DTrace, and modern C++ systems patterns**).
+- Profile and optimize I/O-bound and CPU-bound bottlenecks (`io_uring`, zero-copy, lock-free structures, page cache behavior) and publish 2–3 benchmarked portfolio write-ups.
+
+### Core Resources
+- Hands-on Lab Targets:
+  - [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite) (Full B-Tree index scans, query execution, joins, and page-level caching).
+  - [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis) (RDB persistence, replication, event loop, and memory profiling).
+  - [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka) (Commit log, binary protocol, partition fetch/replication, zero-copy `sendfile` analysis).
+  - Linux `io_uring` asynchronous I/O server and comparative benchmark suite against `epoll`.
+  - Apple Silicon / Darwin transfer drills: ARM64 (`clang -O2 -S`), `lldb`, Instruments Time Profiler / Allocations, and modern C++ (`std::atomic`, RAII).
+
+---
+
 # Detailed Weekly Execution Plan
 
-## Week 1: Nov 9 – Nov 15, 2026 | Cache Geometry & csim.c
+## Week 1: Jan 5 – Jan 10, 2027 | Cache Geometry, 6.172 Profiling & csim.c
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 6.1–6.4 (Locality, SRAM vs DRAM, $(S, E, B)$ geometry), H&P 7th ed Appendix B (Review of Memory Hierarchy: cache line mapping, tags/indices, 3Cs miss classification), and [Sergey Slotin AMH: CPU Caches: Latency](https://en.algorithmica.org/hpc/cpu-cache/latency/) (Measuring cache latency via cyclic permutation pointer chasing; hardware prefetcher defeat).
   - Thu–Fri: [CMU 15-213: Lecture 12 (Cache Memories)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Onur Mutlu DDCA: Caches](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
 - Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Parse Valgrind `lackey` trace lines in [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c).
+  - Mon–Tue: Parse Valgrind `lackey` trace lines in [labs/05_cachelab/cachelab-handout/csim.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/05_cachelab/cachelab-handout/csim.c). Run MIT 6.172 HW1 (C Primer & setup).
   - Wed–Fri: Implement cache set allocation, line tag comparison, and hit/miss/eviction accounting.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
   - Sat: Implement LRU replacement policy using dynamic counter tracking in `csim.c`. Benchmark [sslotin/amh-code: latency.cc](https://github.com/sslotin/amh-code) in QEMU / Colima container to observe physical L1/L2/L3/RAM latency plateaus.
@@ -256,7 +295,7 @@
   - Why does pointer chasing across random cyclic permutations defeat CPU stream prefetchers and allow direct measurement of true memory latency?
   - Why are Set Index bits placed in the middle of the address rather than the high-order bits?
 
-## Week 2: Nov 16 – Nov 22, 2026 | Matrix Transpose Blocking ($32 \times 32$ & $64 \times 64$)
+## Week 2: Jan 11 – Jan 17, 2027 | Matrix Transpose Blocking ($32 \times 32$ & $64 \times 64$)
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Section 6.5–6.6 (Cache impact on program performance, memory mountain), H&P 7th ed Chapter 2 (§§2.1–2.2 Advanced Cache Optimizations: non-blocking caches, critical word first, compiler blocking), and [Sergey Slotin AMH: Associativity & Cache Conflicts](https://en.algorithmica.org/hpc/cpu-cache/associativity/).
   - Thu–Fri: Conflict miss analysis, diagonal self-eviction in matrix transposition, and [Sergey Slotin AMH: Cache-Oblivious Algorithms](https://en.algorithmica.org/hpc/cpu-cache/oblivious/).
@@ -270,19 +309,19 @@
   - Why does an $8 \times 8$ block fail for a $64 \times 64$ matrix on a 1KB direct-mapped cache?
   - In H&P's quantitative cache model, what is the formula for Average Memory Access Time (AMAT), and how do Miss Status Holding Registers (MSHRs) enable non-blocking caches to overlap miss latency?
 
-## Week 3: Nov 23 – Nov 29, 2026 | Cache Synthesis & CodeCrafters SQLite Page Formats
+## Week 3: Jan 18 – Jan 24, 2027 | Cache Synthesis, 6.172 HW2/HW8 & SQLite Page Formats
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: Ulrich Drepper's *What Every Programmer Should Know About Memory* (CPU Caches, Virtual Memory, NUMA).
   - Thu–Fri: Database storage layouts: slotted pages, B-Tree leaf pages, cell pointers.
 - Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Profile loop order cache efficiency in [csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c) using Valgrind `cachegrind`.
+  - Mon–Tue: Profile loop order cache efficiency in [csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/06-memory-hierarchy-caching/04_loop_order_measure.c) using Valgrind `cachegrind`. Complete MIT 6.172 HW2 (Profiling Serial Merge Sort) & HW8 (Caching and Cachegrind / Cache-Oblivious Algorithms).
   - Wed–Fri: Run automated driver on `cachelab` (`./driver.py`). Verify full score (53/53 points).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
   - Sat–Sun: Begin [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite). Parse 100-byte SQLite database header, page size, and decode B-Tree leaf page cell pointers.
 - Active Recall:
   - How does cache tiling transform matrix multiplication miss complexity from $O(N^3)$ to $O(N^3 / B)$?
 
-## Week 4: Nov 30 – Dec 6, 2026 | x86-64 Assembly Authoring Foundations
+## Week 4: Jan 25 – Jan 31, 2027 | x86-64 Assembly Authoring Foundations
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 3.1–3.6 (Registers, operand specifiers, data movement, arithmetic/logical operations) and [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/) (Sign-magnitude vs 2's complement, sign extension, and signed vs unsigned integer overflow).
   - Thu–Fri: [CMU 15-213: Lecture 05 & 06 (Machine Programming I & II)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: C Review & Assembly Basics](https://www.youtube.com/@weiyang2613/videos).
@@ -296,7 +335,7 @@
   - Why must a callee function preserve `%rbx`, `%rbp`, and `%r12-%r15` before overwriting them?
   - How does a CPU hardware adder detect two's complement signed overflow versus unsigned carry during an addition operation?
 
-## Week 5: Dec 7 – Dec 13, 2026 | Advanced Assembly: Stack Frames, Recursion & SIB Addressing
+## Week 5: Feb 1 – Feb 7, 2027 | Advanced Assembly: Stack Frames, Recursion & SIB Addressing
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 3.7–3.9 (Stack frame allocation, arrays, multi-dimensional pointers, nested structures).
   - Thu–Fri: [CMU 15-213: Lecture 07 & 08 (Procedures & Structured Data)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: Machine Level Programming IV (Data)](https://www.youtube.com/@weiyang2613/videos).
@@ -309,7 +348,7 @@
 - Active Recall:
   - What happens if the stack pointer `%rsp` is not aligned to a 16-byte boundary prior to executing a `call` instruction?
 
-## Week 6: Dec 14 – Dec 20, 2026 | Conquering Bomb Lab
+## Week 6: Feb 8 – Feb 14, 2027 | Conquering Bomb Lab
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: Reverse engineering control structures: switches with jump tables, while loops, recursion in assembly.
   - Thu–Fri: GDB commands for binary analysis: `disas`, `x/Nuf <addr>`, `layout asm`, `layout regs`, `break`, `si`, `ni`.
@@ -325,7 +364,7 @@
 - Active Recall:
   - How do you locate a jump table in memory and calculate the target jump address from the index register?
 
-## Week 7: Dec 21 – Dec 27, 2026 | Conquering Attack Lab (Phases 1–4)
+## Week 7: Feb 15 – Feb 21, 2027 | Conquering Attack Lab (Phases 1–4)
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Section 3.12 (Buffer overflow, stack layout, code injection, stack protector canaries, $W \oplus X$ / NX).
   - Thu–Fri: Return-Oriented Programming (ROP): gadget taxonomy (`pop %rdi; ret`), gadget farms, stack pivoting.
@@ -341,7 +380,11 @@
 - Active Recall:
   - Why does `touch3` fail if the cookie string is placed inside `getbuf`'s stack frame?
 
-## Week 8: Dec 28, 2026 – Jan 3, 2027 | CPU Microarchitecture & Von Neumann Emulator
+## Week 8: Feb 22 – Feb 28, 2027 | Buffer, Spaced Repetition & ARM64/`lldb` Bridge
+- Focus:
+  - Catch up on any unfinished Bomb Lab / Attack Lab phases, re-read `PROGRESS.md` misses cold, and compare x86-64 assembly against Apple Silicon ARM64 output (`clang -O2 -S`) using `lldb`.
+
+## Week 9: Mar 1 – Mar 7, 2027 | CPU Microarchitecture & Von Neumann Emulator
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 4.1–4.2 (Y86-64 instruction set, logic gates, ALU, hardware control languages), H&P 7th ed Appendix C (Datapath structure, instruction execution phases), and review [UC Berkeley CS 61C: Number Representation](https://notes.cs61c.org/content/number-rep/) (ALU condition flags: zero, sign, carry, and overflow).
   - Thu–Fri: [Onur Mutlu DDCA: Instruction Set Architectures & Von Neumann Model](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
@@ -354,7 +397,7 @@
 - Active Recall:
   - What constitutes the minimal architectural state of a CPU that must be preserved across clock cycles?
 
-## Week 9: Jan 4 – Jan 10, 2027 | Pipelining, Hazards & Data Forwarding
+## Week 10: Mar 8 – Mar 14, 2027 | Pipelining, Hazards & Data Forwarding
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 4.4–4.5 (Pipelining principles, throughput vs latency, pipeline registers) and H&P 7th ed Appendix C (§C.2–§C.3 Data hazards, forwarding condition logic equations, load-use interlocks, branch stalls).
   - Thu–Fri: [Onur Mutlu DDCA: Lectures 14–16 (Pipelined Microarchitecture, Hazards, Stalls, and Data Forwarding)](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd).
@@ -367,7 +410,7 @@
 - Active Recall:
   - Why can data not be forwarded backward in time during a load-use hazard?
 
-## Week 10: Jan 11 – Jan 17, 2027 | Out-of-Order Execution & Modern Microarchitecture
+## Week 11: Mar 15 – Mar 21, 2027 | Out-of-Order Execution & Modern Microarchitecture
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: H&P 7th ed Chapter 3 (§§3.1–3.6 Instruction-Level Parallelism: Dynamic scheduling via Tomasulo's algorithm, reservation stations, Common Data Bus [CDB]), [Onur Mutlu DDCA: Branch Prediction & Out-of-Order Execution](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd), and [Sergey Slotin AMH: Branch Prediction](https://en.algorithmica.org/hpc/pipelining/branching/).
   - Thu–Fri: H&P 7th ed Chapter 3 (§§3.7–3.9 Hardware-based speculation, Reorder Buffer [ROB], in-order commit, precise exceptions, and register renaming).
@@ -381,7 +424,7 @@
   - How does register renaming eliminate Write-After-Read (WAR) and Write-After-Write (WAW) false hazards?
   - In Tomasulo's algorithm with a Reorder Buffer (ROB), why must instruction commit occur in-order even though issue and execution occur out-of-order?
 
-## Week 11: Jan 18 – Jan 24, 2027 | Program Optimization & Instruction-Level Parallelism
+## Week 12: Mar 22 – Mar 28, 2027 | Program Optimization, ILP & 6.172 Project 1 (Bit Hacks)
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Chapter 5 (Optimizing Program Performance: compiler capabilities/limits, eliminating loop inefficiencies), H&P 7th ed Chapter 1 (CPU performance equation: $\text{CPU Time} = \text{IC} \times \text{CPI} \times \text{Cycle Time}$), and [Sergey Slotin AMH: Instruction-Level Parallelism](https://en.algorithmica.org/hpc/pipelining/tables/).
   - Thu–Fri: H&P 7th ed Chapter 4 (Data-Level Parallelism in SIMD and Vector Architectures) and [CMU 15-213: Lecture 09 & 10 (Code Optimization)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Latency bound vs throughput bound; functional unit issue time.
@@ -389,12 +432,12 @@
   - Mon–Tue: Implement [csi/01-computer-architecture/05-low-level-optimization/pagecount.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/pagecount.c): replace 64-bit integer division with bitwise shifting.
   - Wed–Fri: Implement loop unrolling and multiple accumulators in [csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/05-low-level-optimization/vec/dotproduct.c).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Benchmark Cycles Per Element (CPE) for $1 \times 1, 2 \times 2, 4 \times 4$ unrolling. Compare with [sslotin/amh-code: superscalar.cc](https://github.com/sslotin/amh-code) to observe port saturation and register pressure.
-  - Sun: Benchmark Struct of Arrays (SoA) vs Array of Structs (AoS) in [csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go).
+  - Sat: Benchmark Cycles Per Element (CPE) for $1 \times 1, 2 \times 2, 4 \times 4$ unrolling. Compare with [sslotin/amh-code: superscalar.cc](https://github.com/sslotin/amh-code) to observe port saturation and register pressure. Complete MIT 6.172 HW3 (Vectorization / SIMD) & HW5 (Bentley Rules).
+  - Sun: Benchmark Struct of Arrays (SoA) vs Array of Structs (AoS) in [csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/01-computer-architecture/07-memory-hierarchy-data-layout/metrics/metrics.go). Complete MIT 6.172 Project 1 (Bit Hacks).
 - Active Recall:
   - Why does simple $k \times 1$ loop unrolling fail to break the latency bound, while $k \times k$ unrolling with multiple accumulators breaks it?
 
-## Week 12: Jan 25 – Jan 31, 2027 | Linking & The ELF Object File Format
+## Week 13: Mar 29 – Apr 4, 2027 | Linking & The ELF Object File Format
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Chapter 7 (Linking: compiler drivers, static linking, object files, relocatable ELF format).
   - Thu–Fri: [CMU 15-213: Lecture 13 (Linking)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Symbol resolution (global, external, local; strong vs weak symbols).
@@ -407,7 +450,7 @@
 - Active Recall:
   - How does the dynamic linker resolve a function call on first invocation using the PLT and GOT?
 
-## Week 13: Feb 1 – Feb 7, 2027 | Exceptional Control Flow & Process Lifecycle
+## Week 14: Apr 5 – Apr 11, 2027 | Exceptional Control Flow & Process Lifecycle
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 8.1–8.4 (Exceptions: asynchronous interrupts, synchronous traps/faults/aborts; process abstraction, dual-mode execution).
   - Thu–Fri: [CMU 15-213: Lecture 14 (ECF: Exceptions & Processes)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [Wei Yang: Lecture 14 (Exceptional Control Flow)](https://www.youtube.com/@weiyang2613/videos), [UC Berkeley CS 162: Lectures 02 & 03 (Four Fundamental OS Abstractions, Dual-Mode Operation & Process Control)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Processes & Limited Direct Execution).
@@ -419,7 +462,7 @@
 - Active Recall:
   - What is the difference between a trap, an interrupt, a fault, and an abort?
 
-## Week 14: Feb 8 – Feb 14, 2027 | Signals, Shell Lab & CodeCrafters Shell
+## Week 15: Apr 12 – Apr 18, 2027 | Signals, Shell Lab & CodeCrafters Shell
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Section 8.5 (Signals, pending and blocked vectors, async-signal safety).
   - Thu–Fri: [CMU 15-213: Lecture 15 (ECF: Signals & Nonlocal Jumps)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Race conditions and atomic signal masking (`sigprocmask`).
@@ -431,58 +474,45 @@
 - Active Recall:
   - Why is calling `printf` or `malloc` inside a signal handler dangerous?
 
-## Week 15: Feb 15 – Feb 21, 2027 | Virtual Memory Topography & Address Translation
+## Week 16: Apr 19 – Apr 25, 2027 | Buffer, Linking/ECF Review & Shell Lab Polish
+- Focus:
+  - Spaced-repetition review of ELF relocations, `fork`/`exec`/`waitpid` invariants, and async-signal safety; finish any remaining CodeCrafters Shell stages.
+
+## Week 17: Apr 26 – Apr 30, 2027 | Virtual Memory Topography & Address Translation (Mon–Fri)
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Sections 9.1–9.5 (Virtual address space, physical addressing, pages, page tables, Page Faults, Translation Lookaside Buffer) and H&P 7th ed Chapter 2 (§2.4 Fast address translation with TLBs, page table walks, and Virtually Indexed Physically Tagged [VIPT] caches).
   - Thu–Fri: [CMU 15-213: Lectures 16 & 17 (Virtual Memory: Concepts & Systems)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), [UC Berkeley CS 162: Lectures 10 & 11 (Address Translation, Multi-Level Paging, TLBs)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Paging & TLBs), and OSTEP Chapters 13–19 (Address Spaces, Paging, TLBs).
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Review [exercises/07_process_memory_layout.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/07_process_memory_layout.md). Verify `.text`, `.data`, `.bss`, heap, memory-mapped region, and stack addresses in C.
-  - Wed–Fri: Calculate multi-level page table math: 4-level x86-64 page tables (PGD, P4D, PUD, PMD, PTE) for 48-bit virtual address spaces with 4KB pages.
-- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Trace complete address translation: Virtual Address $\to$ TLB Hit/Miss $\to$ Multi-Level Page Table Walk $\to$ Physical Address $\to$ L1 Cache Tag/Index.
-  - Sun: Experiment with `mmap` anonymous private mappings and shared file mappings in C.
+  - Wed–Fri: Calculate multi-level page table math: 4-level x86-64 page tables (PGD, P4D, PUD, PMD, PTE) for 48-bit virtual address spaces with 4KB pages. Trace `mmap` anonymous and shared mappings.
 - Active Recall:
   - Why does a multi-level page table drastically reduce memory footprint compared to a single-level page table for sparse address spaces?
 
-## Week 16: Feb 22 – Feb 28, 2027 | Dynamic Memory Allocation & Implicit Free Lists
-- Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: CS:APP Section 9.9 (Dynamic Memory Allocation: `malloc`/`free`, throughput vs utilization, internal/external fragmentation), [UC Berkeley CS 162: Lecture 12 (Demand Paging & Page Replacement)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Beyond Physical Memory & Page Replacement).
-  - Thu–Fri: [CMU 15-213: Lecture 18 (Dynamic Memory Allocation: Basic Concepts)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: Lecture 19 (Dynamic Memory Allocation)](https://www.youtube.com/@weiyang2613/videos).
-- Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Review [exercises/09_dynamic_memory_lifecycle.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/09_dynamic_memory_lifecycle.md) and implement [exercises/11_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/exercises/11_bump_allocator.md) in C.
-  - Wed–Fri: Implement an implicit free list memory allocator in [labs/06_malloclab/malloclab-handout/mm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/06_malloclab/malloclab-handout/mm.c) with first-fit search.
-- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Implement immediate boundary-tag coalescing on `free` (four cases: previous/next block allocated/free).
-  - Sun: Benchmark implicit free list on `malloclab` traces. Analyze throughput bottlenecks ($O(N)$ free list scan).
-- Active Recall:
-  - How do boundary tags (footer tags) allow $O(1)$ constant-time coalescing with the preceding block in memory?
+> **Schedule Blackout (May 1 – May 15, 2027):** Nothing scheduled. Full rest window.
 
-## Week 17: Mar 1 – Mar 7, 2027 | Explicit Free Lists & Pointer Arithmetic in C
+## Week 18: May 17 – May 23, 2027 | Dynamic Memory Allocation, 6.172 HW6 & Segregated Free Lists
 - Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: Explicit free list design: embedding `next` and `prev` pointers directly inside the payload of freed memory blocks.
-  - Thu–Fri: [CMU 15-213: Lecture 19 (Dynamic Memory Allocation: Advanced Concepts)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). Free list ordering policies: LIFO vs Address-Ordered.
+  - Mon–Wed: CS:APP Section 9.9 (Dynamic Memory Allocation: `malloc`/`free`, throughput vs utilization, internal/external fragmentation), [CMU 15-213: Lectures 18 & 19](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj), and [Wei Yang: Lecture 19](https://www.youtube.com/@weiyang2613/videos).
+  - Thu–Fri: Segregated free list architecture: size classes (powers of two: 32, 64, 128, 256, ...), segregated fits, and in-place `realloc`.
 - Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Re-architect `mm.c` block layout: add `prev` and `next` pointer offsets inside free blocks without increasing minimum block size.
-  - Wed–Fri: Implement doubly linked list insertion and deletion (`list_remove`, `list_insert`).
+  - Mon–Tue: Build directly on your prep-work [malloc_clone](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/projects/malloc_clone) foundations (skipping redundant implicit/explicit re-implementation). Complete MIT 6.172 HW6 (Simple Storage Allocation).
+  - Wed–Fri: Implement segregated free list root pointers and size-class bucket selection (`clz`) in [labs/06_malloclab/malloclab-handout/mm.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/06_malloclab/malloclab-handout/mm.c).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat: Connect explicit free list to `mm_malloc`, `mm_free`, and coalescing logic.
-  - Sun: Benchmark explicit free list on trace files. Validate that allocation search time scales with $O(\text{free\_blocks})$ instead of $O(\text{total\_blocks})$.
-- Active Recall:
-  - Why does an explicit free list require zero extra memory overhead for pointers compared to an implicit list?
-
-## Week 18: Mar 8 – Mar 14, 2027 | Segregated Free Lists & CodeCrafters SQLite B-Trees
-- Morning Theory (6:30–7:30 AM):
-  - Mon–Wed: Segregated free list architecture: size classes (powers of two: 32, 64, 128, 256, ...), segregated fits.
-  - Thu–Fri: In-place block extension on reallocation; memory utilization optimization.
-- Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: Implement array of segregated free list root pointers in `mm.c`.
-  - Wed–Fri: Implement size class bucket selection using bitwise operations or `clz` (count leading zeros). Tune allocator to pass `malloclab` with score $> 85/100$.
-- Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat–Sun: Advance [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite). Implement B-Tree interior page traversal and binary search on index records.
+  - Sat–Sun: Implement `realloc` in-place extension and tune segregated fits to pass `malloclab` with score $> 85/100$.
 - Active Recall:
   - Why does a segregated free list approximate best-fit memory utilization while preserving constant-time first-fit speed?
 
-## Week 19: Mar 15 – Mar 21, 2027 | xv6 Kernel Architecture & System Calls
+## Week 19: May 24 – May 30, 2027 | MIT 6.172 Project 3: Serial Dynamic Memory Allocation
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: [UC Berkeley CS 162: Lecture 12 (Demand Paging & Page Replacement)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC) and [UW-Madison CS 537: OS (OSTEP)](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Beyond Physical Memory & Page Replacement).
+- Evening & Weekend Lab:
+  - Complete [MIT 6.172 Project 3 (Serial Dynamic Memory Allocation)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/) and benchmark utilization vs throughput against your `mm.c`.
+
+## Week 20: May 31 – Jun 6, 2027 | Virtual Memory & Allocator Synthesis (Buffer)
+- Focus:
+  - Spaced-repetition review of 4-level page tables, TLBs, `mmap`, and allocator invariants; catch up on any remaining `Project 3` / `malloclab` tuning.
+
+## Week 21: Jun 7 – Jun 13, 2027 | xv6 Kernel Architecture & System Calls
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: [xv6 OS Kernel Walkthrough Playlist (Videos #1 & #2: Introduction & Overview, System Calls)](https://www.youtube.com/watch?v=xieHeMeu1HQ&list=PLbtzT1TYeoMj_YvECDl0YqipVZqucZHXs) and [MIT 6.S081: Lecture 1 (Operating System Interfaces) & Lecture 3 (OS Organization & System Calls)](https://www.youtube.com/watch?v=J3LCzufEYt0&list=PLTsf9UeqkReZHXWY9yJvTwLJWYYPcKEqK).
   - Thu–Fri: xv6 Book Chapter 1 & 2; Dual-mode execution on RISC-V: User mode (U-mode) vs Supervisor mode (S-mode); `ecall` and `sret` instructions.
@@ -495,7 +525,7 @@
 - Active Recall:
   - What happens to the CPU registers and program counter when a user program executes the RISC-V `ecall` instruction?
 
-## Week 20: Mar 22 – Mar 28, 2027 | xv6 Hardware Page Tables & Kernel Paging
+## Week 22: Jun 14 – Jun 20, 2027 | xv6 Hardware Page Tables & Kernel Paging
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: [xv6 OS Kernel Walkthrough Playlist (Videos #3 & #4: Page Tables & Memory Management)](https://www.youtube.com/watch?v=xieHeMeu1HQ&list=PLbtzT1TYeoMj_YvECDl0YqipVZqucZHXs) and [MIT 6.S081: Lecture 4 (Page Tables)](https://www.youtube.com/watch?v=J3LCzufEYt0&list=PLTsf9UeqkReZHXWY9yJvTwLJWYYPcKEqK).
   - Thu–Fri: xv6 Book Chapter 3 (Page Tables); RISC-V Sv39 paging architecture (3-level page tables, 39-bit virtual addresses, 56-bit physical addresses); `satp` register.
@@ -508,7 +538,7 @@
 - Active Recall:
   - What are the physical steps taken by the RISC-V MMU when traversing a Sv39 3-level page table upon a TLB miss?
 
-## Week 21: Mar 29 – Apr 4, 2027 | xv6 Traps, Interrupts & Device Drivers
+## Week 23: Jun 21 – Jun 27, 2027 | xv6 Traps, Interrupts & Device Drivers
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: [xv6 OS Kernel Walkthrough Playlist (Videos #5 & #6: Traps, Interrupts, & Exception Handling)](https://www.youtube.com/watch?v=xieHeMeu1HQ&list=PLbtzT1TYeoMj_YvECDl0YqipVZqucZHXs) and [MIT 6.S081: Lecture 5 (Calling Conventions & Stack Frames RISC-V) & Lecture 9 (Interrupts)](https://www.youtube.com/watch?v=J3LCzufEYt0&list=PLTsf9UeqkReZHXWY9yJvTwLJWYYPcKEqK).
   - Thu–Fri: xv6 Book Chapter 4 (Traps and System Calls); Trapframe struct, `stvec`, `sstatus`, `sepc`, `scause`; Trampoline page at `MAXVA`.
@@ -521,7 +551,7 @@
 - Active Recall:
   - Why must the trampoline page be mapped at the exact same virtual address in both user page tables and the kernel page table?
 
-## Week 22: Apr 5 – Apr 11, 2027 | xv6 Copy-on-Write (COW) Fork
+## Week 24: Jun 28 – Jul 4, 2027 | xv6 Copy-on-Write (COW) Fork
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: [xv6 OS Kernel Walkthrough Playlist (Video #7 & #8: Lazy Allocation & Copy-on-Write)](https://www.youtube.com/watch?v=xieHeMeu1HQ&list=PLbtzT1TYeoMj_YvECDl0YqipVZqucZHXs) and [MIT 6.S081: Lecture 8 (Page Faults) & Lecture 16 (Virtual Memory Primitives)](https://www.youtube.com/watch?v=J3LCzufEYt0&list=PLTsf9UeqkReZHXWY9yJvTwLJWYYPcKEqK).
   - Thu–Fri: Copy-on-Write fork architecture: clearing `PTE_W`, setting COW software bit in PTE flags, physical page reference counting.
@@ -534,7 +564,11 @@
 - Active Recall:
   - What race condition occurs if reference count increment/decrement operations in a COW kernel allocator are not protected by locks?
 
-## Week 23: Apr 12 – Apr 18, 2027 | System-Level I/O & Network Sockets
+## Week 25: Jul 5 – Jul 11, 2027 | Buffer & xv6 Kernel Review
+- Focus:
+  - Catch up on any remaining `cowtest` / `alarmtest` edge cases and review RISC-V trapframe + page-table invariants.
+
+## Week 26: Jul 12 – Jul 18, 2027 | System-Level I/O & Network Sockets
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Chapters 10 & 11 (Unix I/O, file descriptors, open file table, v-node table, standard I/O vs robust I/O).
   - Thu–Fri: [CMU 15-213: Lectures 20 & 21 (System-Level I/O & Network Programming)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj). TCP/IP sockets API (`socket`, `bind`, `listen`, `accept`, `connect`).
@@ -547,32 +581,32 @@
 - Active Recall:
   - What is the difference between the open file table entry and the file descriptor table entry when a file is opened twice versus when `dup2` is called?
 
-## Week 24: Apr 19 – Apr 25, 2027 | Concurrent Programming & CodeCrafters Redis (Part 1)
+## Week 27: Jul 19 – Jul 25, 2027 | Concurrent Programming, Proxy Lab Threads & 6.172 HW4
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: CS:APP Chapter 12 (Concurrent Programming: process-based, I/O multiplexing, thread-based), [UC Berkeley CS 162: Lectures 04 & 05 (Concurrency, Synchronization, Locks, Semaphores)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC), and [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Concurrency & Locks).
   - Thu–Fri: [CMU 15-213: Lectures 22 & 23 (Concurrent Programming & Synchronization Basics)](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj) and [Wei Yang: Recitation 14 (Synchronization)](https://www.youtube.com/@weiyang2613/videos).
 - Evening Exercises (8:00–9:30 PM):
-  - Mon–Tue: POSIX threads (`pthread_create`, `pthread_join`, `pthread_detach`). Trace shared stack memory and race conditions on global counters.
+  - Mon–Tue: POSIX threads (`pthread_create`, `pthread_join`, `pthread_detach`). Trace shared stack memory and race conditions on global counters. Complete MIT 6.172 HW4 (Cilk & Reducer Hyperobjects).
   - Wed–Fri: Refactor [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c) to spawn a detached worker thread per client connection.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat–Sun: Start [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis). Implement TCP server binding, RESP protocol parsing (`PING`, `ECHO`), and concurrent connection handling with threads or goroutines.
+  - Sat–Sun: Stress-test multi-threaded `proxy.c` with concurrent clients and Helgrind/TSan; finish 6.172 HW4 reducer benchmarks.
 - Active Recall:
   - Why is a detached thread required when threads do not need to be explicitly joined by the main parent thread?
 
-## Week 25: Apr 26 – May 2, 2027 | Thread Synchronization, Caching & CodeCrafters Redis (Part 2)
+## Week 28: Jul 26 – Aug 1, 2027 | Thread Synchronization, Proxy Lab Cache & 6.172 HW7/HW9/HW10
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: H&P 7th ed Chapter 5 (§§5.1–5.3 Shared-memory multiprocessors, cache coherence problem, snooping bus protocols [MSI/MESI], write-invalidate vs write-update, and false sharing), [Wei Yang: Recitation 13 (Proxy Lab Caching)](https://www.youtube.com/@weiyang2613/videos), and [UC Berkeley CS 162: Lecture 06 (Monitors, Condition Variables, Readers-Writers)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Readers-Writer Problem (favoring readers vs favoring writers); coarse vs fine-grained locking.
   - Thu–Fri: OSTEP Chapter 32 (Common Concurrency Bugs), [UW-Madison CS 537: OS (OSTEP) Playlist](https://www.youtube.com/playlist?list=PLzBbfbHQmjyuqBFJ8KpDdcvnLNkvPXbS-) (Condition Variables, Semaphores, & Concurrency Bugs), and [UC Berkeley CS 162: Lecture 07 (Deadlock & Priority Inversion)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC). Deadlock conditions, hold-and-wait, circular wait prevention.
 - Evening Exercises (8:00–9:30 PM):
   - Mon–Tue: Design an in-memory thread-safe LRU cache structure in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c) with maximum object size (100KB) and total cache size (1MB).
-  - Wed–Fri: Implement Readers-Writer lock synchronization protecting cache lookups and cache insertions. Run `./driver.sh`.
+  - Wed–Fri: Implement Readers-Writer lock synchronization protecting cache lookups and cache insertions. Run `./driver.sh`. Complete MIT 6.172 HW7 (Dynamic-Analysis Tools / Cilksan), HW9 (Deterministic Execution), & HW10 (Data Synchronization).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat–Sun: Complete [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis). Implement `SET` with expiration (`PX`), `GET`, in-memory key-value eviction, and RDB snapshot parsing.
+  - Sat–Sun: Finish `proxy.c` end-to-end verification (`./driver.sh`) and complete 6.172 HW9 & HW10 synchronization exercises.
 - Active Recall:
   - What are the four Coffman conditions necessary for deadlock to occur?
   - In the MESI protocol, why does an attempt to write to a cache line in the Shared (S) state generate an invalidation request on the bus rather than writing directly?
 
-## Week 26: May 3 – May 9, 2027 | High-Throughput Linux I/O & CodeCrafters Kafka
+## Week 29: Aug 2 – Aug 8, 2027 | High-Throughput Linux I/O (`epoll`) & Atomics
 - Morning Theory (6:30–7:30 AM):
   - Mon–Wed: Modern Linux Event Demultiplexing: `select` vs `poll` vs `epoll` ($O(1)$ readiness notification, edge-triggered vs level-triggered) and [UC Berkeley CS 162: Lecture 16 (Networking, Sockets, and I/O Multiplexing)](https://www.youtube.com/playlist?list=PLF2K2xZjNEf97A_uBCwEl61sdxWVP7VWC).
   - Thu–Fri: H&P 7th ed Chapter 5 (§§5.6–5.7 Memory Consistency Models: Sequential Consistency vs Total Store Order [TSO], store buffering with forwarding, and memory barriers), Linux `io_uring`, and C11 acquire-release atomics.
@@ -580,20 +614,125 @@
   - Mon–Tue: Build a non-blocking TCP server using Linux `epoll` (`epoll_create1`, `epoll_ctl`, `epoll_wait`).
   - Wed–Fri: Benchmark atomic counters vs mutexes vs Go channels in [csi/03-languages-and-compilers/05-concurrency-patterns/counter-service/](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/03-languages-and-compilers/05-concurrency-patterns/counter-service).
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
-  - Sat–Sun: Capstone project: [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka). Implement binary Kafka protocol serialization, commit log file writes to disk, and message batching.
+  - Sat–Sun: Load-test your `epoll` server and compare tail latency under contention.
+
+## Week 30: Aug 9 – Aug 15, 2027 | Buffer, Concurrency Review & Memory Consistency
+- Focus:
+  - Spaced-repetition review of MESI cache coherence, TSO vs Sequential Consistency, lock-free atomics, and `epoll` readiness semantics before starting 6.172 Capstones.
 - Active Recall:
   - Why does `epoll` scale to tens of thousands of idle connections ($O(1)$) while `select` degrades linearly ($O(N)$)?
   - Under x86-64's Total Store Order (TSO) memory model, why can a store operation be delayed past subsequent loads to different memory locations without an explicit memory fence?
+
+## Week 31: Aug 16 – Aug 22, 2027 | MIT 6.172 Project 2: Collision Detection (Baseline & Profiling)
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: MIT 6.172 Lectures on Bentley Rules, Profiling (`perf`, `callgrind`), and Measurement Methodology.
+- Evening & Weekend Lab:
+  - Build and profile the baseline `O(N^2)` collision detector in [MIT 6.172 Project 2](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/). Identify hotspots via flamegraphs and `perf stat` IPC/cache-miss counters.
+
+## Week 32: Aug 23 – Aug 29, 2027 | MIT 6.172 Project 2: Spatial Partitioning (Quadtrees)
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Spatial indexing, quadtrees, bounding boxes, and algorithmic complexity vs constant-factor cache locality.
+- Evening & Weekend Lab:
+  - Replace `O(N^2)` pairwise checks with a quadtree / spatial grid; verify correctness against the reference oracle.
+
+## Week 33: Aug 30 – Sep 5, 2027 | MIT 6.172 Project 2: Data Layout, SIMD & Bit Hacks
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: MIT 6.172 Lectures on Compiler Vectorization, SoA vs AoS, and Branchless Arithmetic.
+- Evening & Weekend Lab:
+  - Refactor particle/line structs to SoA, eliminate predictable branches, and verify auto-vectorization (`-Rpass=loop-vectorize`).
+
+## Week 34: Sep 6 – Sep 12, 2027 | MIT 6.172 Project 2: Parallel Collision Detection
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: MIT 6.172 Lectures on Cilk Work/Span Analysis, Grain Size, and Nondeterminism.
+- Evening & Weekend Lab:
+  - Parallelize quadtree construction and collision queries; verify zero data races with `cilksan` / ThreadSanitizer and benchmark multi-core speedup.
+
+## Week 35: Sep 13 – Sep 19, 2027 | MIT 6.172 Project 4: Leiserchess (Baseline & Bitboards)
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: MIT 6.172 Lectures on Domain-Specific Optimization, Bitboards, and Alpha-Beta / Principal Variation Search (PVS).
+- Evening & Weekend Lab:
+  - Profile the baseline [MIT 6.172 Project 4 (Leiserchess)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/) engine; inspect board representation and move-generation hotspots.
+
+## Week 36: Sep 20 – Sep 26, 2027 | MIT 6.172 Project 4: Move Generation & Evaluation Speedups
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Lookup tables, incremental evaluation updates, and branch-free bitboard operations.
+- Evening & Weekend Lab:
+  - Optimize move generation and static evaluation using precomputed ray masks and incremental state updates.
+
+## Week 37: Sep 27 – Oct 3, 2027 | MIT 6.172 Project 4: Transposition Tables & Zobrist Hashing
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Cache-friendly hash tables, Zobrist hashing, and replacement policies.
+- Evening & Weekend Lab:
+  - Implement and tune the transposition table; measure cache-miss rates with `cachegrind` / `perf`.
+
+## Week 38: Oct 4 – Oct 10, 2027 | MIT 6.172 Project 4: Search Pruning & Move Ordering
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Killer moves, history heuristics, null-move pruning, and quiescence search.
+- Evening & Weekend Lab:
+  - Improve search branching factor and node-per-second throughput; run automated matchplay benchmarks.
+
+## Week 39: Oct 11 – Oct 17, 2027 | MIT 6.172 Project 4: Parallel PVS & Lock-Free Tables
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: MIT 6.172 Lectures on Parallel Search, Young Brothers Wait Concept (YBWC), and Lock-Free Transposition Tables.
+- Evening & Weekend Lab:
+  - Parallelize alpha-beta/PVS search across cores; guard against race conditions and false sharing.
+
+## Week 40: Oct 18 – Oct 24, 2027 | MIT 6.172 Project 4: Memory & Cache Micro-Optimization
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Struct packing, `restrict` aliasing, prefetching, and allocator overhead in search trees.
+- Evening & Weekend Lab:
+  - Eliminate remaining `perf` bottlenecks, compact search structs to fit cache lines, and verify deterministic perft counts.
+
+## Week 41: Oct 25 – Oct 31, 2027 | MIT 6.172 Project 4: Tournament Tuning & Final Benchmark
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Quantitative performance attribution and regression testing.
+- Evening & Weekend Lab:
+  - Run full Leiserchess tournament/self-play suite and document total speedup vs baseline.
+
+## Week 42: Nov 1 – Nov 7, 2027 | Buffer, 6.172 Synthesis & Spaced Review
+- Morning Theory (6:30–7:30 AM):
+  - Mon–Fri: Review all 6.172 performance patterns (Bentley rules, cache-oblivious algorithms, work/span, race-freedom).
+- Evening & Weekend Lab:
+  - Cold re-implementation of key bit-hack, allocator, and parallel reduction drills; buffer week for any unfinished 6.172 items.
+
+## Weeks 43–46: Nov 8 – Dec 5, 2027 | CodeCrafters SQLite & Storage Engine Deepening
+- Focus:
+  - Complete [CodeCrafters: Build your own SQLite](https://codecrafters.io/challenges/sqlite) end-to-end (B-Tree interior/leaf splits, index scans, `WHERE` filtering, joins, and page-cache benchmarking).
+
+## Weeks 47–50: Dec 6, 2027 – Jan 2, 2028 | CodeCrafters Redis & Year-End Recovery Buffer
+- Focus:
+  - Weeks 47–49: Complete [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis) (RESP, TTL, RDB snapshots, replication).
+  - Week 50 (Dec 27, 2027 – Jan 2, 2028): Year-end recovery buffer & spaced review.
+
+## Weeks 51–54: Jan 3 – Jan 30, 2028 | CodeCrafters Kafka & `io_uring` Zero-Copy I/O
+- Focus:
+  - Complete [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka) (commit log segments, binary wire protocol, partition fetch streaming) and benchmark an `io_uring` vs `epoll` server with `sendfile` zero-copy profiling.
+
+## Weeks 55–58: Feb 1 – Feb 27, 2028 | Apple-Ecosystem Systems Bridge (ARM64, Instruments, C++)
+- Focus:
+  - Disassemble and profile C/C++ hot loops on Apple Silicon ARM64 (`clang -O2 -S`, `lldb`, Instruments Time Profiler & Allocations).
+  - Port 1–2 concurrency/allocator patterns to modern C++ (RAII, `std::atomic`, memory ordering, lock-free ring buffer).
+
+## Weeks 59–61: Feb 28 – Mar 19, 2028 | Public Portfolio Write-Ups & Systems Mock Interviews
+- Focus:
+  - Publish 2–3 clean GitHub repositories with before/after `perf`/Instruments benchmarks (`6.172` Collision Detection or Leiserchess, custom allocator, `xv6` COW).
+  - Run timed systems design + DSA coding mocks (targeting Apple Core OS / Silicon / Performance roles).
+
+## Weeks 62–63 (+ Apr 3–4, 2028): Mar 20 – Apr 4, 2028 | Final Spaced Review, Buffer & Capstone Sign-off
+- Focus:
+  - Final buffer for any lingering labs, cold active recall across all 9 phases, and complete invariant walkthrough.
 
 ---
 
 # Verification & Milestone Tracking
 
 ## Phase Milestones
-- Milestone 1 (End of Week 3): Cache Lab completed (Part A `csim` and Part B `trans` passing all autograder tests with full 53/53 score); CodeCrafters SQLite header parsing verified.
-- Milestone 2 (End of Week 7): Bomb Lab fully defused (Phases 1–6 + secret phase) and Attack Lab completed (Phases 1–4 ROP chain).
-- Milestone 3 (End of Week 11): 8-bit Von Neumann CPU emulator implemented; instruction-level parallelism and loop unrolling verified.
-- Milestone 4 (End of Week 14): Shell Lab (`tsh.c`) fully implemented with complete signal masking and job control; CodeCrafters Shell passed.
-- Milestone 5 (End of Week 18): Malloc Lab (`mm.c`) segregated free list memory allocator exceeding 85/100 performance index; CodeCrafters SQLite B-Tree search complete.
-- Milestone 6 (End of Week 22): MIT 6.1810 / xv6 kernel labs passed (`syscall`, `pgtbl`, `traps`, `cow`).
-- Milestone 7 (End of Week 26): Proxy Lab (`proxy.c`) multi-threaded caching proxy passed; CodeCrafters Redis and Kafka completed.
+- Milestone 1 (End of Week 3): Cache Lab completed (Part A `csim` and Part B `trans` passing all autograder tests with full 53/53 score); 6.172 HW1, HW2, HW8 completed; CodeCrafters SQLite header parsing verified.
+- Milestone 2 (End of Week 8): Bomb Lab fully defused (Phases 1–6 + secret phase), Attack Lab completed (Phases 1–4 ROP chain), and ARM64/`lldb` bridge verified.
+- Milestone 3 (End of Week 12): 8-bit Von Neumann CPU emulator implemented; ILP/loop unrolling verified; 6.172 HW3, HW5, and Project 1 (Bit Hacks) completed.
+- Milestone 4 (End of Week 16): Shell Lab (`tsh.c`) fully implemented with complete signal masking and job control; CodeCrafters Shell passed.
+- Milestone 5 (End of Week 20): Malloc Lab (`mm.c`) segregated free list memory allocator exceeding 85/100 performance index; 6.172 HW6 and Project 3 benchmarked (post May 1–15 blackout).
+- Milestone 6 (End of Week 25): MIT 6.1810 / xv6 kernel labs passed (`syscall`, `pgtbl`, `traps`, `cow`).
+- Milestone 7 (End of Week 30): Proxy Lab (`proxy.c`) multi-threaded caching proxy passed; 6.172 HW4, HW7, HW9, HW10 completed; `epoll` server benchmarked.
+- Milestone 8 (End of Week 42): MIT 6.172 Project 2 (Collision Detection) and Project 4 (Leiserchess) optimized, race-free, and benchmarked.
+- Milestone 9 (End of Week 63 / Apr 4, 2028): CodeCrafters SQLite, Redis, Kafka, `io_uring`, Apple Silicon ARM64/Instruments/C++ bridge, and 2–3 public portfolio write-ups completed.
