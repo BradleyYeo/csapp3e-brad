@@ -170,9 +170,7 @@ def legacy_merge_intervals(raw_pairs: List[Tuple[int, int]]) -> List[Tuple[int, 
 )
 def merge_two_touching(a: Interval, b: Interval) -> Interval:
     """Merges two touching or overlapping intervals into one."""
-    new_start = a.start
-    new_end = max(a.end, b.end)
-    return Interval(new_start, new_end)
+    raise NotImplementedError("TODO: implement merge_two_touching")
 
 
 # ---------------------------------------------------------------------
@@ -200,42 +198,7 @@ def merge_two_touching(a: Interval, b: Interval) -> Interval:
 )
 def collapse_sorted_intervals(intervals: List[Interval]) -> List[Interval]:
     """Collapses a pre-sorted list of intervals into minimal disjoint intervals."""
-    if not intervals:
-        return []
-
-    collapsed: List[Interval] = [intervals[0]]
-
-    # Invariant Verification Hook
-    def verify_loop_invariant(curr_idx: int) -> None:
-        # Invariant Part 1: collapsed list remains pairwise disjoint
-        if not is_pairwise_disjoint(collapsed):
-            raise LoopInvariantViolationError(f"Collapsed output is not pairwise disjoint at step {curr_idx}: {collapsed}")
-        # Invariant Part 2: start points of collapsed must be monotonically increasing
-        if not is_sorted_intervals(collapsed):
-            raise LoopInvariantViolationError(f"Collapsed output is not sorted at step {curr_idx}: {collapsed}")
-
-    # Initialization: I holds for first element
-    verify_loop_invariant(0)
-
-    # Maintenance: iterate across remaining intervals
-    for idx in range(1, len(intervals)):
-        candidate = intervals[idx]
-        last = collapsed[-1]
-
-        if are_intervals_touching_or_overlapping(last, candidate):
-            # Maintenance Step: consolidate last and candidate
-            merged = merge_two_touching(last, candidate)
-            collapsed[-1] = merged
-        else:
-            # Maintenance Step: disjoint gap found, append new interval
-            collapsed.append(candidate)
-
-        # Invariant holds after each iteration
-        verify_loop_invariant(idx)
-
-    # Termination: loop terminates when all intervals processed.
-    # At loop exit: (I and not B) implies Q_collapse (pairwise disjoint).
-    return collapsed
+    raise NotImplementedError("TODO: implement collapse_sorted_intervals")
 
 
 # ---------------------------------------------------------------------
@@ -267,7 +230,7 @@ def collapse_sorted_intervals(intervals: List[Interval]) -> List[Interval]:
 )
 def sort_intervals_by_start(intervals: List[Interval]) -> List[Interval]:
     """Pure Stage 1: Sorts intervals monotonically by start coordinate."""
-    return sorted(intervals, key=lambda iv: (iv.start, iv.end))
+    raise NotImplementedError("TODO: implement sort_intervals_by_start")
 
 
 # ---------------------------------------------------------------------
@@ -300,8 +263,7 @@ def consolidate_intervals(intervals: List[Interval]) -> List[Interval]:
     1. C1: Sort intervals {P_any} -> {R}
     2. C2: Collapse sorted {R} -> {Q_disjoint}
     """
-    sorted_intervals = sort_intervals_by_start(intervals)  # Stage 1: establishes {R}
-    return collapse_sorted_intervals(sorted_intervals)      # Stage 2: establishes {Q}
+    raise NotImplementedError("TODO: implement consolidate_intervals")
 
 
 # =====================================================================
