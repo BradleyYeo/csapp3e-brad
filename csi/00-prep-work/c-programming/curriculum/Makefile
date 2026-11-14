@@ -99,8 +99,8 @@ run-exercises: $(EXERCISES)
 	[ $$fail -eq 0 ]
 
 test-python:
-	@echo "== 49_hoare_logic_refactoring"; python3 49_hoare_logic_refactoring.py
-	@echo "== 51_python_pointer_chasing"; python3 51_python_pointer_chasing.py --test
+	@echo "== 55_hoare_logic_refactoring"; python3 55_hoare_logic_refactoring.py
+	@echo "== 57_python_pointer_chasing"; python3 57_python_pointer_chasing.py --test
 
 test-sanitizers: clean
 	@$(MAKE) CFLAGS="$(CFLAGS_SAN)" run-exercises

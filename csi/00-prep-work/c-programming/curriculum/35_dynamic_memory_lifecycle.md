@@ -191,4 +191,4 @@ State 3: Writing byte and incrementing size
 ---
 
 # Next Step in Curriculum
-Proceed to [36_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/curriculum/36_bump_allocator.md) for custom monotonic arena allocation, and [52_dangling_refs_and_leaks.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/curriculum/52_dangling_refs_and_leaks.md) for focused drills on identifying, fixing, and preventing dangling references and memory leaks.
+Proceed to [39_bump_allocator.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/curriculum/39_bump_allocator.md) for custom monotonic arena allocation, and [38_dangling_refs_and_leaks.md](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/00-prep-work/c-programming/curriculum/38_dangling_refs_and_leaks.md) for focused drills on identifying, fixing, and preventing dangling references and memory leaks.
