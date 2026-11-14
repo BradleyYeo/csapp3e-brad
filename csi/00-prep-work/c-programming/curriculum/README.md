@@ -23,14 +23,14 @@ Single file: `make 20_pointer_traversal && ./20_pointer_traversal`
 > WSL). Drills 45–48 create directories, hard links, FIFOs, and pipes; NTFS mounts
 > under `/mnt/c` don't emulate inodes faithfully and 46 will abort there.
 
-Targets 17, 26, and 50 are deliberately outside `make all` — they're incomplete on
+Targets 18, 27, and 56 are deliberately outside `make all` — they're incomplete on
 purpose (fix-it exercises); see their rows below.
 
 ---
 
-## Stage A — Language foundations (K&R Ch. 1–3)
+## Stage A — Language foundations (K&R Ch. 1–3 + CS:APP Ch. 2)
 
-Control flow, character I/O, arrays, bit arithmetic. All single-file.
+Control flow, character I/O, arrays, bit arithmetic, and data representation. All single-file.
 
 | # | File | Concept |
 |---|---|---|
@@ -50,77 +50,72 @@ Control flow, character I/O, arrays, bit arithmetic. All single-file.
 | 14 | `14_kr203_htoi.c` | base conversion, digit parsing |
 | 15 | `15_kr206_setbits.c` | bitwise masking algebra |
 | 16 | `16_kr208_rightrot.c` | rotation without modulo |
-| 17 | `17_kr301_binsearch_count.c` | **repair target — does not compile**; fix syntax, add comparison counter |
-| 18 | `18_kr303_expand_ranges.c` | string scanning, lookahead, boundary cases |
-| 19 | `19_kr305_itob.c` | generic base printing, character digits |
+| 17 | `17_twos_complement_and_ieee754.{c,md}` | endianness, unsigned promotion bugs, UB-free overflow, IEEE 754 `float_twice` (`datalab` / CS:APP Ch. 2) |
+| 18 | `18_kr301_binsearch_count.c` | **repair target — does not compile**; fix syntax, add comparison counter |
+| 19 | `19_kr303_expand_ranges.c` | string scanning, lookahead, boundary cases |
+| 20 | `20_kr305_itob.c` | generic base printing, character digits |
 
-## Stage B — Pointers and strings (drills 20–23 + K&R Ch. 4–5)
-
-| # | File | Concept |
-|---|---|---|
-| 20 | `20_pointer_traversal.{c,md}` | cursor traversal, reverse scans, two-pointer lockstep |
-| 21 | `21_anchored_matching.{c,md}` | separate position-predicate from cursor-scanner |
-| 22 | `22_enum_state_machine.{c,md}` | enums, status codes — define errors out of existence |
-| 23 | `23_char_group_slicing.{c,md}` | pointer subtraction, memcpy null-termination invariant |
-| 24 | `24_kr401_strrindex.c` | rightmost substring search |
-| 25 | `25_kr503_strcat.c` | **repair target** — remove malloc for in-place concat, `const char *t`, fix `getstrlen` UB (see REMEDIATION Phase A) |
-| 26 | `26_kr504_strend.c` | suffix match with end-pointer arithmetic, no `[]` — functions only; **write the test `main` yourself** (not in default build) |
-| 27 | `27_kr505_strn_family.c` | bounded string ops, length-limit discipline |
-| 28 | `28_kr501_getch_ungetch.c` | pushback buffering (`make 28_kr501_getch_ungetch` links `_resources/getch.c`) |
-
-## Stage C — Memory model and lifetime
+## Stage B — Pointers and strings (drills 21–24 + K&R Ch. 4–5)
 
 | # | File | Concept |
 |---|---|---|
-| 29 | `29_pointer_decay.c` | **repair target** — array decay in parameters, add `assert()` stride checks (REMEDIATION Phase A) |
-| 30 | `30_pointer_arithmetic_strides.{c,md}` | type scaling, `void*` hazards, `uintptr_t` |
-| 31 | `31_process_memory_layout.{c,md}` | text/data/BSS/heap/stack segments, growth directions |
-| 32 | `32_getline_ingestion.{c,md}` | heap-owned input buffers, O(1) newline strip, ownership |
-| 33 | `33_kr507_sortlines.c` | **repair target** — replace static `allocbuf` with dynamic allocation, geometric growth (REMEDIATION Phase B) |
-| 34 | `34_dynamic_memory_lifecycle.{c,md}` | safe `realloc` idiom, nullify-after-free, deep clone |
-| 35 | `35_memory_safety_sanitizers.{c,md}` | ASan/UBSan, `--trigger-*` flags, read the reports |
-| 36 | `36_bump_allocator.{c,md}` | arena allocation, power-of-two alignment, scoped rollback |
+| 21 | `21_pointer_traversal.{c,md}` | cursor traversal, reverse scans, two-pointer lockstep |
+| 22 | `22_anchored_matching.{c,md}` | separate position-predicate from cursor-scanner |
+| 23 | `23_enum_state_machine.{c,md}` | enums, status codes — define errors out of existence |
+| 24 | `24_char_group_slicing.{c,md}` | pointer subtraction, memcpy null-termination invariant |
+| 25 | `25_kr401_strrindex.c` | rightmost substring search |
+| 26 | `26_kr503_strcat.c` | **repair target** — remove malloc for in-place concat, `const char *t`, fix `getstrlen` UB (see REMEDIATION Phase A) |
+| 27 | `27_kr504_strend.c` | suffix match with end-pointer arithmetic, no `[]` — functions only; **write the test `main` yourself** (not in default build) |
+| 28 | `28_kr505_strn_family.c` | bounded string ops, length-limit discipline |
+| 29 | `29_kr501_getch_ungetch.c` | pushback buffering (`make 29_kr501_getch_ungetch` links `_resources/getch.c`) |
+
+## Stage C — Memory model, safety, and lifetime
+
+| # | File | Concept |
+|---|---|---|
+| 30 | `30_pointer_decay.c` | **repair target** — array decay in parameters, add `assert()` stride checks (REMEDIATION Phase A) |
+| 31 | `31_pointer_arithmetic_strides.{c,md}` | type scaling, `void*` hazards, `uintptr_t` |
+| 32 | `32_process_memory_layout.{c,md}` | text/data/BSS/heap/stack segments, growth directions |
+| 33 | `33_getline_ingestion.{c,md}` | heap-owned input buffers, O(1) newline strip, ownership |
+| 34 | `34_kr507_sortlines.c` | **repair target** — replace static `allocbuf` with dynamic allocation, geometric growth (REMEDIATION Phase B) |
+| 35 | `35_dynamic_memory_lifecycle.{c,md}` | safe `realloc` idiom, nullify-after-free, deep clone |
+| 36 | `36_memory_safety_sanitizers.{c,md}` | ASan/UBSan, `--trigger-*` flags, read the reports |
 | 37 | `37_valgrind_fundamentals.{c,md}` | Memcheck A/V-bits, four leak kinds, `make valgrind-37` |
-| 38 | `38_kr803_malloc_flushbuf.c` | design stdio buffering + `malloc`/`_allocbuf` — capstone of Stage C |
+| 38 | `38_dangling_refs_and_leaks.{c,md}` | identify, fix, and prevent dangling references and memory leaks |
+| 39 | `39_bump_allocator.{c,md}` | arena allocation, power-of-two alignment, scoped rollback |
+| 40 | `40_kr803_malloc_flushbuf.c` | design stdio buffering + `malloc`/`_allocbuf` — capstone of Stage C |
 
-## Stage D — Multi-file programs, structs, recursion
-
-| # | File | Concept |
-|---|---|---|
-| 39 | `39_calculator/` | RPN calculator split across files; **repair target** — encapsulate global `stack.c` arrays into a heap `Stack` struct with init/push/pop/free (REMEDIATION Phase B). Build: `clang -std=gnu17 39_calculator/*.c -o calc` |
-| 40 | `40_kr602_getword_groups.c` | structs, functions returning `char *`, keyword grouping |
-| 41 | `41_recursion_patterns.{c,md}` | recursion structure, base cases, stack depth |
-| 42 | `42_macro_fundamentals.{c,md}` | preprocessor, macro hygiene, `do-while(0)` |
-
-## Stage E — Systems and POSIX
+## Stage D — Multi-file programs, structs, cache locality, recursion
 
 | # | File | Concept |
 |---|---|---|
-| 43 | `43_kr706_compare_files.c` | stdio file handling (`_resources/test1.txt`, `test2.txt` are inputs) |
-| 44 | `44_kr801_fcopy.c` | **repair target** — fd order in `fcopy`, loop `write()` for partials (REMEDIATION Phase C) |
-| 45 | `45_mmap_search.{c,md}` | zero-copy mapping, bounded scanning, page faults |
-| 46 | `46_filesystem_inode_ops.{c,md}` | inodes, hard links, `sbrk` heap break |
-| 47 | `47_pipe_pingpong.{c,md}` | full-duplex IPC, descriptor-close invariants, latency measurement |
-| 48 | `48_process_pipeline_exec.{c,md}` | fork/exec/waitpid/dup2 pipeline orchestration |
+| 41 | `41_calculator/` | RPN calculator split across files; **repair target** — encapsulate global `stack.c` arrays into a heap `Stack` struct with init/push/pop/free (REMEDIATION Phase B). Build: `clang -std=gnu17 41_calculator/*.c -o calc` |
+| 42 | `42_kr602_getword_groups.c` | structs, functions returning `char *`, keyword grouping |
+| 43 | `43_struct_alignment_and_fn_ptrs.{c,md}` | struct alignment/padding, `container_of`, overflow-safe comparators, jump tables (CS:APP Ch. 3) |
+| 44 | `44_recursion_patterns.{c,md}` | recursion structure, base cases, stack depth |
+| 45 | `45_macro_fundamentals.{c,md}` | preprocessor, macro hygiene, `do-while(0)` |
+| 46 | `46_cache_locality_and_blocking.{c,md}` | `(s, E, b)` address bit splitting, LRU cache simulator, tiled transpose (`cachelab` / CS:APP Ch. 5–6) |
 
-## Stage F — Transfer and reasoning
-
-| # | File | Concept |
-|---|---|---|
-| 49 | `49_hoare_logic_refactoring.{py,md}` | specs, loop invariants, refinement (`python3 49_hoare_logic_refactoring.py`) |
-| 50 | `50_pipelining_hazards.{c,md}` | hazard units vs data/control hazards — **repair target**: the test-stub section doesn't compile; completing it is the exercise (not in default build) |
-| 51 | `51_python_pointer_chasing.{py,md}` | references vs pointers, transfer check |
-| 52 | `52_dangling_refs_and_leaks.{c,md}` | identify, fix, and prevent dangling references and memory leaks (Stage C extension) |
-
-## Stage G — CS:APP 3e Bridge (Ch. 2–12 & Labs Readiness)
+## Stage E — Systems, POSIX, signals, and concurrency
 
 | # | File | Concept |
 |---|---|---|
-| 53 | `53_twos_complement_and_ieee754.{c,md}` | endianness, unsigned promotion bugs, UB-free overflow, IEEE 754 `float_twice` (`datalab` / Ch. 2) |
-| 54 | `54_struct_alignment_and_fn_ptrs.{c,md}` | struct alignment/padding, `container_of`, overflow-safe comparators, jump tables (Ch. 3) |
-| 55 | `55_cache_locality_and_blocking.{c,md}` | `(s, E, b)` address bit splitting, LRU cache simulator, tiled transpose (`cachelab` / Ch. 5–6) |
-| 56 | `56_signals_and_ecf_races.{c,md}` | `WNOHANG` coalesced reaping, `errno`-safe `SIGCHLD` handler, `sigprocmask` around `fork` (`shlab` / Ch. 8) |
-| 57 | `57_robust_io_and_pthreads.{c,md}` | `rio_readn`/`rio_writen` short-count & `EINTR` loops, `pthread` mutex/condvar `BoundedQueue` (`proxylab` / Ch. 10 & 12) |
+| 47 | `47_kr706_compare_files.c` | stdio file handling (`_resources/test1.txt`, `test2.txt` are inputs) |
+| 48 | `48_kr801_fcopy.c` | **repair target** — fd order in `fcopy`, loop `write()` for partials (REMEDIATION Phase C) |
+| 49 | `49_mmap_search.{c,md}` | zero-copy mapping, bounded scanning, page faults |
+| 50 | `50_filesystem_inode_ops.{c,md}` | inodes, hard links, `sbrk` heap break |
+| 51 | `51_pipe_pingpong.{c,md}` | full-duplex IPC, descriptor-close invariants, latency measurement |
+| 52 | `52_process_pipeline_exec.{c,md}` | fork/exec/waitpid/dup2 pipeline orchestration |
+| 53 | `53_signals_and_ecf_races.{c,md}` | `WNOHANG` coalesced reaping, `errno`-safe `SIGCHLD` handler, `sigprocmask` around `fork` (`shlab` / CS:APP Ch. 8) |
+| 54 | `54_robust_io_and_pthreads.{c,md}` | `rio_readn`/`rio_writen` short-count & `EINTR` loops, `pthread` mutex/condvar `BoundedQueue` (`proxylab` / CS:APP Ch. 10 & 12) |
+
+## Stage F — Architecture, formal reasoning, and transfer
+
+| # | File | Concept |
+|---|---|---|
+| 55 | `55_hoare_logic_refactoring.{py,md}` | specs, loop invariants, refinement (`python3 55_hoare_logic_refactoring.py`) |
+| 56 | `56_pipelining_hazards.{c,md}` | hazard units vs data/control hazards — **repair target**: the test-stub section doesn't compile; completing it is the exercise (not in default build) |
+| 57 | `57_python_pointer_chasing.{py,md}` | references vs pointers, transfer check (`python3 57_python_pointer_chasing.py --test`) |
 
 **Graduation:** `../projects/ls_clone` and `../projects/malloc_clone` — nothing here
 is considered done until those build clean under sanitizers.
@@ -133,11 +128,11 @@ is considered done until those build clean under sanitizers.
 - `DRILLS_INDEX.md` — original tutor-drill curriculum index ⚠️ its exercise numbers
   (01–20) are the *old* numbering; the table above is authoritative
 - `REMEDIATION.md` — the Phase A–D repair curriculum; its file paths are stale —
-  map `pointers.c`→29, `exercise_5-3.c`→25, `5.c`/`exercise_5-4.c`→27/26,
-  `diagnostic/2.c`,`Chapter4/stack.c`→39, `diagnostic/3.c`,`Chapter5/7.c`→33/38,
-  `Chapter8/1.c`→44
-- `getch.c`, `util.h` — shared pushback helpers (28, 40)
-- `test1.txt`, `test2.txt` — inputs for 43/44
+  map `pointers.c`→30, `exercise_5-3.c`→26, `5.c`/`exercise_5-4.c`→28/27,
+  `diagnostic/2.c`,`Chapter4/stack.c`→41, `diagnostic/3.c`,`Chapter5/7.c`→34/40,
+  `Chapter8/1.c`→48
+- `getch.c`, `util.h` — shared pushback helpers (29, 42)
+- `test1.txt`, `test2.txt` — inputs for 47/48
 
 ## What was deleted (duplicate concepts)
 
