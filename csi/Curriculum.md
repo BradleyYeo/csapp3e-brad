@@ -4,7 +4,7 @@
 
 - Morning Theory Block (Monday to Friday, 6:30 AM – 7:30 AM, 1.0 hour):
   - Dedicated to conceptual textbook reading and lecture videos.
-  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Hennessy & Patterson (H&P/P&H) *Computer Architecture: A Quantitative Approach* (7th Edition, with Kozyrakis), Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/), and [MIT 6.172: Performance Engineering of Software Systems (Fall 2018)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/).
+  - Textbooks & Literature: CS:APP 3e, OSTEP (*Operating Systems: Three Easy Pieces*), Harris & Harris DDCA, Hennessy & Patterson (H&P/P&H) *Computer Architecture: A Quantitative Approach* (7th Edition, with Kozyrakis), Sergey Slotin's [Algorithms for Modern Hardware (AMH)](https://en.algorithmica.org/hpc/), [UC Berkeley CS 61C: Number Representation Notes](https://notes.cs61c.org/content/number-rep/), [MIT 6.172: Performance Engineering of Software Systems (Fall 2018)](https://ocw.mit.edu/courses/6-172-performance-engineering-of-software-systems-fall-2018/pages/assignments/), and [Web Browser Engineering](https://browser.engineering/) (Panchekha & Harrelson).
   - Lecture Video Tracks:
     - [Onur Mutlu: Digital Design & Computer Architecture Playlist](https://www.youtube.com/playlist?list=PL5Q2soXY2Zi-yo9kK-BKrq11ykNKkVEpd)
     - [CMU 15-213: Introduction to Computer Systems Playlist](https://www.youtube.com/playlist?list=PLtv4PQFH2yMas_SCMTEaE4eUIWWWiwISj)
@@ -275,6 +275,7 @@
   - [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis) (RDB persistence, replication, event loop, and memory profiling).
   - [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka) (Commit log, binary protocol, partition fetch/replication, zero-copy `sendfile` analysis).
   - Linux `io_uring` asynchronous I/O server and comparative benchmark suite against `epoll`.
+  - [Web Browser Engineering](https://browser.engineering/) (Chapters 1–16: HTTP/TLS, HTML/CSS parsing, layout, JS/DOM, XSS/CSRF security, compositing, event loop, GPU animations, accessibility, invalidation).
   - Apple Silicon / Darwin transfer drills: ARM64 (`clang -O2 -S`), `lldb`, Instruments Time Profiler / Allocations, and modern C++ (`std::atomic`, RAII).
 
 ---
@@ -577,7 +578,7 @@
   - Wed–Fri: Build an echo client and iterative echo server using the CS:APP `Rio` (Robust I/O) package.
 - Weekend Deep Work (2:00–5:00 PM & 8:00–9:30 PM):
   - Sat: Inspect network packet captures from [csi/02-computer-networks/01-packet-capture-ctf](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/csi/02-computer-networks/01-packet-capture-ctf).
-  - Sun: Implement basic HTTP/1.0 request parser and response generator in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c).
+  - Sun: Implement basic HTTP/1.0 request parser and response generator in [labs/08_proxylab/proxylab-handout/proxy.c](file:///Users/bradleyyeo/Documents/learn/csapp3e-brad/labs/08_proxylab/proxylab-handout/proxy.c). Complete [Web Browser Engineering Ch. 1](https://browser.engineering/http.html) (raw sockets, TLS, HTTP requests).
 - Active Recall:
   - What is the difference between the open file table entry and the file descriptor table entry when a file is opened twice versus when `dup2` is called?
 
@@ -704,21 +705,28 @@
   - Weeks 47–49: Complete [CodeCrafters: Build your own Redis](https://codecrafters.io/challenges/redis) (RESP, TTL, RDB snapshots, replication).
   - Week 50 (Dec 27, 2027 – Jan 2, 2028): Year-end recovery buffer & spaced review.
 
-## Weeks 51–54: Jan 3 – Jan 30, 2028 | CodeCrafters Kafka & `io_uring` Zero-Copy I/O
+## Weeks 51–53: Jan 3 – Jan 23, 2028 | CodeCrafters Kafka & `io_uring` Zero-Copy I/O
 - Focus:
   - Complete [CodeCrafters: Build your own Kafka](https://codecrafters.io/challenges/kafka) (commit log segments, binary wire protocol, partition fetch streaming) and benchmark an `io_uring` vs `epoll` server with `sendfile` zero-copy profiling.
 
-## Weeks 55–58: Feb 1 – Feb 27, 2028 | Apple-Ecosystem Systems Bridge (ARM64, Instruments, C++)
+## Weeks 54–57: Jan 24 – Feb 20, 2028 | Web Browser Engineering (From-Scratch Browser in Python)
+- Focus:
+  - **Week 54 (Jan 24 – Jan 30, 2028)**: [Web Browser Engineering](https://browser.engineering/) Ch. 2–5 (Drawing to the screen, formatting text, constructing the HTML tree, inline/block layout).
+  - **Week 55 (Jan 31 – Feb 6, 2028)**: Ch. 6–10 (CSS cascade & author styles, buttons/links, forms & web servers, JS/DOM runtime, cookies, XSS & CSRF security).
+  - **Week 56 (Feb 7 – Feb 13, 2028)**: Ch. 11–13 (Blending/clipping/compositing, scheduling tasks & the browser event loop, GPU-accelerated animations).
+  - **Week 57 (Feb 14 – Feb 20, 2028)**: Ch. 14–16 (Accessibility tree & zooming, embedded images/iframes, invalidation & incremental layout/paint).
+
+## Weeks 58–60: Feb 21 – Mar 12, 2028 | Apple-Ecosystem Systems Bridge (ARM64, Instruments, C++)
 - Focus:
   - Disassemble and profile C/C++ hot loops on Apple Silicon ARM64 (`clang -O2 -S`, `lldb`, Instruments Time Profiler & Allocations).
   - Port 1–2 concurrency/allocator patterns to modern C++ (RAII, `std::atomic`, memory ordering, lock-free ring buffer).
 
-## Weeks 59–61: Feb 28 – Mar 19, 2028 | Public Portfolio Write-Ups & Systems Mock Interviews
+## Weeks 61–62: Mar 13 – Mar 26, 2028 | Public Portfolio Write-Ups & Systems Mock Interviews
 - Focus:
-  - Publish 2–3 clean GitHub repositories with before/after `perf`/Instruments benchmarks (`6.172` Collision Detection or Leiserchess, custom allocator, `xv6` COW).
-  - Run timed systems design + DSA coding mocks (targeting Apple Core OS / Silicon / Performance roles).
+  - Publish 2–3 clean GitHub repositories with before/after `perf`/Instruments benchmarks (`6.172` Collision Detection or Leiserchess, custom allocator, `xv6` COW, or browser engine).
+  - Run timed systems design + DSA coding mocks.
 
-## Weeks 62–63 (+ Apr 3–4, 2028): Mar 20 – Apr 4, 2028 | Final Spaced Review, Buffer & Capstone Sign-off
+## Week 63 (+ Apr 3–4, 2028): Mar 27 – Apr 4, 2028 | Final Spaced Review, Buffer & Capstone Sign-off
 - Focus:
   - Final buffer for any lingering labs, cold active recall across all 9 phases, and complete invariant walkthrough.
 
@@ -735,4 +743,4 @@
 - Milestone 6 (End of Week 25): MIT 6.1810 / xv6 kernel labs passed (`syscall`, `pgtbl`, `traps`, `cow`).
 - Milestone 7 (End of Week 30): Proxy Lab (`proxy.c`) multi-threaded caching proxy passed; 6.172 HW4, HW7, HW9, HW10 completed; `epoll` server benchmarked.
 - Milestone 8 (End of Week 42): MIT 6.172 Project 2 (Collision Detection) and Project 4 (Leiserchess) optimized, race-free, and benchmarked.
-- Milestone 9 (End of Week 63 / Apr 4, 2028): CodeCrafters SQLite, Redis, Kafka, `io_uring`, Apple Silicon ARM64/Instruments/C++ bridge, and 2–3 public portfolio write-ups completed.
+- Milestone 9 (End of Week 63 / Apr 4, 2028): CodeCrafters SQLite, Redis, Kafka, `io_uring`, *Web Browser Engineering* (Ch. 1–16), Apple Silicon ARM64/Instruments/C++ bridge, and 2–3 public portfolio write-ups completed.

@@ -13,11 +13,27 @@
  * `counts` must be zero-initialized by this function.
  */
 void count_char_frequencies(const char *input, int counts[static 128]) {
-  (void)input;
   for (size_t i = 0; i < 128; i++) {
     counts[i] = 0;
   }
-  /* TODO: implement */
+
+  if (input == NULL) {
+    return;
+  }
+
+  for (size_t i = 0; input[i] != '\0'; i++) {
+    int idx = (unsigned char)input[i];
+    if (idx < 128) {
+      counts[idx]++;
+    }
+  }
+}
+
+static void append_char(char *out, size_t out_cap, size_t *pos, char ch) {
+  if (*pos+1 < out_cap) {
+    out[*pos] = ch;
+    (*pos)++;
+  }
 }
 
 /*
@@ -26,11 +42,23 @@ void count_char_frequencies(const char *input, int counts[static 128]) {
  * as "<char>: <count asterisks>\n" in ascending ASCII order.
  */
 void format_histogram(const int counts[static 128], char *out, size_t out_cap) {
-  (void)counts;
-  if (out_cap > 0) {
-    out[0] = '\0';
+  if (out == NULL || out_cap == 0) {
+    return;
   }
-  /* TODO: implement */
+
+  size_t pos = 0;
+  for (size_t i = 0; i < 128; i++) {
+    if (counts[i] > 0) {
+      append_char(out, out_cap, &pos, (char)i);
+      append_char(out, out_cap, &pos, ':');
+      append_char(out, out_cap, &pos, ' ');
+      for (int j = 0; j < counts[i]; j++) {
+        append_char(out, out_cap, &pos, '*');
+      }
+      append_char(out, out_cap, &pos, '\n');
+    }
+  }
+  out[pos] = '\0';
 }
 
 int main(void) {
