@@ -1,40 +1,47 @@
-/*Write a program detab that replaces tabs in the input with the proper number of blanks to space to the next tab stop. Assume a fixed set of tab stops, say every n columns. Should n be a variable or a symbolic parameter?*/
+/* K&R 1-20: Write a function detab that replaces tabs in the input with the
+ * proper number of blanks to space to the next tab stop. Assume a fixed set of
+ * tab stops, every `tabstop` columns.
+ */
+#include <assert.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+constexpr int DEFAULT_TABSTOP = 8;
 
 /*
-0. Define a TABSTOP as any val eg. 8
-1. Keep a count of the incoming characters (mod 8)
-2. At any point, no of tabs to be added = (TABSTOP - charCount%8)
+ * detab: copies `in` to `out` (up to `out_cap` bytes, NUL-terminated),
+ * replacing each '\t' with spaces up to the next `tabstop` column boundary.
+ * '\n' resets the column counter to 0.
+ */
+void detab(const char *in, char *out, size_t out_cap, int tabstop) {
+  (void)in;
+  (void)tabstop;
+  if (out_cap > 0) {
+    out[0] = '\0';
+  }
+  /* TODO: implement */
+}
 
-PS. Print a long string of zeroes at the start for reference
-*/
+int main(void) {
+  char out[256];
 
-#define TABSTOP 8
-#define COLUMNS 100
+  detab("\t", out, sizeof(out), DEFAULT_TABSTOP);
+  assert(strcmp(out, "        ") == 0);
 
-#include<stdio.h>
-int main() {
-    int curChar, charCount = 0;
+  detab("ab\tc", out, sizeof(out), DEFAULT_TABSTOP);
+  assert(strcmp(out, "ab      c") == 0);
 
-    /*Column bar for reference*/
-    for(int i = 0; i < COLUMNS; i++)
-        printf("%d", i%TABSTOP + 1);
-    printf("\n");
-    
-    while((curChar = getchar()) != EOF) {
-        charCount %= TABSTOP; /* Since we are counting the distance to the next tab stop */
+  detab("12345678\tx", out, sizeof(out), DEFAULT_TABSTOP);
+  assert(strcmp(out, "12345678        x") == 0);
 
-        if (curChar == '\n') { /* Move to the next line */
-            charCount = 0;
-        } else if (curChar == '\t') { /* Add remaning spaces to get to tab stop */
-            int remainingSpaces = TABSTOP - charCount;
-            for(int i = 0; i < remainingSpaces; i++)
-                printf(" ");
-            charCount = 0;
-        } else {  /* Any other character */
-            ++charCount;
-        }
-    }
+  detab("ab\ncd\te", out, sizeof(out), 4);
+  assert(strcmp(out, "ab\ncd  e") == 0);
 
+  detab("", out, sizeof(out), DEFAULT_TABSTOP);
+  assert(strcmp(out, "") == 0);
 
-    return 0;
+  printf("[PASS] Exercise 10: detab verified.\n");
+  return EXIT_SUCCESS;
 }

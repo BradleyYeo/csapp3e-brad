@@ -1,6 +1,6 @@
 #include<stdio.h>
 /*Program to copy input to output, replacing each tab by \t, backspace by \b and backslash by \\*/
-main() {
+int main() {
     int curChar;
     while ((curChar = getchar()) != EOF) {
         if (curChar == '\t') {
@@ -13,5 +13,5 @@ main() {
             putchar(curChar);
         }
     }
-    
+
 }

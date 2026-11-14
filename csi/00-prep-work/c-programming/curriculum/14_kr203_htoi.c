@@ -1,29 +1,28 @@
-/* Write a function htoi(s) to convert a string of hexadecimal characters into equivalent intger value */
+/* K&R 2-3: Write a function htoi(s) that converts a string of hexadecimal
+ * digits (including an optional 0x or 0X prefix) into its equivalent integer
+ * value.
+ */
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-/* Test case:
+/*
+ * htoi: converts hexadecimal string `s` (optional "0x" / "0X" prefix,
+ * digits '0'-'9', 'a'-'f', 'A'-'F') to its integer value.
+ */
+int htoi(const char *s) {
+  (void)s;
+  /* TODO: implement */
+  return -1;
+}
 
-AAf41 - returns 700225
+int main(void) {
+  assert(htoi("AAF41") == 700225);
+  assert(htoi("0x1f") == 31);
+  assert(htoi("0XFF") == 255);
+  assert(htoi("0") == 0);
+  assert(htoi("deadBEEF") == (int)0xdeadbeef);
 
-*/
-
-#include<stdio.h>
-#include<string.h>
-
- int htoi(char s []);
-
- int main() {
-    int curChar;
-    printf("%d", htoi("AAF41"));
-    return 0;
- }
-
- int htoi(char s []) {
-    int val = 0;
-    for (int i = 0; i < strlen(s); i++) {
-        int curChar = s[i];
-        int charVal = curChar >= 'A' && curChar <= 'F' ? curChar - 'A' + 10 : (curChar >= 'a' && curChar <= 'f' ? curChar - 'a' + 10 : curChar - '0');
-        val = (val * 16) + (charVal);
-    }
-    return val;
- }
-
+  printf("[PASS] Exercise 14: htoi verified.\n");
+  return EXIT_SUCCESS;
+}

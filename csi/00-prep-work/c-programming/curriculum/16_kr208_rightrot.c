@@ -1,42 +1,27 @@
+/* K&R 2-8: Write a function rightrot(x, n) that returns the value of the
+ * integer x rotated to the right by n positions.
+ */
+#include <assert.h>
+#include <limits.h>
 #include <stdio.h>
+#include <stdlib.h>
 
-unsigned rightrot(unsigned x, int n);
-int wordlength(void);
-void print_binary(unsigned n);
-
-int main() {
-  int x = 55;
-  int n = 10;
-  print_binary(x);
-  printf("\n");
-  unsigned num = rightrot(x, n);
-  print_binary(num);
+unsigned int rightrot(unsigned int x, int n) {
+  (void)x;
+  (void)n;
+  /* TODO: implement without UB on shift >= word width */
+  return 0U;
 }
 
-unsigned rightrot(unsigned x, int n) {
-  int wordlength();
-  int rbit;
+int main(void) {
+  constexpr int width = (int)(sizeof(unsigned int) * CHAR_BIT);
 
-  while (n-- > 0) {
-    rbit = (x & 1) << (wordlength() - 1);
-    x = x >> 1;
-    x = x | rbit;
-  }
-  return x;
-}
+  assert(rightrot(0x12345678U, 0) == 0x12345678U);
+  assert(rightrot(0x12345678U, width) == 0x12345678U);
+  assert(rightrot(0x00000001U, 1) == (1U << (width - 1)));
+  assert(rightrot(0x80000001U, 1) == ((1U << (width - 1)) | 0x40000000U));
+  assert(rightrot(0x12345678U, 4) == 0x81234567U);
 
-void print_binary(unsigned n) {
-  if (n > 1) {
-    print_binary(n / 2);
-  }
-  printf("%d", n % 2);
-}
-
-int wordlength(void) {
-  int i;
-  unsigned v = (unsigned)~0;
-
-  for (i = 1; (v = v >> 1) > 0; i++)
-    ;
-  return i;
+  printf("[PASS] Exercise 16: rightrot verified.\n");
+  return EXIT_SUCCESS;
 }

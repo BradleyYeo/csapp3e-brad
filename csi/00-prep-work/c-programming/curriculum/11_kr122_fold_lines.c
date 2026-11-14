@@ -1,81 +1,42 @@
+/* K&R 1-22: Write a program to "fold" long input lines into two or more
+ * shorter lines after the last non-blank character that occurs before the
+ * n-th column of input. Handle very long lines and no-blank runs gracefully.
+ */
+#include <assert.h>
+#include <stddef.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#define MAXCOL 10 /* maximum column of input */
-#define TABINC 8  /* tab increment size */
-
-char line[MAXCOL]; /* input line */
-
-int exptab(int pos);
-int findblnk(int pos);
-int newpos(int pos);
-void printl(int pos);
-
-/* fold long input lines into two or more shorter lines */
-int main() {
-  int c, pos;
-
-  pos = 0; /* position in the line */
-  while ((c = getchar()) != EOF) {
-    line[pos] = c; /* store current character */
-    if (c == '\t') /* expand tab character */
-      pos = exptab(pos);
-    else if (c == '\n') {
-      printl(pos); /* print current input line */
-      pos = 0;
-    } else if (++pos >= MAXCOL) {
-      pos = findblnk(pos);
-      printl(pos);
-      pos = newpos(pos);
-    }
+/*
+ * fold_lines: wraps `in` at `maxcol` columns into `out` (up to `out_cap`
+ * bytes, NUL-terminated). Breaks after the last blank before `maxcol` when one
+ * exists; otherwise hard-wraps at `maxcol`.
+ */
+void fold_lines(const char *in, char *out, size_t out_cap, size_t maxcol) {
+  (void)in;
+  (void)maxcol;
+  if (out_cap > 0) {
+    out[0] = '\0';
   }
-  return 0;
+  /* TODO: implement */
 }
 
-/* exptab: expand tab into blanks */
-int exptab(int pos) {
-  line[pos] = ' '; /* tab is at least one blank */
-  for (++pos; pos < MAXCOL && pos % TABINC != 0; ++pos)
-    line[pos] = ' ';
-  if (pos < MAXCOL) /* room left in current line */
-    return pos;
-  else {
-    printl(pos);
-    return 0;
-  }
-}
+int main(void) {
+  char out[256];
 
-/* findblnk: find blank's position */
-int findblnk(int pos) {
-  while (pos > 0 && line[pos] != ' ')
-    --pos;
-  if (pos == 0) /* no blanks in the line? */
-    return MAXCOL;
-  else              /* at least one blank */
-    return pos + 1; /* position after the blank */
-}
+  fold_lines("short\n", out, sizeof(out), 10);
+  assert(strcmp(out, "short\n") == 0);
 
-/* newpos: rearrange line with new position */
-int newpos(int pos) {
-  int i, j;
+  fold_lines("hello world!\n", out, sizeof(out), 10);
+  assert(strcmp(out, "hello\nworld!\n") == 0);
 
-  if (pos <= 0 || pos >= MAXCOL)
-    return 0; /* nothing to rearrange */
-  else {
-    i = 0;
-    for (j = pos; j < MAXCOL; ++j) {
-      line[i] = line[j];
-      ++i;
-    }
-    return i; /* new position in line */
-  }
-}
+  fold_lines("abcdefghijkl\n", out, sizeof(out), 5);
+  assert(strcmp(out, "abcde\nfghij\nkl\n") == 0);
 
-/* printl: print line until pos column */
-void printl(int pos) {
-  int i;
+  fold_lines("", out, sizeof(out), 10);
+  assert(strcmp(out, "") == 0);
 
-  for (i = 0; i < pos; ++i)
-    putchar(line[i]);
-  if (pos > 0) /* any chars printed? */
-    putchar('\n');
+  printf("[PASS] Exercise 11: fold lines verified.\n");
+  return EXIT_SUCCESS;
 }

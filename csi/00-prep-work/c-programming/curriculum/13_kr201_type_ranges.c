@@ -1,44 +1,50 @@
-/*Write a program to determine ranges of char, short, int and long variables, both signed and unsigned 
-using standard headers and by direct computation*/
+/* K&R 2-1: Determine the ranges of signed/unsigned char, short, int, and long
+ * by direct computation (without signed-overflow UB) and verify against
+ * <limits.h>.
+ */
+#include <assert.h>
+#include <limits.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-#include<stdio.h>
-#include<limits.h>
-#include<float.h>
+unsigned char computed_uchar_max(void) {
+  /* TODO: compute using bitwise / unsigned arithmetic without <limits.h> */
+  return 0;
+}
 
-int main() {
+signed char computed_schar_max(void) {
+  /* TODO: compute without signed overflow UB */
+  return 0;
+}
 
-    /* Using headers */
-    printf("The max value of char is %d \n", CHAR_MAX);
-    printf("The min value of char is %d \n", CHAR_MIN);
-    printf("The max value of short is %d \n", SHRT_MAX);
-    printf("The min value of short is %d \n", SHRT_MIN);
-    printf("The max value of unsigned int is %u \n", UINT_MAX); /* unsigned */
-    printf("The max value of long is %ld \n", LONG_MAX);
-    printf("The min value of long is %ld \n", LONG_MIN);
-    printf("The max value of float is %.12e \n", FLT_MAX); /* floats */
-    printf("The min value of float is %.12e \n", FLT_MIN);
+signed char computed_schar_min(void) {
+  /* TODO: compute without signed overflow UB */
+  return 0;
+}
 
-    /* Computing */
-    char c = 1; /* char */
-    while (c > 0) {
-        c <<= 1;
-        printf("%d \n", c);
-    }
-    printf("The max value of char is %d \n", -c - 1);
-    printf("The min value of char is %d \n", c);
-    printf("The max value of unsigned char is %d \n", -c * 2 - 1);
+unsigned int computed_uint_max(void) {
+  /* TODO: compute using unsigned arithmetic without <limits.h> */
+  return 0U;
+}
 
-    int i = 1; /* int */
-    while (i > 0) {
-        i <<= 1;
-        printf("%d \n", i);
-    }
+int computed_int_max(void) {
+  /* TODO: compute without signed overflow UB */
+  return 0;
+}
 
-    printf("The max value of int is %d \n", -i - 1);
-    printf("The min value of int is %d \n", i);
-    printf("The max value of unsigned int is %lu \n", (unsigned long)(-i) * 2 - 1); // Converting to unsigned long to prevent overflow when making i -> -i
+int computed_int_min(void) {
+  /* TODO: compute without signed overflow UB */
+  return 0;
+}
 
+int main(void) {
+  assert(computed_uchar_max() == UCHAR_MAX);
+  assert(computed_schar_max() == SCHAR_MAX);
+  assert(computed_schar_min() == SCHAR_MIN);
+  assert(computed_uint_max() == UINT_MAX);
+  assert(computed_int_max() == INT_MAX);
+  assert(computed_int_min() == INT_MIN);
 
-
-    return 0;
+  printf("[PASS] Exercise 13: type ranges verified.\n");
+  return EXIT_SUCCESS;
 }

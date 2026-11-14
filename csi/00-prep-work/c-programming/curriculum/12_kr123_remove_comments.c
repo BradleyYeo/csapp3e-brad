@@ -1,49 +1,46 @@
-/* Write a program to remove all comments - don't forget to handle quoted strings and character constants */
-/* Assumption - all programs syntactically valid */
+/* K&R 1-23: Write a function to remove all comments from a C program.
+ * Don't forget to handle quoted strings and character constants properly.
+ */
+#include <assert.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-/* Test case: (Input taken line by line)
+/*
+ * remove_comments: copies C source from `in` into `out` (up to `out_cap`
+ * bytes, NUL-terminated), stripping both block and line comments while
+ * preserving string literals ("...") and character constants ('...'),
+ * including escaped quotes.
+ */
+void remove_comments(const char *in, char *out, size_t out_cap) {
+  (void)in;
+  if (out_cap > 0) {
+    out[0] = '\0';
+  }
+  /* TODO: implement */
+}
 
-Bottom of this page: https://clc-wiki.net/wiki/K%26R2_solutions:Chapter_1:Exercise_23#Uncomment03_.28Gregory_Pietsch.29
-Note: Did not account for wrapping a comment using '\' symbol
+int main(void) {
+  char out[512];
 
-*/
+  remove_comments("int x = 1; /* comment */\n", out, sizeof(out));
+  assert(strcmp(out, "int x = 1; \n") == 0);
 
+  remove_comments("int y = 2; // line comment\nint z = 3;\n", out, sizeof(out));
+  assert(strcmp(out, "int y = 2; \nint z = 3;\n") == 0);
 
+  remove_comments("const char *s = \"/* not a comment */ // still string\";\n",
+                  out, sizeof(out));
+  assert(strcmp(out, "const char *s = \"/* not a comment */ // still string\";\n") == 0);
 
-#define OUT 0   /* Define valid states */
-#define INQUOTES 1
-#define INSINGLECOMMENTS 2 
-#define INMULTICOMMENTS 3
+  remove_comments("const char *q = \"escaped \\\" /* keep */\";\n", out,
+                  sizeof(out));
+  assert(strcmp(out, "const char *q = \"escaped \\\" /* keep */\";\n") == 0);
 
-#include<stdio.h>
-int main() {
-    int curChar, prevChar = '\0';
-    int state = OUT;
+  remove_comments("char c = '/'; /* real comment */\n", out, sizeof(out));
+  assert(strcmp(out, "char c = '/'; \n") == 0);
 
-    while ((curChar = getchar()) != EOF) {
-        if (curChar == '\n') { /* Print newline regardless of state */
-            putchar(curChar);
-        } else if (state == OUT) { /* If not inside any quotes/comments - check for any possible change in states */
-            if (curChar == '/' && prevChar == '/') {
-                state = INSINGLECOMMENTS;
-            } else if (curChar == '*' && prevChar == '/')  {
-                state = INMULTICOMMENTS;
-            } else if (curChar == '\"' || curChar == '\'') { /* If quotes start - print them + change state */
-                state = INQUOTES;
-                putchar(curChar);
-            } else if (curChar != '\\' && curChar != '/') { /* If no change in state, simply print char */
-                putchar(curChar);
-            }
-        } else  { /* Currently inside comments or quotes */
-            if ((state == INSINGLECOMMENTS && curChar == '\n') || (state == INMULTICOMMENTS && curChar == '/' && prevChar == '*')) { /* If comment ends */
-                state = OUT;
-            } else if (state == INQUOTES)   { /* If quotes end */
-                if (curChar == '\'' || curChar == '\"') {
-                    state = OUT;
-                }
-                putchar(curChar);
-            }
-        }
-        prevChar = curChar; /* record current char as the previous char for next iteration */
-    }
+  printf("[PASS] Exercise 12: remove comments verified.\n");
+  return EXIT_SUCCESS;
 }

@@ -6,7 +6,7 @@
 
 #include<stdio.h>
 
-main() {
+int main() {
     int state = OUT;
     int c;
     while ((c=getchar()) != EOF) {

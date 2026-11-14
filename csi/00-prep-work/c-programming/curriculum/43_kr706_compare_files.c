@@ -1,72 +1,74 @@
-/* Write a program to compare two files, print the first line where they differ*/
+/* K&R 7-6: Write a program to compare two files, printing the first line
+ * where they differ.
+ */
+#include <assert.h>
+#include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
+constexpr size_t MAXLINELENGTH = 256;
 
-/* Plan:
-1. Define a maxline length to be read
-2. Accept/Expect 2 file names via command line arguments (handle errors if > 2 or < 2)
-3. Open both using fopen in read mode
-4. Read 1 line each for both - then compare - if match then continue, if no match/one file over handle
-5. fclose - handled by exit in all cases
-*/
+/*
+ * compare_files: compares `fp1` and `fp2` line by line (up to `cap` bytes per
+ * line).
+ * Returns:
+ *   0  if both files are identical,
+ *   1  if a difference (or early EOF in one file) is found, writing the
+ *      1-based line number to `*diff_line` and the differing lines (or "" on
+ *      EOF) into `line1` and `line2`,
+ *  -1  on stream error or invalid arguments.
+ */
+int compare_files(FILE *fp1, FILE *fp2, char *line1, char *line2, size_t cap,
+                  size_t *diff_line) {
+  (void)fp1;
+  (void)fp2;
+  (void)diff_line;
+  if (cap > 0) {
+    line1[0] = '\0';
+    line2[0] = '\0';
+  }
+  /* TODO: implement */
+  return -1;
+}
 
-/*Note: 
-- If number of lines differs in both files, even if the text is same until one of the file terminates -> will mark as different as one of the files will terminate with a \n while the other will not
-- Can handle with a custom comparer where we first compute length of the result of fgets each time and then handle last character accordingly
-*/
+static FILE *make_memfile(const char *content) {
+  FILE *fp = tmpfile();
+  assert(fp != nullptr);
+  fputs(content, fp);
+  rewind(fp);
+  return fp;
+}
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+int main(void) {
+  char l1[MAXLINELENGTH];
+  char l2[MAXLINELENGTH];
+  size_t diff_line = 0;
 
-#define MAXLINELENGTH 20
+  FILE *a = make_memfile("line one\nline two\n");
+  FILE *b = make_memfile("line one\nline two\n");
+  assert(compare_files(a, b, l1, l2, sizeof(l1), &diff_line) == 0);
+  fclose(a);
+  fclose(b);
 
-int main(int argc, char *argv[]) {
+  FILE *c = make_memfile("line one\nalpha\nline three\n");
+  FILE *d = make_memfile("line one\nbeta\nline three\n");
+  assert(compare_files(c, d, l1, l2, sizeof(l1), &diff_line) == 1);
+  assert(diff_line == 2);
+  assert(strcmp(l1, "alpha\n") == 0);
+  assert(strcmp(l2, "beta\n") == 0);
+  fclose(c);
+  fclose(d);
 
-    FILE *fp1, *fp2;
-    char linef1[MAXLINELENGTH], linef2[MAXLINELENGTH];
-    char *fgets1Res, *fgets2Res; // to store results for fgets, for error handling later
-    
+  FILE *e = make_memfile("only one\n");
+  FILE *f = make_memfile("only one\nextra line\n");
+  assert(compare_files(e, f, l1, l2, sizeof(l1), &diff_line) == 1);
+  assert(diff_line == 2);
+  assert(strcmp(l1, "") == 0);
+  assert(strcmp(l2, "extra line\n") == 0);
+  fclose(e);
+  fclose(f);
 
-    if (argc != 3) { // > 2 or < 2 file names
-        fprintf(stderr, "%d arguments provided as filenames when 2 were expected", argc-1);
-        exit(1);
-    }
-
-    fp1 = fopen(*++argv, "r");
-    fp2 = fopen(*++argv, "r");
-
-    if (fp1 == NULL || fp2 == NULL) { // file opening error
-        fprintf(stderr, "Error opening file with name provided in argument number %d", fp1 == NULL ? 1 : 2);
-        exit(2);
-    }
-
-    while ((fgets1Res = fgets(linef1,MAXLINELENGTH, fp1)) && (fgets2Res = fgets(linef2, MAXLINELENGTH, fp2))) { // comparing line by line
-        if (strcmp(fgets1Res, fgets2Res) != 0) {
-            fprintf(stdout, "The first line(s) of difference between the two files are:\n - %s \n - %s \n respectively.", linef1, linef2);
-            exit(0);
-        }
-    }
-
-    if (ferror(fp1) || ferror(fp2)) { // error in file stream
-        fprintf(stderr, "Stream error in file with name provided in argument number %d", ferror(fp1) ? 1 : 2);
-        exit(3);
-    }
-
-    // if ((fgets1Res && !fgets2Res) || (!fgets1Res && fgets2Res)) { // cannot handle case where one file ends and the other does not - read 'Note'
-    //     fprintf(stdout, "One file ended and the other did not - last line read in file provided by arg %d is %s", (fgets1Res && !fgets2Res) ? 1 : 2, (fgets1Res && !fgets2Res) ? linef1 : linef2);
-    //     exit(0);
-    // }
-
-    fprintf(stdout, "No line of difference found between the two files");
-    exit(0);
-
-
-
-
-
-    
-
-
-
-    return 0;
+  printf("[PASS] Exercise 43: compare files verified.\n");
+  return EXIT_SUCCESS;
 }
