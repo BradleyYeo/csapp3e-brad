@@ -1,0 +1,6 @@
+[submodule "csi/02-OS/ostep-homework"]
+	path = csi/02-OS/ostep-homework
+	url = https://github.com/BradleyYeo/ostep-homework.git
+[submodule "csi/02-OS/xv6-riscv"]
+	path = csi/02-OS/xv6-riscv
+	url = https://github.com/BradleyYeo/xv6-riscv.git
