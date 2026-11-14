@@ -22,26 +22,29 @@ EXERCISES = 03_kr105_temp_for_loop 04_kr106_eof_value 05_kr108_count_blanks \
             08_kr114_char_histogram 09_kr119_reverse_line 10_kr120_detab \
             11_kr122_fold_lines 12_kr123_remove_comments 13_kr201_type_ranges \
             14_kr203_htoi 15_kr206_setbits 16_kr208_rightrot \
-            18_kr303_expand_ranges 19_kr305_itob 20_pointer_traversal \
-            21_anchored_matching 22_enum_state_machine 23_char_group_slicing \
-            24_kr401_strrindex 26_kr504_strend 27_kr505_strn_family \
-            28_kr501_getch_ungetch 30_pointer_arithmetic_strides \
-            31_process_memory_layout 32_getline_ingestion \
-            34_dynamic_memory_lifecycle 35_memory_safety_sanitizers \
-            36_bump_allocator 37_valgrind_fundamentals 38_kr803_malloc_flushbuf \
-            40_kr602_getword_groups 41_recursion_patterns 42_macro_fundamentals \
-            43_kr706_compare_files 45_mmap_search 46_filesystem_inode_ops \
-            47_pipe_pingpong 48_process_pipeline_exec \
-            52_dangling_refs_and_leaks
+            17_twos_complement_and_ieee754 19_kr303_expand_ranges \
+            20_kr305_itob 21_pointer_traversal 22_anchored_matching \
+            23_enum_state_machine 24_char_group_slicing 25_kr401_strrindex \
+            27_kr504_strend 28_kr505_strn_family 29_kr501_getch_ungetch \
+            31_pointer_arithmetic_strides 32_process_memory_layout \
+            33_getline_ingestion 35_dynamic_memory_lifecycle \
+            36_memory_safety_sanitizers 37_valgrind_fundamentals \
+            38_dangling_refs_and_leaks 39_bump_allocator \
+            40_kr803_malloc_flushbuf 42_kr602_getword_groups \
+            43_struct_alignment_and_fn_ptrs 44_recursion_patterns \
+            45_macro_fundamentals 46_cache_locality_and_blocking \
+            47_kr706_compare_files 49_mmap_search 50_filesystem_inode_ops \
+            51_pipe_pingpong 52_process_pipeline_exec \
+            53_signals_and_ecf_races 54_robust_io_and_pthreads
 
-# Fix-the-existing-code targets (REMEDIATION.md). 17 and 50 deliberately do
+# Fix-the-existing-code targets (REMEDIATION.md). 18 and 56 deliberately do
 # NOT compile — the syntax/TODO errors are the exercise. Build with `make repair`.
-REPAIR = 17_kr301_binsearch_count 25_kr503_strcat 29_pointer_decay \
-         33_kr507_sortlines 44_kr801_fcopy 50_pipelining_hazards
+REPAIR = 18_kr301_binsearch_count 26_kr503_strcat 30_pointer_decay \
+         34_kr507_sortlines 48_kr801_fcopy 56_pipelining_hazards
 
 # Exercises whose runtime is dominated by your code — worth benchmarking.
-BENCH_TARGETS = 32_getline_ingestion 36_bump_allocator 38_kr803_malloc_flushbuf \
-                41_recursion_patterns 45_mmap_search 47_pipe_pingpong
+BENCH_TARGETS = 33_getline_ingestion 39_bump_allocator 40_kr803_malloc_flushbuf \
+                44_recursion_patterns 49_mmap_search 51_pipe_pingpong
 REPS ?= 5
 
 .PHONY: all exercises repair test run-exercises test-python test-sanitizers \
@@ -51,22 +54,23 @@ all: $(DONE) $(EXERCISES)
 
 exercises: $(EXERCISES)
 
-# 40 builds on the shared pushback getch (reference infrastructure, unchanged)
-40_kr602_getword_groups: 40_kr602_getword_groups.c _resources/getch.c
+# 42 builds on the shared pushback getch (reference infrastructure, unchanged)
+42_kr602_getword_groups: 42_kr602_getword_groups.c _resources/getch.c
 	$(CC) $(CFLAGS) -I_resources -o $@ $< _resources/getch.c
 # 0b literals are standard in C23 but clang <19 only accepts them as an
 # extension even under -std=c23; they appear in the frozen test asserts.
-42_macro_fundamentals: CFLAGS += -Wno-gnu-binary-literal
+45_macro_fundamentals: CFLAGS += -Wno-gnu-binary-literal
 # usleep() is hidden by strict -std=c23 without this
-48_process_pipeline_exec: CFLAGS += -D_DEFAULT_SOURCE
+52_process_pipeline_exec: CFLAGS += -D_DEFAULT_SOURCE
+54_robust_io_and_pthreads: CFLAGS += -pthread
 
-$(DONE) $(filter-out 40_kr602_getword_groups,$(EXERCISES)): %: %.c
+$(DONE) $(filter-out 42_kr602_getword_groups,$(EXERCISES)): %: %.c
 	$(CC) $(CFLAGS) -o $@ $<
 
 $(REPAIR): %: %.c
 	$(CC) $(CFLAGS_REPAIR) -o $@ $<
 
-repair: $(filter-out 17_kr301_binsearch_count 50_pipelining_hazards,$(REPAIR))
+repair: $(filter-out 18_kr301_binsearch_count 56_pipelining_hazards,$(REPAIR))
 
 test: run-exercises test-python
 

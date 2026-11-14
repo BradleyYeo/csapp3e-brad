@@ -112,6 +112,16 @@ Control flow, character I/O, arrays, bit arithmetic. All single-file.
 | 51 | `51_python_pointer_chasing.{py,md}` | references vs pointers, transfer check |
 | 52 | `52_dangling_refs_and_leaks.{c,md}` | identify, fix, and prevent dangling references and memory leaks (Stage C extension) |
 
+## Stage G — CS:APP 3e Bridge (Ch. 2–12 & Labs Readiness)
+
+| # | File | Concept |
+|---|---|---|
+| 53 | `53_twos_complement_and_ieee754.{c,md}` | endianness, unsigned promotion bugs, UB-free overflow, IEEE 754 `float_twice` (`datalab` / Ch. 2) |
+| 54 | `54_struct_alignment_and_fn_ptrs.{c,md}` | struct alignment/padding, `container_of`, overflow-safe comparators, jump tables (Ch. 3) |
+| 55 | `55_cache_locality_and_blocking.{c,md}` | `(s, E, b)` address bit splitting, LRU cache simulator, tiled transpose (`cachelab` / Ch. 5–6) |
+| 56 | `56_signals_and_ecf_races.{c,md}` | `WNOHANG` coalesced reaping, `errno`-safe `SIGCHLD` handler, `sigprocmask` around `fork` (`shlab` / Ch. 8) |
+| 57 | `57_robust_io_and_pthreads.{c,md}` | `rio_readn`/`rio_writen` short-count & `EINTR` loops, `pthread` mutex/condvar `BoundedQueue` (`proxylab` / Ch. 10 & 12) |
+
 **Graduation:** `../projects/ls_clone` and `../projects/malloc_clone` — nothing here
 is considered done until those build clean under sanitizers.
 
