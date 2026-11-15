@@ -76,6 +76,19 @@ int main(void) {
   format_histogram(counts, buf, sizeof(buf));
   assert(strcmp(buf, "") == 0);
 
+  count_char_frequencies(NULL, counts);
+  assert(counts[(unsigned char)'a'] == 0);
+
+  count_char_frequencies("a\xff", counts);
+  assert(counts[(unsigned char)'a'] == 1);
+
+  char small[5];
+  format_histogram(counts, small, sizeof(small));
+  assert(strcmp(small, "a: *") == 0);
+
+  format_histogram(counts, NULL, 10);
+  format_histogram(counts, buf, 0);
+
   printf("[PASS] Exercise 08: char histogram verified.\n");
   return EXIT_SUCCESS;
 }

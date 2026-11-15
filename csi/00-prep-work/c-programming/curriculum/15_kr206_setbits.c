@@ -20,6 +20,8 @@ int main(void) {
   assert(setbits(0xFFU, 3, 4, 0x05U) == 0xF5U);
   assert(setbits(0x00U, 7, 4, 0x0AU) == 0xA0U);
   assert(setbits(0x1234U, 0, 1, 0x01U) == 0x1235U);
+  assert(setbits(0xCAU, 4, 0, 0xFFU) == 0xCAU);
+  assert(setbits(0x12345678U, 31, 32, 0xABCDEF01U) == 0xABCDEF01U);
 
   printf("[PASS] Exercise 15: setbits verified.\n");
   return EXIT_SUCCESS;

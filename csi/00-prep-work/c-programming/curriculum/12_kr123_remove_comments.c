@@ -41,6 +41,22 @@ int main(void) {
   remove_comments("char c = '/'; /* real comment */\n", out, sizeof(out));
   assert(strcmp(out, "char c = '/'; \n") == 0);
 
+  remove_comments("", out, sizeof(out));
+  assert(strcmp(out, "") == 0);
+
+  remove_comments("int x;/*eof", out, sizeof(out));
+  assert(strcmp(out, "int x;") == 0);
+
+  char small[6];
+  remove_comments("int x = 1;\n", small, sizeof(small));
+  assert(strcmp(small, "int x") == 0);
+
+  remove_comments("int x;", NULL, 10);
+  remove_comments("int x;", out, 0);
+
+  remove_comments(NULL, out, sizeof(out));
+  assert(strcmp(out, "") == 0);
+
   printf("[PASS] Exercise 12: remove comments verified.\n");
   return EXIT_SUCCESS;
 }

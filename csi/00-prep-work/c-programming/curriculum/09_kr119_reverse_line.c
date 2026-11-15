@@ -53,6 +53,8 @@ int main(void) {
   reverse(s5);
   assert(strcmp(s5, "rac ecar") == 0);
 
+  reverse(NULL);
+
   printf("[PASS] Exercise 09: reverse line verified.\n");
   return EXIT_SUCCESS;
 }

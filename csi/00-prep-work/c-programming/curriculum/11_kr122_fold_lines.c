@@ -37,6 +37,19 @@ int main(void) {
   fold_lines("", out, sizeof(out), 10);
   assert(strcmp(out, "") == 0);
 
+  char small[6];
+  fold_lines("hello world!\n", small, sizeof(small), 10);
+  assert(strcmp(small, "hello") == 0);
+
+  fold_lines("hello\n", NULL, 10, 10);
+  fold_lines("hello\n", out, 0, 10);
+
+  fold_lines(NULL, out, sizeof(out), 10);
+  assert(strcmp(out, "") == 0);
+
+  fold_lines("hello\n", out, sizeof(out), 0);
+  assert(strcmp(out, "hello\n") == 0);
+
   printf("[PASS] Exercise 11: fold lines verified.\n");
   return EXIT_SUCCESS;
 }

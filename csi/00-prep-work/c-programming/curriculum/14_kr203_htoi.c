@@ -22,6 +22,10 @@ int main(void) {
   assert(htoi("0XFF") == 255);
   assert(htoi("0") == 0);
   assert(htoi("deadBEEF") == (int)0xdeadbeef);
+  assert(htoi("0x0") == 0);
+  assert(htoi("") == 0);
+  assert(htoi("0x") == 0);
+  assert(htoi(NULL) == 0);
 
   printf("[PASS] Exercise 14: htoi verified.\n");
   return EXIT_SUCCESS;

@@ -21,6 +21,7 @@ int main(void) {
   assert(rightrot(0x00000001U, 1) == (1U << (width - 1)));
   assert(rightrot(0x80000001U, 1) == ((1U << (width - 1)) | 0x40000000U));
   assert(rightrot(0x12345678U, 4) == 0x81234567U);
+  assert(rightrot(0x12345678U, width + 4) == 0x81234567U);
 
   printf("[PASS] Exercise 16: rightrot verified.\n");
   return EXIT_SUCCESS;

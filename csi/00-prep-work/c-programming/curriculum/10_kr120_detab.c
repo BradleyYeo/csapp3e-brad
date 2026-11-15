@@ -15,6 +15,10 @@ enum { DEFAULT_TABSTOP = 8 };
  * replacing each '\t' with spaces up to the next `tabstop` column boundary.
  * '\n' resets the column counter to 0.
  */
+static void append_char() {
+  
+}
+
 void detab(const char *in, char *out, size_t out_cap, int tabstop) {
   (void)in;
   (void)tabstop;
@@ -24,25 +28,22 @@ void detab(const char *in, char *out, size_t out_cap, int tabstop) {
   int col = 0;
   size_t pos = 0;
   while (*in != '\0') {
-    if (pos + 1 < out_cap) {
-      out[pos++] = *in;
-    }
     if (*in == '\t') {
       int spaces = tabstop - (col % tabstop);
       for (int i = 0; i < spaces; i++) {
         col++;
-        *out++ = ' ';
+        out[pos++] = ' ';
       }
     } else if (*in == '\n') {
-      *out++ = '\n';
+      out[pos++] = '\n';
       col = 0;
     } else {
-      *out++ = *in;
+      out[pos++] = *in;
       col++;
     }
     in++;
   }
-  out = '\0';
+  out[pos] = '\0';
 }
 
 int main(void) {
@@ -62,6 +63,19 @@ int main(void) {
 
   detab("", out, sizeof(out), DEFAULT_TABSTOP);
   assert(strcmp(out, "") == 0);
+
+  char small[5];
+  detab("\t", small, sizeof(small), DEFAULT_TABSTOP);
+  assert(strcmp(small, "    ") == 0);
+
+  detab("\t", NULL, 10, DEFAULT_TABSTOP);
+  detab("\t", out, 0, DEFAULT_TABSTOP);
+
+  detab(NULL, out, sizeof(out), DEFAULT_TABSTOP);
+  assert(strcmp(out, "") == 0);
+
+  detab("\t", out, sizeof(out), 0);
+  assert(strcmp(out, "        ") == 0);
 
   printf("[PASS] Exercise 10: detab verified.\n");
   return EXIT_SUCCESS;
