@@ -7,9 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
-constexpr int MY_EOF = -1;
-constexpr size_t MY_BUFSIZE = 16;
-constexpr size_t MY_OPEN_MAX = 8;
+enum { MY_EOF = -1, MY_BUFSIZE = 16, MY_OPEN_MAX = 8 };
 
 enum my_flags {
   MY_READ = 1,

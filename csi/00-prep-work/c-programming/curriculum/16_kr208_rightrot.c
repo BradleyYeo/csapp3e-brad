@@ -14,7 +14,7 @@ unsigned int rightrot(unsigned int x, int n) {
 }
 
 int main(void) {
-  constexpr int width = (int)(sizeof(unsigned int) * CHAR_BIT);
+  const int width = (int)(sizeof(unsigned int) * CHAR_BIT);
 
   assert(rightrot(0x12345678U, 0) == 0x12345678U);
   assert(rightrot(0x12345678U, width) == 0x12345678U);

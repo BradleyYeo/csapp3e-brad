@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-constexpr int DEFAULT_TABSTOP = 8;
+enum { DEFAULT_TABSTOP = 8 };
 
 /*
  * detab: copies `in` to `out` (up to `out_cap` bytes, NUL-terminated),
@@ -21,7 +21,28 @@ void detab(const char *in, char *out, size_t out_cap, int tabstop) {
   if (out_cap > 0) {
     out[0] = '\0';
   }
-  /* TODO: implement */
+  int col = 0;
+  size_t pos = 0;
+  while (*in != '\0') {
+    if (pos + 1 < out_cap) {
+      out[pos++] = *in;
+    }
+    if (*in == '\t') {
+      int spaces = tabstop - (col % tabstop);
+      for (int i = 0; i < spaces; i++) {
+        col++;
+        *out++ = ' ';
+      }
+    } else if (*in == '\n') {
+      *out++ = '\n';
+      col = 0;
+    } else {
+      *out++ = *in;
+      col++;
+    }
+    in++;
+  }
+  out = '\0';
 }
 
 int main(void) {

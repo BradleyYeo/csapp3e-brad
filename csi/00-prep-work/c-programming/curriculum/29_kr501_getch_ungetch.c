@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-constexpr size_t BUFSIZE = 100;
+enum { BUFSIZE = 100 };
 
 static const char *test_src = nullptr;
 static size_t test_pos = 0;

@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-constexpr size_t MAXLINELENGTH = 256;
+enum { MAXLINELENGTH = 256 };
 
 /*
  * compare_files: compares `fp1` and `fp2` line by line (up to `cap` bytes per
