@@ -11,8 +11,25 @@
  * reverse: reverses the NUL-terminated string `s` in place.
  */
 void reverse(char s[]) {
-  (void)s;
-  /* TODO: implement */
+  if (s == NULL ) {
+    return;
+  }
+
+  size_t s_len = strlen(s);
+  if (s_len == 0) {
+    return;
+  }
+
+      int left = 0;
+  int right = s_len - 1;
+
+  while (left < right) {
+    char tmp = s[left];
+    s[left] = s[right];
+    s[right] = tmp;
+    left++;
+    right--;
+  }
 }
 
 int main(void) {

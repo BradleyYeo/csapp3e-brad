@@ -30,7 +30,7 @@ void count_char_frequencies(const char *input, int counts[static 128]) {
 }
 
 static void append_char(char *out, size_t out_cap, size_t *pos, char ch) {
-  if (*pos+1 < out_cap) {
+  if (*pos + 1 < out_cap) {
     out[*pos] = ch;
     (*pos)++;
   }
@@ -45,9 +45,8 @@ void format_histogram(const int counts[static 128], char *out, size_t out_cap) {
   if (out == NULL || out_cap == 0) {
     return;
   }
-
   size_t pos = 0;
-  for (size_t i = 0; i < 128; i++) {
+  for (int i = 0; i < 128; i++) {
     if (counts[i] > 0) {
       append_char(out, out_cap, &pos, (char)i);
       append_char(out, out_cap, &pos, ':');
