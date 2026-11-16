@@ -2,15 +2,27 @@ CC = clang
 
 # ── One modern standard for the whole curriculum ────────────────────────────
 CSTD = -std=c23
-WARN = -Wall -Wextra -pedantic
+# -Wconversion/-Wsign-conversion kill the int/size_t drift that bites every
+# buffer-cursor exercise. If a frozen older exercise now trips -Werror, give it
+# a per-target escape hatch below (pattern: 45_macro_fundamentals) rather than
+# weakening the global set.
+WARN = -Wall -Wextra -pedantic \
+       -Wconversion -Wsign-conversion -Wshadow -Wundef \
+       -Wmissing-prototypes -Wstrict-prototypes -Wwrite-strings \
+       -Wcast-qual -Wpointer-arith -Wimplicit-fallthrough -Wswitch-enum \
+       -Wdouble-promotion -Wformat=2 -Wunreachable-code
 
 # Exercises (incl. your in-progress stubs): warnings are errors — ship clean.
 CFLAGS = $(CSTD) $(WARN) -Werror -g
 # Repair targets keep deliberate legacy defects; warnings are the to-do list,
 # so no -Werror there until you fix them.
 CFLAGS_REPAIR = $(CSTD) $(WARN) -g
-CFLAGS_SAN = $(CSTD) $(WARN) -Werror -g -fsanitize=address,undefined \
-             -fno-omit-frame-pointer
+# -fno-sanitize-recover=all is non-negotiable for an assert-driven suite:
+# default UBSan prints a note and KEEPS RUNNING, so a poisoned binary can
+# still exit 0 and the dashboard lies "PASS".
+CFLAGS_SAN = $(CSTD) $(WARN) -Werror -g \
+             -fsanitize=address,undefined,local-bounds,integer-divide-by-zero,unsigned-integer-overflow,implicit-conversion \
+             -fno-sanitize-recover=all -fno-omit-frame-pointer
 CFLAGS_BENCH = $(CSTD) $(WARN) -O2
 
 # 01/02 are complete and compile warning-free under C23 strict.
@@ -48,7 +60,7 @@ BENCH_TARGETS = 33_getline_ingestion 39_bump_allocator 40_kr803_malloc_flushbuf 
 REPS ?= 5
 
 .PHONY: all exercises repair test run-exercises test-python test-sanitizers \
-        valgrind-37 bench clean clean-obj
+        valgrind-37 bench clean clean-obj one analyze vec
 
 all: $(DONE) $(EXERCISES)
 
@@ -76,12 +88,14 @@ test: run-exercises test-python
 
 # Run every exercise, report PASS/FAIL, wall time per exercise, and total.
 # Continues past failures — the table doubles as your progress dashboard.
+# Each run is capped at 10s: FAIL (exit 124) means a hang, the classic
+# forgot-to-advance-the-index loop.
 run-exercises: $(EXERCISES)
 	@pass=0; fail=0; total=0; \
 	for t in $(EXERCISES); do \
 	  echo "== $$t"; \
 	  t0=$$(date +%s%N); \
-	  ./$$t; rc=$$?; \
+	  timeout 10 ./$$t; rc=$$?; \
 	  t1=$$(date +%s%N); \
 	  us=$$(( (t1 - t0) / 1000 )); \
 	  total=$$(( total + us )); \
@@ -109,6 +123,32 @@ test-sanitizers: clean
 valgrind-37: 37_valgrind_fundamentals
 	valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes \
 		--error-exitcode=1 ./37_valgrind_fundamentals
+
+# ── Developer tools: the fast inner loop ────────────────────────────────────
+# Build ONE exercise with the full sanitizer lane and run it capped:
+#   make one T=11_kr122_fold_lines
+one:
+	@if [ -z "$(T)" ]; then echo "usage: make one T=11_kr122_fold_lines"; exit 2; fi
+	$(CC) $(CFLAGS_SAN) -o $(T) $(T).c
+	timeout 10 ./$(T)
+
+# Static analysis over every exercise source (clang-tidy ships with clang).
+# bugprone-infinite-loop alone would have flagged this morning's drafts.
+# Silence style noise per-checker, e.g. --checks='-readability-magic-numbers,...'
+analyze:
+	clang-tidy $(filter-out _resources/%,$(wildcard *.c)) -- \
+	  $(CSTD) -Wall -I_resources
+
+# Vectorization remarks: ask the compiler why it did/didn't optimize YOUR
+# loops (aliasing, strides, early exits) — change the code, re-ask.
+CFLAGS_VEC = $(CSTD) -O2 -g \
+             -Rpass=loop-vectorize -Rpass-missed=loop-vectorize \
+             -Rpass-analysis=loop-vectorize
+vec:
+	@for t in 05_kr108_count_blanks 08_kr114_char_histogram 46_cache_locality_and_blocking; do \
+	  echo "== $$t"; \
+	  $(CC) $(CFLAGS_VEC) -c $$t.c -o /dev/null; \
+	done
 
 # ── Benchmark lane: compare implementations ─────────────────────────────────
 # Builds each timed exercise also at -O2 and reports best-of-$(REPS) wall time
