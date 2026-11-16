@@ -63,9 +63,10 @@ static uint32_t bswap_u32(uint32_t x) {
  * - Return true iff strlen(s) > strlen(t) without unsigned underflow.
  */
 static bool safe_str_longer(const char *s, const char *t) {
-  (void)s;
-  (void)t;
-  return false; /* TODO: implement */
+  if (s == nullptr || t == nullptr){
+    return false; /* TODO: implement */
+  }
+  return strlen(s) > strlen(t);
 }
 
 /*
@@ -79,9 +80,11 @@ static bool safe_str_longer(const char *s, const char *t) {
  *   Negative overflow occurs iff x < 0 && y < 0 && s >= 0.
  */
 static bool tadd_ok_i32(int32_t x, int32_t y) {
-  (void)x;
-  (void)y;
-  return false; /* TODO: implement */
+  uint32_t sum = (uint32_t)x + (uint32_t)y;
+  int32_t s = (int32_t) sum;
+  bool overflowed = !((x >= 0 && y >= 0 && s < 0) || (x < 0 && y < 0 && s >= 0));
+  
+  return overflowed;
 }
 
 /*
@@ -158,6 +161,7 @@ int main(void) {
   assert(bswap_u32(0x12345678U) == 0x78563412U);
   assert(bswap_u32(0x00FF0001U) == 0x0100FF00U);
   assert(bswap_u32(0xAABBCCDDU) == 0xDDCCBBAAU);
+  puts("[PASS] Drill 1: byte swap");
 
   /* Drill 2: Unsigned promotion underflow */
   assert(safe_str_longer("hello", "hi") == true);
@@ -165,6 +169,7 @@ int main(void) {
   assert(safe_str_longer("abc", "def") == false);
   assert(safe_str_longer(nullptr, "abc") == false);
   assert(safe_str_longer("abc", nullptr) == false);
+  puts("[PASS] Drill 2: unsigned promotion");
 
   /* Drill 3: Two's complement addition overflow detection */
   assert(tadd_ok_i32(100, 200) == true);
@@ -174,6 +179,7 @@ int main(void) {
   assert(tadd_ok_i32(INT32_MIN, 0) == true);
   assert(tadd_ok_i32(INT32_MIN, -1) == false);
   assert(tadd_ok_i32(INT32_MIN, INT32_MAX) == true);
+  puts("[PASS] Drill 3: overflow detection");
 
   /* Drill 4: Saturating addition */
   assert(saturating_add_i32(10, -3) == 7);
@@ -181,6 +187,7 @@ int main(void) {
   assert(saturating_add_i32(INT32_MAX - 5, 10) == INT32_MAX);
   assert(saturating_add_i32(INT32_MIN, -1) == INT32_MIN);
   assert(saturating_add_i32(INT32_MIN + 5, -10) == INT32_MIN);
+  puts("[PASS] Drill 4: saturating add");
 
   /* Drill 5: IEEE 754 decomposition & classification */
   uint32_t neg_one = f32_to_bits(-1.5f); /* 0xBFC00000: sign=1, exp=127, frac=0x400000 */
@@ -193,6 +200,7 @@ int main(void) {
   assert(float_classify(0x7F800000U) == FP_INF);
   assert(float_classify(0xFF800000U) == FP_INF);
   assert(float_classify(0x7FC00001U) == FP_NAN);
+  puts("[PASS] Drill 5: decompose & classify");
 
   /* Drill 6: float_twice_bits across all IEEE 754 categories */
   assert(float_twice_bits(0x00000000U) == 0x00000000U); /* +0.0 -> +0.0 */
@@ -206,6 +214,7 @@ int main(void) {
   assert(float_twice_bits(0xFF7FFFFFU) == 0xFF800000U); /* -max norm -> -Inf */
   assert(float_twice_bits(0x7F800000U) == 0x7F800000U); /* +Inf -> +Inf */
   assert(float_twice_bits(0x7FC01234U) == 0x7FC01234U); /* NaN -> NaN */
+  puts("[PASS] Drill 6: float_twice_bits");
 
   printf("[PASS] Exercise 53: Two's Complement & IEEE 754 Bits verified.\n");
   return EXIT_SUCCESS;
