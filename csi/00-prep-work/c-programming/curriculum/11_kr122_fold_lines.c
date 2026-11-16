@@ -13,6 +13,8 @@
  * bytes, NUL-terminated). Breaks after the last blank before `maxcol` when one
  * exists; otherwise hard-wraps at `maxcol`.
  */
+
+# TODO BRAD
 static void append(char *out, size_t out_cap, size_t *pos, char ch){
   if (*pos + 1 < out_cap){
     out[*pos] = ch;
@@ -21,17 +23,14 @@ static void append(char *out, size_t out_cap, size_t *pos, char ch){
 }
 
 static void copy_all(const char *in, char *out, size_t out_cap){
+  size_t pos = 0;
    for (size_t i = 0; in[i] != '\0'; i++){
-     append(out, out_cap, &in, in[i]);
+     append(out, out_cap, &pos, in[i]);
    }
 }
 
 void fold_lines(const char *in, char *out, size_t out_cap, size_t maxcol) {
-  if (out_cap > 0) {
-    out[0] = '\0';
-  }
-
-  if (in == NULL){
+  if (out == NULL){
     return;
   }
 
@@ -39,18 +38,12 @@ void fold_lines(const char *in, char *out, size_t out_cap, size_t maxcol) {
     return;
   }
 
-  size_t pos = 0;
-  size_t col_count = 0;
-  size_t last_blank = 0;
-  for (size_t i = 0; in[i] != '\0'; i++) {
-    if (in[i] == ' '){
-      last_blank = i;
-    }
-
-    append(out, out_cap, &pos, '\n');
-    
+  if (in == NULL) {
+    out[0] = '\0';
+    return;
   }
-  append(out, out_cap, &pos, '\n');
+  size_t pos =0;
+  out[pos] = '\0';
 }
 
 int main(void) {
