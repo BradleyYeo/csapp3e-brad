@@ -13,6 +13,37 @@ Bridges C integer/bitwise drills to CS:APP Chapter 2 and `datalab`: endianness, 
 
 ---
 
+# Bit Manipulation Toolbox (the Drill 1 lessons)
+
+## Hex Is Programmer's Binary
+- One hex digit = one nibble = exactly 4 bits. There is no `%b` in C because there doesn't need to be one.
+- Read `0x12345678` as four tiles — `12 | 34 | 56 | 78` — at positions 3, 2, 1, 0, where **position 0 = bits 7–0 (LSB end)**. Translate digit-by-digit, never through decimal.
+- The digit↔nibble table (`5` = `0101`, `A` = `1010`, `F` = `1111`, …) must be automatic before Drills 5–6.
+
+## Positions Are the Truth; Shifts Are Bookkeeping
+- Every bitfield term answers one question: *which slot does this tile occupy in the final word?* Asserts check slots, not distances.
+- With positions counted from the bottom: extract shift `s = 8 × source_position`, place shift `d = 8 × destination_position`.
+- Two algebraically equivalent formulations — **pick one per expression, never mix**:
+  - *extract-to-floor:* `((x >> s) & mask) << d` — the tile comes down to bits 7–0, gets masked, rises to its destination.
+  - *travel-in-place:* `(x & (mask << s)) << (d − s)` — the mask sits at the source slot and the tile moves only by travel distance.
+- The mask goes **between** the two shifts. Mask after placing ⇒ you delete exactly what you moved (the `0x00000034` bug). Mask before extracting ⇒ the mask can't see the target tile.
+
+## Each Operator Has a Job
+- `&` isolates; `|` assembles. `&` between two shifted copies of the same value intersects their bits — it returns a small number or zero, never a concatenation.
+- `<<`/`>>` bind tighter than `&`/`|`, so `((x >> s) & mask) << d` needs its inner parens; write them anyway — verifying precedence costs more than typing it.
+- One term per field, `|`-joined: each term is an independently printable probe, so a failed assert localizes to a tile, not to a soup of two variables named `back`/`front`.
+
+## Why a Rotate Can't Be a Reverse (parity argument)
+- `x << 16 | x >> 16` moves every byte **2 positions** — even. Byte reversal moves every byte **±1 or ±3** — odd. So halves swap but bytes never cross within a half: `0x12345678` → `0x5678 1234`, not `0x7856 3412`.
+- The rotate is only rescuable by a second stage that swaps nibbles *within* every byte (`(r >> 4) & 0x0F0F0F0F | (r << 4) & 0xF0F0F0F0`) — a different two-stage algorithm (Route B), not an incrementally-fixed Route A.
+
+## Debug-Printing Bits
+- `printf("0x%08X", u)` — zero-pad to 8 digits; unpadded output hides *which byte slot* the wrong value sits in.
+- Prints live in `main`/the test harness, never inside a pure helper: the function has a contract; the driver has curiosity.
+- When one assert fails, print each term separately — the tile that lies names the bug.
+
+---
+
 # Two's Complement Hazards and Overflow Safety
 
 ## Implicit Unsigned Promotion (`CS:APP 2.25–2.26`)
@@ -50,6 +81,9 @@ Bridges C integer/bitwise drills to CS:APP Chapter 2 and `datalab`: endianness, 
 ---
 
 # Active Recall Questions
+- From memory, write the term that moves byte 1 of `x` into slot 3 of the result, and the one that moves byte 3 into slot 0. Which shift in each is extract and which is place?
+- Where exactly does `& 0xFF` go in `((x >> 8) & 0xFF) << 16`, and why do both neighboring orders of operations lose information?
+- Prove that no expression built from `x << 16` and `x >> 16` alone can produce a byte swap. (One sentence: name the invariant.)
 - Why can `(uint32_t)x + (uint32_t)y` detect signed 32-bit overflow safely while `(x + y) < 0` cannot?
 - What is the bit pattern of `-0.0f` vs `+0.0f`, and why must `float_twice_bits` preserve the sign bit?
 - What is the bit pattern of the largest denormalized `float`, and what happens when it is multiplied by `2.0f`?

@@ -1,5 +1,5 @@
 /*
- * Exercise 53: Two's Complement Arithmetic, Byte Order & IEEE 754 Bits (CS:APP Ch. 2 / datalab)
+ * Two's Complement Arithmetic, Byte Order & IEEE 754 Bits (CS:APP Ch. 2 / datalab)
  *
  * Compile and run:
  *   make -C curriculum 53_twos_complement_and_ieee754 && ./curriculum/53_twos_complement_and_ieee754
@@ -42,8 +42,12 @@ typedef enum {
  * - Example: 0x12345678U -> 0x78563412U.
  */
 static uint32_t bswap_u32(uint32_t x) {
-  (void)x;
-  return 0U; /* TODO: implement */
+  uint32_t mask =  0xFFU;
+
+  return ((x >> 0) & mask) << 24 
+          | ((x >> 8) & mask) << 16
+          | ((x >> 16) & mask) << 8
+          | ((x >> 24) & mask) << 0;
 }
 
 /*
@@ -149,6 +153,8 @@ static uint32_t f32_to_bits(float f) {
 
 int main(void) {
   /* Drill 1: Byte swap */
+  printf("bswap(0x%08X) = 0x%08X, want 0x%08X\n",
+       0x12345678U, bswap_u32(0x12345678U), 0x78563412U);
   assert(bswap_u32(0x12345678U) == 0x78563412U);
   assert(bswap_u32(0x00FF0001U) == 0x0100FF00U);
   assert(bswap_u32(0xAABBCCDDU) == 0xDDCCBBAAU);
