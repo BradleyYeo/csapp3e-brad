@@ -1,8 +1,8 @@
 /*
- * Exercise 54: Struct Alignment, Intrusive Containers & Function Pointers (CS:APP Ch. 3 / Systems C)
+ * Exercise 43: Struct Alignment, Intrusive Containers & Function Pointers (CS:APP Ch. 3 / Systems C)
  *
  * Compile and run:
- *   make -C curriculum 54_struct_alignment_and_fn_ptrs && ./curriculum/54_struct_alignment_and_fn_ptrs
+ *   make -C curriculum 43_struct_alignment_and_fn_ptrs && ./curriculum/43_struct_alignment_and_fn_ptrs
  */
 #define _POSIX_C_SOURCE 200809L
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
@@ -46,6 +46,17 @@ typedef struct {
 
 typedef int (*generic_cmp_fn)(const void *a, const void *b);
 typedef int32_t (*alu_op_fn)(int32_t a, int32_t b);
+
+typedef struct IntrusiveDNode {
+  struct IntrusiveDNode *prev;
+  struct IntrusiveDNode *next;
+} IntrusiveDNode;
+
+typedef struct {
+  int pid;
+  int nice;
+  IntrusiveDNode run_link;
+} RunQueueProc;
 
 /*
  * Drill 1: Struct Padding Computation (CS:APP 3.9.3 Alignment)
@@ -136,6 +147,61 @@ static bool alu_dispatch(uint8_t opcode, int32_t a, int32_t b, int32_t *out) {
   return false; /* TODO: implement */
 }
 
+/*
+ * Drill 6: Intrusive Circular Sentinel Doubly-Linked List (`struct list_head` / OSTEP Runqueue)
+ *
+ * OS kernels (Linux, xv6, OSTEP schedulers) embed a circular sentinel `IntrusiveDNode`
+ * inside process structs (`RunQueueProc`). Using a sentinel `head` whose `next` and `prev`
+ * point to itself when empty eliminates NULL-pointer special cases on push and remove.
+ *
+ * Requirements:
+ * - proc_from_run_link:
+ *     Return nullptr if node == nullptr; else recover RunQueueProc * via offsetof(RunQueueProc, run_link).
+ * - dlist_init:
+ *     If head != nullptr, set head->next = head and head->prev = head.
+ * - dlist_empty:
+ *     Return true if head == nullptr || head->next == head.
+ * - dlist_push_back:
+ *     If head == nullptr || node == nullptr, return.
+ *     Splice `node` right before `head` (between `head->prev` and `head`).
+ * - dlist_remove:
+ *     If node == nullptr || node->prev == nullptr || node->next == nullptr, return.
+ *     Splice `node->prev` and `node->next` together, then reset `node->prev = node` and `node->next = node`.
+ * - dlist_pop_front_proc:
+ *     If dlist_empty(head), return nullptr.
+ *     Save `IntrusiveDNode *first = head->next`, call `dlist_remove(first)`, and return `proc_from_run_link(first)`.
+ */
+static RunQueueProc *proc_from_run_link(const IntrusiveDNode *node) {
+  (void)node;
+  return nullptr; /* TODO: implement */
+}
+
+static void dlist_init(IntrusiveDNode *head) {
+  (void)head;
+  /* TODO: implement */
+}
+
+static bool dlist_empty(const IntrusiveDNode *head) {
+  (void)head;
+  return true; /* TODO: implement */
+}
+
+static void dlist_push_back(IntrusiveDNode *head, IntrusiveDNode *node) {
+  (void)head;
+  (void)node;
+  /* TODO: implement */
+}
+
+static void dlist_remove(IntrusiveDNode *node) {
+  (void)node;
+  /* TODO: implement */
+}
+
+static RunQueueProc *dlist_pop_front_proc(IntrusiveDNode *head) {
+  (void)head;
+  return nullptr; /* TODO: implement */
+}
+
 int main(void) {
   /* Drill 1: Alignment & packing */
   size_t raw_sum = sizeof(uint8_t) + sizeof(uint64_t) + sizeof(uint16_t) + sizeof(uint32_t);
@@ -195,6 +261,32 @@ int main(void) {
   assert(alu_dispatch(4, 1, 2, &res) == false);
   assert(alu_dispatch(0, 1, 2, nullptr) == false);
 
-  printf("[PASS] Exercise 54: Struct Alignment & Function Pointers verified.\n");
+  /* Drill 6: Intrusive circular sentinel doubly-linked list */
+  IntrusiveDNode runq = {0};
+  dlist_init(&runq);
+  assert(dlist_empty(&runq) == true);
+  assert(dlist_pop_front_proc(&runq) == nullptr);
+  assert(proc_from_run_link(nullptr) == nullptr);
+
+  RunQueueProc p1 = {.pid = 10, .nice = 0};
+  RunQueueProc p2 = {.pid = 20, .nice = 5};
+  RunQueueProc p3 = {.pid = 30, .nice = -2};
+  dlist_push_back(&runq, &p1.run_link);
+  dlist_push_back(&runq, &p2.run_link);
+  dlist_push_back(&runq, &p3.run_link);
+  assert(dlist_empty(&runq) == false);
+
+  /* O(1) arbitrary middle removal without knowing head */
+  dlist_remove(&p2.run_link);
+  assert(p2.run_link.next == &p2.run_link && p2.run_link.prev == &p2.run_link);
+
+  RunQueueProc *out1 = dlist_pop_front_proc(&runq);
+  assert(out1 == &p1 && out1->pid == 10);
+  RunQueueProc *out2 = dlist_pop_front_proc(&runq);
+  assert(out2 == &p3 && out2->pid == 30);
+  assert(dlist_empty(&runq) == true);
+  assert(dlist_pop_front_proc(&runq) == nullptr);
+
+  printf("[PASS] Exercise 43: Struct Alignment & Function Pointers verified.\n");
   return EXIT_SUCCESS;
 }

@@ -1,8 +1,8 @@
 /*
- * Exercise 55: Cache Address Geometry, LRU Simulator & Tiled Blocking (CS:APP Ch. 5–6 / cachelab)
+ * Exercise 46: Cache Address Geometry, LRU Simulator & Tiled Blocking (CS:APP Ch. 5–6 / cachelab)
  *
  * Compile and run:
- *   make -C curriculum 55_cache_locality_and_blocking && ./curriculum/55_cache_locality_and_blocking
+ *   make -C curriculum 46_cache_locality_and_blocking && ./curriculum/46_cache_locality_and_blocking
  */
 #define _POSIX_C_SOURCE 200809L
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
@@ -226,6 +226,6 @@ int main(void) {
   cache_sim_destroy(&blocked_sim);
   free(arena);
 
-  printf("[PASS] Exercise 55: Cache Locality & Tiled Blocking verified.\n");
+  printf("[PASS] Exercise 46: Cache Locality & Tiled Blocking verified.\n");
   return EXIT_SUCCESS;
 }

@@ -1,6 +1,6 @@
-# Exercise 54: Struct Alignment, Intrusive Containers, and Function Pointers
+# Exercise 43: Struct Alignment, Intrusive Containers, and Function Pointers
 
-Bridges C memory layout and polymorphism to CS:APP Chapter 3, `bomblab`, `attacklab`, and kernel/allocator codebases (`xv6`, `malloc_clone`).
+Bridges C memory layout and polymorphism to CS:APP Chapter 3, `bomblab`, `attacklab`, and kernel/allocator codebases (`xv6`, `malloc_clone`, OSTEP runqueues).
 
 ---
 
@@ -28,6 +28,19 @@ PackedPacket (16 bytes):
 - Intrusive containers embed `IntrusiveLink` directly inside `TaskItem`.
 - `offsetof(TaskItem, link)` yields the compile-time byte offset of `link` from the start of `TaskItem`; subtracting it from `(uintptr_t)link` recovers the owning `TaskItem *`.
 
+## Circular Sentinel Doubly-Linked Lists (`IntrusiveDNode`)
+- A sentinel `head` node initialized so `head->next == head` and `head->prev == head` defines empty-list and boundary-head `NULL` special cases out of existence (John Ousterhout).
+- Splicing a new `node` before `head` (`dlist_push_back`) or removing any node (`dlist_remove`) executes the exact same four pointer assignments whether the list has 0, 1, or 100 elements.
+- Because `dlist_remove(node)` only needs `node->prev` and `node->next`, an OS scheduler or LRU cache can unlink a `RunQueueProc` in $O(1)$ without searching from `head`.
+
+```
+Empty sentinel:   +---> [ head ] ---+
+                  |        ^        |
+                  +--------+--------+ (next == prev == head)
+
+Non-empty ring:   [ head ] <-> [ p1.run_link ] <-> [ p3.run_link ] <-> (back to head)
+```
+
 ---
 
 # Safe Generic Comparators and Function-Pointer Dispatch
@@ -46,3 +59,4 @@ PackedPacket (16 bytes):
 - Why does reordering fields in `BloatedPacket` shrink `sizeof` from 24 bytes to 16 bytes without changing any member type?
 - Why must `(uintptr_t)link - offsetof(TaskItem, link)` operate on `uintptr_t` or `unsigned char *` rather than `IntrusiveLink *`?
 - Why does `*a - *b` fail as a `qsort`/`bsearch` comparator for `int32_t`?
+- How does a circular sentinel `head` eliminate `if (head == nullptr)` branches in `dlist_push_back` and `dlist_remove`?

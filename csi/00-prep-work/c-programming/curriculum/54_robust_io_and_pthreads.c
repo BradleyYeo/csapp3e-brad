@@ -1,8 +1,8 @@
 /*
- * Exercise 57: Robust Short-Count I/O & POSIX Threads Bounded Queue (CS:APP Ch. 10 & 12 / proxylab)
+ * Exercise 54: Robust Short-Count I/O & POSIX Threads Bounded Queue (CS:APP Ch. 10 & 12 / proxylab)
  *
  * Compile and run:
- *   make -C curriculum 57_robust_io_and_pthreads && ./curriculum/57_robust_io_and_pthreads
+ *   make -C curriculum 54_robust_io_and_pthreads && ./curriculum/54_robust_io_and_pthreads
  */
 #define _POSIX_C_SOURCE 200809L
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
@@ -231,6 +231,6 @@ int main(void) {
   bqueue_destroy(&q);
   assert(q.buf == nullptr);
 
-  printf("[PASS] Exercise 57: Robust I/O & Pthreads Bounded Queue verified.\n");
+  printf("[PASS] Exercise 54: Robust I/O & Pthreads Bounded Queue verified.\n");
   return EXIT_SUCCESS;
 }

@@ -1,4 +1,4 @@
-# Exercise 55: Cache Address Geometry, LRU Simulation, and Tiled Blocking
+# Exercise 46: Cache Address Geometry, LRU Simulation, and Tiled Blocking
 
 Bridges C array access patterns to CS:APP Chapters 5–6 and `cachelab`: virtual/physical address decomposition, set-associative cache eviction, and loop tiling for spatial and temporal locality.
 

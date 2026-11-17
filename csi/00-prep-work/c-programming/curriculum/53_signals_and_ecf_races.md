@@ -1,4 +1,4 @@
-# Exercise 56: Signals, Coalesced Reaping, and ECF Race Conditions
+# Exercise 53: Signals, Coalesced Reaping, and ECF Race Conditions
 
 Bridges POSIX process control to CS:APP Chapter 8 (Exceptional Control Flow) and `shlab`: unqueued pending signals, async-signal-safe handlers, `errno` preservation, and `sigprocmask` synchronization around `fork`.
 

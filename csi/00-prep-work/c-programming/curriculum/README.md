@@ -23,7 +23,7 @@ Single file: `make 20_pointer_traversal && ./20_pointer_traversal`
 > WSL). Drills 45–48 create directories, hard links, FIFOs, and pipes; NTFS mounts
 > under `/mnt/c` don't emulate inodes faithfully and 46 will abort there.
 
-Targets 18, 27, and 56 are deliberately outside `make all` — they're incomplete on
+Targets 18, 27, and 60 are deliberately outside `make all` — they're incomplete on
 purpose (fix-it exercises); see their rows below.
 
 ---
@@ -91,7 +91,7 @@ Control flow, character I/O, arrays, bit arithmetic, and data representation. Al
 |---|---|---|
 | 41 | `41_calculator/` | RPN calculator split across files; **repair target** — encapsulate global `stack.c` arrays into a heap `Stack` struct with init/push/pop/free (REMEDIATION Phase B). Build: `clang -std=gnu17 41_calculator/*.c -o calc` |
 | 42 | `42_kr602_getword_groups.c` | structs, functions returning `char *`, keyword grouping |
-| 43 | `43_struct_alignment_and_fn_ptrs.{c,md}` | struct alignment/padding, `container_of`, overflow-safe comparators, jump tables (CS:APP Ch. 3) |
+| 43 | `43_struct_alignment_and_fn_ptrs.{c,md}` | struct alignment/padding, `container_of`, intrusive circular doubly-linked list, overflow-safe comparators, jump tables (CS:APP Ch. 3 / OSTEP) |
 | 44 | `44_recursion_patterns.{c,md}` | recursion structure, base cases, stack depth |
 | 45 | `45_macro_fundamentals.{c,md}` | preprocessor, macro hygiene, `do-while(0)` |
 | 46 | `46_cache_locality_and_blocking.{c,md}` | `(s, E, b)` address bit splitting, LRU cache simulator, tiled transpose (`cachelab` / CS:APP Ch. 5–6) |
@@ -108,14 +108,18 @@ Control flow, character I/O, arrays, bit arithmetic, and data representation. Al
 | 52 | `52_process_pipeline_exec.{c,md}` | fork/exec/waitpid/dup2 pipeline orchestration |
 | 53 | `53_signals_and_ecf_races.{c,md}` | `WNOHANG` coalesced reaping, `errno`-safe `SIGCHLD` handler, `sigprocmask` around `fork` (`shlab` / CS:APP Ch. 8) |
 | 54 | `54_robust_io_and_pthreads.{c,md}` | `rio_readn`/`rio_writen` short-count & `EINTR` loops, `pthread` mutex/condvar `BoundedQueue` (`proxylab` / CS:APP Ch. 10 & 12) |
+| 55 | `55_ostep_cpu_sched_and_lde.{c,md}` | monotonic syscall timing, turnaround/response metrics, MLFQ anti-gaming + boost, stride scheduling (OSTEP Ch. 6–9) |
+| 56 | `56_ostep_vm_paging_and_tlb.{c,md}` | segmentation bounds/growth, two-level page walk + A/D bits, ASID TLB, Clock page replacement (OSTEP Ch. 15–22 / `xv6`) |
+| 57 | `57_ostep_locks_sema_and_deadlock.{c,md}` | `<stdatomic.h>` ticket spinlock, `Zem` semaphore, generation barrier, writer-preference RW lock, lock ordering (OSTEP Ch. 28–32) |
+| 58 | `58_ostep_vsfs_and_crash_recovery.{c,md}` | VSFS allocation bitmaps, direct/indirect `bmap`, `dirlookup`/`dirlink`, Fletcher-16 checksums, WAL recovery (OSTEP Ch. 39–44 / `xv6`) |
 
 ## Stage F — Architecture, formal reasoning, and transfer
 
 | # | File | Concept |
 |---|---|---|
-| 55 | `55_hoare_logic_refactoring.{py,md}` | specs, loop invariants, refinement (`python3 55_hoare_logic_refactoring.py`) |
-| 56 | `56_pipelining_hazards.{c,md}` | hazard units vs data/control hazards — **repair target**: the test-stub section doesn't compile; completing it is the exercise (not in default build) |
-| 57 | `57_python_pointer_chasing.{py,md}` | references vs pointers, transfer check (`python3 57_python_pointer_chasing.py --test`) |
+| 59 | `59_hoare_logic_refactoring.{py,md}` | specs, loop invariants, refinement (`python3 59_hoare_logic_refactoring.py`) |
+| 60 | `60_pipelining_hazards.{c,md}` | hazard units vs data/control hazards — **repair target**: the test-stub section doesn't compile; completing it is the exercise (not in default build) |
+| 61 | `61_python_pointer_chasing.{py,md}` | references vs pointers, transfer check (`python3 61_python_pointer_chasing.py --test`) |
 
 **Graduation:** `../projects/ls_clone` and `../projects/malloc_clone` — nothing here
 is considered done until those build clean under sanitizers.

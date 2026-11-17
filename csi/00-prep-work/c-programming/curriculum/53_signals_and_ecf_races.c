@@ -1,8 +1,8 @@
 /*
- * Exercise 56: Signals, Coalesced Reaping & ECF Race Conditions (CS:APP Ch. 8 / shlab)
+ * Exercise 53: Signals, Coalesced Reaping & ECF Race Conditions (CS:APP Ch. 8 / shlab)
  *
  * Compile and run:
- *   make -C curriculum 56_signals_and_ecf_races && ./curriculum/56_signals_and_ecf_races
+ *   make -C curriculum 53_signals_and_ecf_races && ./curriculum/53_signals_and_ecf_races
  */
 #define _POSIX_C_SOURCE 200809L
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
@@ -159,6 +159,6 @@ int main(void) {
 
   assert(sigaction(SIGCHLD, &old_sa, nullptr) == 0);
 
-  printf("[PASS] Exercise 56: Signals & ECF Race Conditions verified.\n");
+  printf("[PASS] Exercise 53: Signals & ECF Race Conditions verified.\n");
   return EXIT_SUCCESS;
 }

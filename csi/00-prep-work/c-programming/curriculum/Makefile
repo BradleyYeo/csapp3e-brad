@@ -47,12 +47,14 @@ EXERCISES = 03_kr105_temp_for_loop 04_kr106_eof_value 05_kr108_count_blanks \
             45_macro_fundamentals 46_cache_locality_and_blocking \
             47_kr706_compare_files 49_mmap_search 50_filesystem_inode_ops \
             51_pipe_pingpong 52_process_pipeline_exec \
-            53_signals_and_ecf_races 54_robust_io_and_pthreads
+            53_signals_and_ecf_races 54_robust_io_and_pthreads \
+            55_ostep_cpu_sched_and_lde 56_ostep_vm_paging_and_tlb \
+            57_ostep_locks_sema_and_deadlock 58_ostep_vsfs_and_crash_recovery
 
-# Fix-the-existing-code targets (REMEDIATION.md). 18 and 56 deliberately do
+# Fix-the-existing-code targets (REMEDIATION.md). 18 and 60 deliberately do
 # NOT compile — the syntax/TODO errors are the exercise. Build with `make repair`.
 REPAIR = 18_kr301_binsearch_count 26_kr503_strcat 30_pointer_decay \
-         34_kr507_sortlines 48_kr801_fcopy 56_pipelining_hazards
+         34_kr507_sortlines 48_kr801_fcopy 60_pipelining_hazards
 
 # Exercises whose runtime is dominated by your code — worth benchmarking.
 BENCH_TARGETS = 33_getline_ingestion 39_bump_allocator 40_kr803_malloc_flushbuf \
@@ -75,6 +77,7 @@ exercises: $(EXERCISES)
 # usleep() is hidden by strict -std=c23 without this
 52_process_pipeline_exec: CFLAGS += -D_DEFAULT_SOURCE
 54_robust_io_and_pthreads: CFLAGS += -pthread
+57_ostep_locks_sema_and_deadlock: CFLAGS += -pthread
 
 $(DONE) $(filter-out 42_kr602_getword_groups,$(EXERCISES)): %: %.c
 	$(CC) $(CFLAGS) -o $@ $<
@@ -82,7 +85,7 @@ $(DONE) $(filter-out 42_kr602_getword_groups,$(EXERCISES)): %: %.c
 $(REPAIR): %: %.c
 	$(CC) $(CFLAGS_REPAIR) -o $@ $<
 
-repair: $(filter-out 18_kr301_binsearch_count 56_pipelining_hazards,$(REPAIR))
+repair: $(filter-out 18_kr301_binsearch_count 60_pipelining_hazards,$(REPAIR))
 
 test: run-exercises test-python
 
@@ -113,8 +116,8 @@ run-exercises: $(EXERCISES)
 	[ $$fail -eq 0 ]
 
 test-python:
-	@echo "== 55_hoare_logic_refactoring"; python3 55_hoare_logic_refactoring.py
-	@echo "== 57_python_pointer_chasing"; python3 57_python_pointer_chasing.py --test
+	@echo "== 59_hoare_logic_refactoring"; python3 59_hoare_logic_refactoring.py
+	@echo "== 61_python_pointer_chasing"; python3 61_python_pointer_chasing.py --test
 
 test-sanitizers: clean
 	@$(MAKE) CFLAGS="$(CFLAGS_SAN)" run-exercises

@@ -1,4 +1,4 @@
-# Exercise 57: Robust Short-Count I/O and POSIX Threads Bounded Queue
+# Exercise 54: Robust Short-Count I/O and POSIX Threads Bounded Queue
 
 Bridges POSIX file descriptors and concurrency to CS:APP Chapters 10 and 12 and `proxylab`: handling partial reads/writes and `EINTR` loops, plus mutex and condition-variable synchronization.
 
