@@ -123,7 +123,11 @@ static int32_t saturating_add_i32(int32_t x, int32_t y) {
  */
 static FloatParts float_decompose(uint32_t bits) {
   (void)bits;
-  return (FloatParts){.sign = 0, .exp = 0, .frac = 0}; /* TODO: implement */
+  uint32_t sign = bits >> 31 & 0x1U;
+  uint32_t exp = bits >> 23 & 0xFFU;
+  uint32_t frac = bits & 0x7FFFFFU;
+  return (FloatParts){sign = sign, exp = exp,
+                      frac = frac};
 }
 
 static FloatClass float_classify(uint32_t bits) {
