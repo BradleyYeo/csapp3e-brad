@@ -114,12 +114,7 @@ static int32_t saturating_add_i32(int32_t x, int32_t y) {
  * Requirements for float_decompose:
  * - Extract sign (0 or 1), exp (0..255), and frac (0..0x7FFFFF).
  *
- * Requirements for float_classify:
- * - exp == 0 && frac == 0   -> FP_ZERO
- * - exp == 0 && frac != 0   -> FP_DENORM
- * - exp == 0xFF && frac == 0 -> FP_INF
- * - exp == 0xFF && frac != 0 -> FP_NAN
- * - otherwise               -> FP_NORM
+
  */
 static FloatParts float_decompose(uint32_t bits) {
   (void)bits;
@@ -130,9 +125,27 @@ static FloatParts float_decompose(uint32_t bits) {
                       frac = frac};
 }
 
+/* Requirements for float_classify:
+ * - exp == 0 && frac == 0   -> FP_ZERO
+ * - exp == 0 && frac != 0   -> FP_DENORM
+ * - exp == 0xFF && frac == 0 -> FP_INF
+ * - exp == 0xFF && frac != 0 -> FP_NAN
+ * - otherwise               -> FP_NORM
+ */
+
 static FloatClass float_classify(uint32_t bits) {
-  (void)bits;
-  return FP_ZERO; /* TODO: implement */
+  FloatParts floatparts = float_decompose(bits);
+  if (floatparts.exp == 0 && floatparts.frac == 0) {
+    return FP_ZERO;
+  }
+  else if (floatparts.exp == 0 && floatparts.frac != 0) {
+    return FP_DENORM;
+  } else if (floatparts.exp == 0xFF && floatparts.frac == 0) {
+    return FP_INF;
+  } else if (floatparts.exp == 0xFF && floatparts.frac != 0) {
+    return FP_NAN;
+  }
+  return FP_NORM;
 }
 
 /*
@@ -153,8 +166,17 @@ static FloatClass float_classify(uint32_t bits) {
  * - Reassemble `(sign << 31) | (exp << 23) | frac` and return.
  */
 static uint32_t float_twice_bits(uint32_t uf) {
-  (void)uf;
-  return 0U; /* TODO: implement */
+  FloatParts p = float_decompose(uf);
+  uint32_t result = p.exp <<= 1;
+  if (p.exp == 0xFF) {
+    return uf;
+  } else if (p.exp == 0) {
+    return result;
+  }
+  if (result == 0xFF) {
+    p.frac = 0;
+  }
+  return p.sign | p.exp | p.frac;
 }
 
 static uint32_t f32_to_bits(float f) {
