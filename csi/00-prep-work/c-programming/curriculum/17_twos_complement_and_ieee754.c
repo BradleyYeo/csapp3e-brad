@@ -167,16 +167,18 @@ static FloatClass float_classify(uint32_t bits) {
  */
 static uint32_t float_twice_bits(uint32_t uf) {
   FloatParts p = float_decompose(uf);
-  uint32_t result = p.exp <<= 1;
   if (p.exp == 0xFF) {
     return uf;
   } else if (p.exp == 0) {
-    return result;
+    p.frac <<= 1;
+  } else {
+    p.exp += 1;
+    if (p.exp == 0xFF) {
+      p.frac = 0;
+    }
   }
-  if (result == 0xFF) {
-    p.frac = 0;
-  }
-  return p.sign | p.exp | p.frac;
+
+  return (p.sign << 31) | (p.exp << 23) | p.frac;
 }
 
 static uint32_t f32_to_bits(float f) {
