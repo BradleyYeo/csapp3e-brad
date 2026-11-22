@@ -1,0 +1,4 @@
+[package]
+name = "unit-05-algebraic-refactoring"
+version = "0.1.0"
+edition = "2021"

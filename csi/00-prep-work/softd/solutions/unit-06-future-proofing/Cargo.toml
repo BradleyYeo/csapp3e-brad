@@ -1,0 +1,4 @@
+[package]
+name = "unit-06-future-proofing"
+version = "0.1.0"
+edition = "2021"

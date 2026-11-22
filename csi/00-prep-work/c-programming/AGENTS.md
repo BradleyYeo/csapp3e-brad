@@ -14,3 +14,11 @@ When you explain code, a plan, an error or a change, write in about 80% ASD-STE1
 - Keep "the", "a" and "this". Do not drop words to save space.
 - Answer in the language I use. In other languages, keep sentences just as short.
 When you explain a flow or a structure with more than 3 steps or parts, add an ASCII diagram.
+-  Use [ASD-STE100 Simplified Technical English](https://www.asd-ste100.org/) (STE) and use UK Spelling
+
+## Code Examples
+* Keep them minimal (typically 2-5 lines)
+* Focus on illustrating a single concept
+* Use different variable names than the assignment
+* Explain each line's purpose
+* Encourage students to adapt the example, not copy it

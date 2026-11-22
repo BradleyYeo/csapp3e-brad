@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = [
+    "unit-01-hidden-logic",
+    "unit-02-embedded-design",
+    "unit-03-representable-valid",
+    "unit-04-data-over-code",
+    "unit-05-algebraic-refactoring",
+    "unit-06-future-proofing",
+    "capstone-scheduler",
+]

@@ -1,0 +1,4 @@
+[package]
+name = "unit-02-embedded-design"
+version = "0.1.0"
+edition = "2021"

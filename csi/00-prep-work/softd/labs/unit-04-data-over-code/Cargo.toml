@@ -1,0 +1,4 @@
+[package]
+name = "unit-04-data-over-code"
+version = "0.1.0"
+edition = "2021"
