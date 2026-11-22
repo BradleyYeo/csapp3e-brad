@@ -168,9 +168,19 @@ void cache_destroy(cache_t *cache) {
  * If full, find LRU line (smallest timestamp) and evict
  * Returns CACHE_HIT, CACHE_MISS, or CACHE_MISS | CACHE_EVICT.
  */
-// int cache_access(cache_t *cache, uint64_t addr, int clk){}
+int cache_access(cache_t *cache, uint64_t addr, int clk) {
+  uint64_t mask = (1ULL << cache->s) - 1;
+  uint64_t set_index = (addr >> cache->b) & mask;
+  uint64_t tag = addr >> (cache->s + cache->b);
 
-    int main(int argc, char *argv[]) {
+  line_t *lines = cache->sets[set_index].lines;
+  int empty_idx = -1;
+  int lru_idx = 0;
+
+
+}
+// make test STAGE = 4
+int main(int argc, char *argv[]) {
   args_t args = parse_args(argc, argv);
 
   FILE *fp = fopen(args.t, "r");
