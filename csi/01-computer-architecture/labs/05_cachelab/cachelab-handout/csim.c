@@ -177,7 +177,6 @@ int cache_access(cache_t *cache, uint64_t addr, int clk) {
   int empty_idx = -1;
   int lru_idx = 0;
 
-
 }
 // make test STAGE = 4
 int main(int argc, char *argv[]) {
