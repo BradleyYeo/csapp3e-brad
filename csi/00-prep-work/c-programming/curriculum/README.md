@@ -51,7 +51,7 @@ Control flow, character I/O, arrays, bit arithmetic, and data representation. Al
 | 15 | `15_kr206_setbits.c` | bitwise masking algebra |
 | 16 | `16_kr208_rightrot.c` | rotation without modulo |
 | 17 | `17_twos_complement_and_ieee754.{c,md}` | endianness, unsigned promotion bugs, UB-free overflow, IEEE 754 `float_twice` (`datalab` / CS:APP Ch. 2) |
-| 18 | `18_kr301_binsearch_count.c` | **repair target — does not compile**; fix syntax, add comparison counter |
+| 18 | `18_kr301_binsearch_count.{c,md}` | **repair + perf target** — overflow-safe binary search, K&R 3-1 1-test comparison counter, branchless `cmov` search & 16 MiB benchmark |
 | 19 | `19_kr303_expand_ranges.c` | string scanning, lookahead, boundary cases |
 | 20 | `20_kr305_itob.c` | generic base printing, character digits |
 
