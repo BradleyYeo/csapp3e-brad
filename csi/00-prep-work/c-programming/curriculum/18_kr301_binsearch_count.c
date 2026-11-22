@@ -1,18 +1,23 @@
 /*
- * Exercise 18 (K&R 3-1): Binary Search, Comparison Counting & Performance Optimization
+ * Exercise 18 (K&R 3-1): Binary Search, Comparison Counting & Performance
+ * Optimization
  *
  * Concepts covered:
  * - Overflow-safe midpoint calculation (`low + (high - low) / 2`)
- * - Heap allocation (`malloc`/`free`) for datasets that exceed stack & L2/L3 cache
- * - Defeating dead-code elimination (`volatile` sink) and branch-predictor bias (PRNG queries)
+ * - Heap allocation (`malloc`/`free`) for datasets that exceed stack & L2/L3
+ * cache
+ * - Defeating dead-code elimination (`volatile` sink) and branch-predictor bias
+ * (PRNG queries)
  * - Drill 1 (Baseline): Classic 2-comparison binary search
  * - Drill 2 (K&R 3-1): Single-comparison loop + comparison counter
  * - Drill 3 (AMH / Systems Perf): Branchless binary search (`cmov` / `csel`)
  *
  * Build & benchmark in WSL:
  *   make 18_kr301_binsearch_count && ./18_kr301_binsearch_count
- *   clang -std=c23 -O2 -Wall -Wextra -o 18_opt 18_kr301_binsearch_count.c && ./18_opt
+ *   clang -std=c23 -O2 -Wall -Wextra -o 18_opt 18_kr301_binsearch_count.c &&
+ * ./18_opt
  */
+#include <stddef.h>
 #define _POSIX_C_SOURCE 200809L
 #if !defined(__STDC_VERSION__) || __STDC_VERSION__ < 202311L
 #include <stdbool.h>
@@ -28,24 +33,26 @@
 #include <time.h>
 
 enum {
-  BENCH_N = 1 << 22,       /* 4,194,304 ints (~16 MiB: spills out of L1/L2 cache) */
-  BENCH_QUERIES = 500000,  /* 500k random lookups to defeat branch prediction */
-  TODO_SENTINEL = -2       /* Returned by unimplemented optimization drills */
+  BENCH_N = 1 << 22, /* 4,194,304 ints (~16 MiB: spills out of L1/L2 cache) */
+  BENCH_QUERIES = 500000, /* 500k random lookups to defeat branch prediction */
+  TODO_SENTINEL = -2      /* Returned by unimplemented optimization drills */
 };
 
 /*
  * Drill 1 (Baseline — Implemented): Classic Two-Test Binary Search
  *
  * C Tips:
- * - `const int a[]` promises read-only access and lets the compiler optimize loads.
- * - `low + (high - low) / 2` avoids signed integer overflow UB when `n > INT_MAX / 2`.
+ * - `const int a[]` promises read-only access and lets the compiler optimize
+ * loads.
+ * - `low + (high - low) / 2` avoids signed integer overflow UB when `n >
+ * INT_MAX / 2`.
  * - `static` gives internal linkage, allowing `-O2` to inline cleanly.
  */
 static int binarySearch(int x, int n, const int a[]) {
   int low = 0;
   int high = n - 1;
   while (low <= high) {
-    int mid = low + (high - low) / 2;
+    size_t mid = low + (high - low) / 2;
     if (a[mid] == x) {
       return mid;
     } else if (a[mid] < x) {
@@ -61,29 +68,51 @@ static int binarySearch(int x, int n, const int a[]) {
  * Drill 2 (K&R 3-1): One-Test-Inside-Loop Binary Search with Comparison Counter
  *
  * Optimization concept:
- * - The baseline tests `a[mid] == x` AND `a[mid] < x` on every iteration (2 branches).
- * - Narrow the half-open/closed interval using ONLY ONE comparison inside the loop:
- *     while (low < high):
- *       mid = low + (high - low) / 2
- *       increment `*comparisons_out` (if non-null)
- *       if (x <= a[mid]) high = mid;
- *       else             low = mid + 1;
- * - After the loop, check once outside: if `n > 0 && a[low] == x`, return `low`, else `-1`.
+ * - The baseline tests `a[mid] == x` AND `a[mid] < x` on every iteration (2
+ * branches).
+ * - Narrow the half-open/closed interval using ONLY ONE comparison inside the
+ * loop: while (low < high): mid = low + (high - low) / 2 increment
+ * `*comparisons_out` (if non-null) if (x <= a[mid]) high = mid; else low = mid
+ * + 1;
+ * - After the loop, check once outside: if `n > 0 && a[low] == x`, return
+ * `low`, else `-1`.
  *
  * Requirements:
- * - Return -1 immediately if `n <= 0 || a == nullptr` (setting `*comparisons_out = 0` if non-null).
- * - Count every element comparison (`x <= a[mid]` inside loop + final equality check) in `*comparisons_out`.
- * - Return the index of `x` (lowest index if duplicates exist), or `-1` if not found.
+ * - Return -1 immediately if `n <= 0 || a == nullptr` (setting
+ * `*comparisons_out = 0` if non-null).
+ * - Count every element comparison (`x <= a[mid]` inside loop + final equality
+ * check) in `*comparisons_out`.
+ * - Return the index of `x` (lowest index if duplicates exist), or `-1` if not
+ * found.
  */
 static int binarySearch_one_test(int x, int n, const int a[],
                                  size_t *comparisons_out) {
-  (void)x;
-  (void)n;
-  (void)a;
+  size_t cmps = 0;
   if (comparisons_out != nullptr) {
     *comparisons_out = 0;
   }
-  return TODO_SENTINEL; /* TODO: implement K&R 3-1 single-test loop */
+  if (n <= 0 || a == nullptr) {
+    return -1;
+  }
+  size_t low = 0;
+  size_t high = (size_t)n - 1;
+  while (low < high) {
+    size_t mid = low + (high - low) / 2;
+    cmps++;
+    if (x <= a[mid]) {
+      high = mid;
+    } else {
+      low = mid + 1;
+    }
+  }
+  cmps++;
+  if (a[low] == x) {
+    return (int)low;
+  }
+  if (comparisons_out != nullptr) {
+    *comparisons_out = cmps;
+  }
+  return -1;
 }
 
 /*
@@ -91,18 +120,19 @@ static int binarySearch_one_test(int x, int n, const int a[],
  *
  * Optimization concept (Slotin AMH / CS:APP Ch. 5):
  * - On random queries, each binary search comparison is a 50/50 coin flip.
- * - Modern CPUs suffer a ~15-20 cycle pipeline flush on every branch misprediction.
- * - By maintaining a `const int *base = a` and `size_t len = (size_t)n` and updating:
- *     size_t half = len / 2;
- *     base += (base[half] <= x) ? half : 0;
- *     len -= half;
- *   `clang -O2` emits a branchless conditional move (`cmov` on x86-64 / `csel` on ARM64).
+ * - Modern CPUs suffer a ~15-20 cycle pipeline flush on every branch
+ * misprediction.
+ * - By maintaining a `const int *base = a` and `size_t len = (size_t)n` and
+ * updating: size_t half = len / 2; base += (base[half] <= x) ? half : 0; len -=
+ * half; `clang -O2` emits a branchless conditional move (`cmov` on x86-64 /
+ * `csel` on ARM64).
  *
  * Requirements:
  * - Return -1 if `n <= 0 || a == nullptr`.
  * - Loop while `len > 1`, halving `len` and conditionally advancing `base`.
  * - After the loop, return `(int)(base - a)` if `*base == x`, else `-1`.
- * - Verify emitted assembly with: `clang -std=c23 -O2 -S 18_kr301_binsearch_count.c -o -`
+ * - Verify emitted assembly with: `clang -std=c23 -O2 -S
+ * 18_kr301_binsearch_count.c -o -`
  */
 static int binarySearch_branchless(int x, int n, const int a[]) {
   (void)x;
@@ -134,9 +164,10 @@ static void verify_basic_cases(int (*fn)(int, int, const int *),
   const int evens[4] = {2, 4, 6, 8};
   const int single[1] = {42};
 
-  assert(fn(4, 5, a) == 3);       /* catches returning 0 instead of mid */
-  assert(fn(1, 5, a) == 0);       /* first element */
-  assert(fn(5, 5, a) == 4);       /* last element: catches low < high & low = mid hang */
+  assert(fn(4, 5, a) == 3); /* catches returning 0 instead of mid */
+  assert(fn(1, 5, a) == 0); /* first element */
+  assert(fn(5, 5, a) ==
+         4); /* last element: catches low < high & low = mid hang */
   assert(fn(0, 5, a) == -1);      /* missing below min */
   assert(fn(6, 5, a) == -1);      /* missing above max */
   assert(fn(5, 4, evens) == -1);  /* missing in middle */
@@ -156,17 +187,20 @@ int main(void) {
   /* 1. Core & boundary unit tests on baseline */
   verify_basic_cases(binarySearch, "binarySearch (baseline)");
 
-  /* 2. Allocate large sorted dataset on the HEAP (16 MiB would overflow stack!) */
+  /* 2. Allocate large sorted dataset on the HEAP (16 MiB would overflow stack!)
+   */
   int *big = malloc((size_t)BENCH_N * sizeof(int));
   int *queries = malloc((size_t)BENCH_QUERIES * sizeof(int));
   assert(big != nullptr && queries != nullptr);
 
-  /* Store even numbers [0, 2, 4, ..., 2*(N-1)] so even queries hit and odd queries miss */
+  /* Store even numbers [0, 2, 4, ..., 2*(N-1)] so even queries hit and odd
+   * queries miss */
   for (int i = 0; i < BENCH_N; i++) {
     big[i] = i * 2;
   }
 
-  /* Pre-generate unpredictable random queries so the branch predictor cannot cheat */
+  /* Pre-generate unpredictable random queries so the branch predictor cannot
+   * cheat */
   uint32_t rng = 0xDEADBEEFU;
   for (int i = 0; i < BENCH_QUERIES; i++) {
     queries[i] = (int)(xorshift32(&rng) % (uint32_t)(BENCH_N * 2));
@@ -192,11 +226,11 @@ int main(void) {
   volatile int64_t sink = baseline_checksum;
   (void)sink;
 
-  printf("\nBenchmark: N = %d ints (%.1f MiB), %d random queries\n",
-         BENCH_N, (double)((size_t)BENCH_N * sizeof(int)) / (1024.0 * 1024.0),
+  printf("\nBenchmark: N = %d ints (%.1f MiB), %d random queries\n", BENCH_N,
+         (double)((size_t)BENCH_N * sizeof(int)) / (1024.0 * 1024.0),
          BENCH_QUERIES);
-  printf("  baseline (2 tests/iter): %8.2f ms  (%5.1f ns/query)\n",
-         base_ms, (base_ms * 1e6) / (double)BENCH_QUERIES);
+  printf("  baseline (2 tests/iter): %8.2f ms  (%5.1f ns/query)\n", base_ms,
+         (base_ms * 1e6) / (double)BENCH_QUERIES);
 
   /* 4. Drill 2: K&R 3-1 Single-Test Loop (auto-verified once implemented) */
   size_t sample_cmps = 0;
@@ -216,17 +250,20 @@ int main(void) {
     clock_gettime(CLOCK_MONOTONIC, &t1);
     double one_ms = elapsed_ms(t0, t1);
     assert(one_checksum == baseline_checksum);
-    printf("  one_test (K&R 3-1):      %8.2f ms  (%5.1f ns/query, %.1f cmps/query, %.2fx)\n",
+    printf("  one_test (K&R 3-1):      %8.2f ms  (%5.1f ns/query, %.1f "
+           "cmps/query, %.2fx)\n",
            one_ms, (one_ms * 1e6) / (double)BENCH_QUERIES,
            (double)total_cmps / (double)BENCH_QUERIES, base_ms / one_ms);
   } else {
-    printf("  one_test (K&R 3-1):      [TODO] implement binarySearch_one_test to benchmark\n");
+    printf("  one_test (K&R 3-1):      [TODO] implement binarySearch_one_test "
+           "to benchmark\n");
   }
 
   /* 5. Drill 3: Branchless CMOV Search (auto-verified once implemented) */
   if (binarySearch_branchless(4, 5, (const int[]){1, 2, 3, 4, 5}) !=
       TODO_SENTINEL) {
-    verify_basic_cases(binarySearch_branchless, "binarySearch_branchless (CMOV)");
+    verify_basic_cases(binarySearch_branchless,
+                       "binarySearch_branchless (CMOV)");
 
     int64_t bl_checksum = 0;
     clock_gettime(CLOCK_MONOTONIC, &t0);
@@ -239,7 +276,8 @@ int main(void) {
     printf("  branchless (CMOV):       %8.2f ms  (%5.1f ns/query, %.2fx)\n",
            bl_ms, (bl_ms * 1e6) / (double)BENCH_QUERIES, base_ms / bl_ms);
   } else {
-    printf("  branchless (CMOV):       [TODO] implement binarySearch_branchless to benchmark\n");
+    printf("  branchless (CMOV):       [TODO] implement "
+           "binarySearch_branchless to benchmark\n");
   }
 
   free(queries);
